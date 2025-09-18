@@ -1,2 +1,3 @@
+boto3>=1.40.27
 colorama>=0.4.4
 requests>=2.25.1
