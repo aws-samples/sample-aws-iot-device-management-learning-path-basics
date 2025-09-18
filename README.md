@@ -62,8 +62,8 @@ A comprehensive demonstration of AWS IoT Device Management capabilities includin
 
 ```bash
 # 1. Clone and setup
-git clone <repository-url>
-cd aws-iot-dm-basics-learning-path
+git clone https://github.com/aws-samples/sample-aws-iot-device-management-learning-path-basics.git
+cd sample-aws-iot-device-management-learning-path-basics
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
