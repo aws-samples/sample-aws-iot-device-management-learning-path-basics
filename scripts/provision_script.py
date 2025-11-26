@@ -13,12 +13,22 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from threading import Semaphore
 
+# Add i18n to path
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "i18n"))
+
 import boto3
 from botocore.exceptions import ClientError
 from colorama import Fore, Style, init
 
+from language_selector import get_language
+from loader import load_messages
+
 # Initialize colorama
 init()
+
+# Global variables for i18n
+USER_LANG = "en"
+messages = {}
 
 # Configuration
 CONTINENTS = {
@@ -257,43 +267,66 @@ class IoTProvisioner:
         self.thing_creation_semaphore = Semaphore(80)
         self.package_semaphore = Semaphore(8)
 
+    def get_message(self, key, *args):
+        """Get localized message with optional formatting"""
+        # Handle nested keys like 'warnings.debug_warning'
+        if '.' in key:
+            keys = key.split('.')
+            msg = messages
+            for k in keys:
+                if isinstance(msg, dict) and k in msg:
+                    msg = msg[k]
+                else:
+                    msg = key  # Fallback to key if not found
+                    break
+        else:
+            msg = messages.get(key, key)
+        
+        if args and isinstance(msg, str):
+            return msg.format(*args)
+        return msg
+
+    def get_learning_moment(self, moment_key):
+        """Get localized learning moment"""
+        return messages.get("learning_moments", {}).get(moment_key, {})
+
     def safe_api_call(self, func, operation_name, resource_name, debug=False, **kwargs):
         """Safely execute AWS API call with error handling and optional debug info"""
         try:
             if debug or self.debug_mode:
-                print(f"\n🔍 DEBUG: {operation_name}: {resource_name}")
-                print(f"📤 API Call: {func.__name__}")
-                print("📥 Input Parameters:")
+                print(f"\n{self.get_message('debug.debug_operation', operation_name, resource_name)}")
+                print(self.get_message('debug.api_call', func.__name__))
+                print(self.get_message('debug.input_parameters'))
                 print(json.dumps(kwargs, indent=2, default=str))
             else:
-                print(f"Creating {operation_name}: {resource_name}")
+                print(self.get_message('resources.creating_resource', operation_name, resource_name))
 
             response = func(**kwargs)
 
             if debug or self.debug_mode:
-                print("📤 API Response:")
+                print(self.get_message('debug.api_response'))
                 print(json.dumps(response, indent=2, default=str))
 
-            print(f"✅ Created {operation_name}: {resource_name}")
+            print(self.get_message('resources.created_resource', operation_name, resource_name))
             time.sleep(0.125)  # Rate limiting  # nosemgrep: arbitrary-sleep
             return response
         except ClientError as e:
             error_code = e.response["Error"]["Code"]
             if error_code in ["ResourceAlreadyExistsException", "ConflictException"]:
-                print(f"⚠️  {operation_name} {resource_name} already exists, skipping")
+                print(self.get_message('resources.resource_already_exists', operation_name, resource_name))
             else:
-                print(f"❌ Error creating {operation_name} {resource_name}: {e.response['Error']['Message']}")
+                print(self.get_message('resources.error_creating_resource', operation_name, resource_name, e.response['Error']['Message']))
                 if debug or self.debug_mode:
-                    print("🔍 DEBUG: Full error response:")
+                    print(self.get_message('debug.full_error'))
                     print(json.dumps(e.response, indent=2, default=str))
             time.sleep(0.125)  # nosemgrep: arbitrary-sleep
             return None
         except Exception as e:
-            print(f"❌ Error: {str(e)}")
+            print(self.get_message('errors.error_message', str(e)))
             if debug or self.debug_mode:
                 import traceback
 
-                print("🔍 DEBUG: Full traceback:")
+                print(self.get_message('debug.full_traceback'))
                 traceback.print_exc()
             time.sleep(0.125)  # nosemgrep: arbitrary-sleep
             return None
@@ -310,79 +343,79 @@ class IoTProvisioner:
             identity = self.sts_client.get_caller_identity()
             self.account_id = identity["Account"]
 
-            print("✅ AWS clients initialized")
+            print(self.get_message('status.clients_initialized'))
             if self.debug_mode:
-                print("🔍 DEBUG: Client configuration:")
-                print(f"   IoT Service: {self.iot_client.meta.service_model.service_name}")
-                print(f"   API Version: {self.iot_client.meta.service_model.api_version}")
+                print(self.get_message('debug.client_config'))
+                print(f"   {self.get_message('debug.service')}: {self.iot_client.meta.service_model.service_name}")
+                print(f"   {self.get_message('debug.api_version')}: {self.iot_client.meta.service_model.api_version}")
 
             return True
         except Exception as e:
-            print(f"❌ Error initializing AWS clients: {str(e)}")
+            print(self.get_message('errors.error_initializing', str(e)))
             return False
 
     def print_header(self):
-        print(f"{Fore.CYAN}🚀 AWS IoT Provisioning Script (Boto3){Style.RESET_ALL}")
-        print(f"{Fore.CYAN}======================================{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('title')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('separator')}{Style.RESET_ALL}")
 
-        print(f"{Fore.BLUE}📍 AWS Configuration:{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}   Account ID: {self.account_id}{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}   Region: {self.region}{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{self.get_message('aws_config')}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}   {self.get_message('status.account_id')}: {self.account_id}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}   {self.get_message('status.region')}: {self.region}{Style.RESET_ALL}")
         print()
 
     def get_debug_mode(self):
         """Ask user for debug mode"""
         print(
-            f"{Fore.RED}⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses){Style.RESET_ALL}"
+            f"{Fore.RED}{self.get_message('warnings.debug_warning')}{Style.RESET_ALL}"
         )
         choice = (
-            input(f"{Fore.YELLOW}🔧 Enable debug mode (show all API calls and responses)? [y/N]: {Style.RESET_ALL}")
+            input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}")
             .strip()
             .lower()
         )
         self.debug_mode = choice in ["y", "yes"]
 
         if self.debug_mode:
-            print(f"{Fore.GREEN}✅ Debug mode enabled{Style.RESET_ALL}\n")
+            print(f"{Fore.GREEN}{self.get_message('status.debug_enabled')}{Style.RESET_ALL}\n")
 
     def get_thing_types(self):
         """Get thing types from user input"""
         default_types = "SedanVehicle,SUVVehicle,TruckVehicle"
         print(
-            f"{Fore.YELLOW}📝 Enter thing types (comma-separated, e.g., SedanVehicle,SUVVehicle,TruckVehicle):{Style.RESET_ALL}"
+            f"{Fore.YELLOW}{self.get_message('prompts.thing_types')}{Style.RESET_ALL}"
         )
-        print(f"{Fore.CYAN}   Default: {default_types}{Style.RESET_ALL}")
-        thing_types_input = input(f"{Fore.YELLOW}   Your choice [{default_types}]: {Style.RESET_ALL}").strip()
+        print(f"{Fore.CYAN}   {self.get_message('ui.default')}: {default_types}{Style.RESET_ALL}")
+        thing_types_input = input(f"{Fore.YELLOW}   {self.get_message('prompts.your_choice', default_types)}{Style.RESET_ALL}").strip()
 
         if not thing_types_input:
             thing_types_input = default_types
-            print(f"{Fore.GREEN}✅ Using default: {default_types}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{self.get_message('status.using_default', default_types)}{Style.RESET_ALL}")
 
         return [t.strip() for t in thing_types_input.split(",")]
 
     def get_continent_choice(self):
         """Get continent selection from user"""
         default_choice = 1
-        print(f"{Fore.BLUE}🌍 Select continent:{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{self.get_message('status.select_continent')}{Style.RESET_ALL}")
         for num, info in CONTINENTS.items():
-            marker = " (default)" if num == default_choice else ""
+            marker = f" ({self.get_message('ui.default')})" if num == default_choice else ""
             print(f"{Fore.CYAN}{num}. {info['name']}{marker}{Style.RESET_ALL}")
 
         while True:
             try:
                 user_input = input(
-                    f"{Fore.YELLOW}Enter choice [1-{len(CONTINENTS)}] [{default_choice}]: {Style.RESET_ALL}"
+                    f"{Fore.YELLOW}{self.get_message('prompts.enter_choice', f'1-{len(CONTINENTS)}', default_choice)}{Style.RESET_ALL}"
                 ).strip()
                 if not user_input:
-                    print(f"{Fore.GREEN}✅ Using default: {CONTINENTS[default_choice]['name']}{Style.RESET_ALL}")
+                    print(f"{Fore.GREEN}{self.get_message('status.using_default', CONTINENTS[default_choice]['name'])}{Style.RESET_ALL}")
                     return default_choice
 
                 choice = int(user_input)
                 if 1 <= choice <= len(CONTINENTS):
                     return choice
-                print(f"{Fore.RED}❌ Invalid choice. Please enter 1-{len(CONTINENTS)}{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.invalid_choice', f'1-{len(CONTINENTS)}')}{Style.RESET_ALL}")
             except ValueError:
-                print(f"{Fore.RED}❌ Please enter a valid number{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.enter_valid_number')}{Style.RESET_ALL}")
 
     def get_country_selection(self, continent_choice):
         """Get country selection from user"""
@@ -392,29 +425,29 @@ class IoTProvisioner:
         default_selection = "3" if continent_choice == 1 else "2"
 
         print(
-            f"\n{Fore.BLUE}🇦 Available countries in {continent_info['name']}: {', '.join(available_countries)}{Style.RESET_ALL}"
+            f"\n{Fore.BLUE}{self.get_message('status.available_countries', continent_info['name'], ', '.join(available_countries))}{Style.RESET_ALL}"
         )
-        print(f"{Fore.CYAN}Options:{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}1. Enter a number (1-{max_countries}) to use first N countries{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}2. Enter comma-separated country codes (e.g., US,CA,MX){Style.RESET_ALL}")
-        print(f"{Fore.CYAN}   Default: {default_selection} (first {default_selection} countries){Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('status.options')}:{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}1. {self.get_message('status.country_option_number', max_countries)}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}2. {self.get_message('status.country_option_codes')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}   {self.get_message('ui.default')}: {default_selection} ({self.get_message('status.first_n_countries', default_selection)}){Style.RESET_ALL}")
 
         while True:
             user_input = input(
-                f"{Fore.YELLOW}📊 Enter number or country codes [{default_selection}]: {Style.RESET_ALL}"
+                f"{Fore.YELLOW}{self.get_message('prompts.enter_country_selection', default_selection)}{Style.RESET_ALL}"
             ).strip()
 
             if not user_input:
                 count = int(default_selection)
                 selected = available_countries[:count]
-                print(f"{Fore.GREEN}✅ Using default: {', '.join(selected)}{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}{self.get_message('status.using_default', ', '.join(selected))}{Style.RESET_ALL}")
                 return selected
 
             try:
                 count = int(user_input)
                 if 1 <= count <= max_countries:
                     return available_countries[:count]
-                print(f"{Fore.RED}❌ Please enter a number between 1 and {max_countries}{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.number_between', 1, max_countries)}{Style.RESET_ALL}")
                 continue
             except ValueError:
                 pass
@@ -424,27 +457,27 @@ class IoTProvisioner:
                 invalid_codes = [code for code in country_codes if code not in available_countries]
 
                 if invalid_codes:
-                    print(f"{Fore.RED}❌ Invalid country codes: {', '.join(invalid_codes)}{Style.RESET_ALL}")
-                    print(f"{Fore.YELLOW}Available codes: {', '.join(available_countries)}{Style.RESET_ALL}")
+                    print(f"{Fore.RED}{self.get_message('errors.invalid_country_codes', ', '.join(invalid_codes))}{Style.RESET_ALL}")
+                    print(f"{Fore.YELLOW}{self.get_message('ui.available_codes', ', '.join(available_countries))}{Style.RESET_ALL}")
                     continue
 
                 if not country_codes:
-                    print(f"{Fore.RED}❌ Please provide at least one country code{Style.RESET_ALL}")
+                    print(f"{Fore.RED}{self.get_message('errors.provide_country_code')}{Style.RESET_ALL}")
                     continue
 
                 return country_codes
 
-            print(f"{Fore.RED}❌ Invalid input. Enter a number or comma-separated country codes{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.invalid_country_input')}{Style.RESET_ALL}")
 
     def get_package_versions(self):
         """Get package versions from user input"""
         default_versions = "1.0.0,1.1.0"
-        print(f"{Fore.YELLOW}📝 Enter package versions (comma-separated, e.g., 1.0.0,1.1.0,2.0.0):{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}   Default: {default_versions}{Style.RESET_ALL}")
-        versions_input = input(f"{Fore.YELLOW}   Your choice [{default_versions}]: {Style.RESET_ALL}").strip()
+        print(f"{Fore.YELLOW}{self.get_message('prompts.package_versions')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}   {self.get_message('ui.default')}: {default_versions}{Style.RESET_ALL}")
+        versions_input = input(f"{Fore.YELLOW}   {self.get_message('prompts.your_choice', default_versions)}{Style.RESET_ALL}").strip()
 
         if not versions_input:
-            print(f"{Fore.GREEN}✅ Using default: {default_versions}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{self.get_message('status.using_default', default_versions)}{Style.RESET_ALL}")
             return ["1.0.0", "1.1.0"]
 
         versions = [v.strip() for v in versions_input.split(",")]
@@ -452,7 +485,7 @@ class IoTProvisioner:
         # Basic validation
         for version in versions:
             if not version or not all(c.isdigit() or c == "." for c in version):
-                print(f"{Fore.RED}❌ Invalid version format: {version}{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.invalid_version_format', version)}{Style.RESET_ALL}")
                 return self.get_package_versions()
 
         return versions
@@ -463,24 +496,24 @@ class IoTProvisioner:
         while True:
             try:
                 user_input = input(
-                    f"{Fore.YELLOW}📊 Enter number of devices to create [{default_count}]: {Style.RESET_ALL}"
+                    f"{Fore.YELLOW}{self.get_message('prompts.device_count', default_count)}{Style.RESET_ALL}"
                 ).strip()
 
                 if not user_input:
-                    print(f"{Fore.GREEN}✅ Using default: {default_count}{Style.RESET_ALL}")
+                    print(f"{Fore.GREEN}{self.get_message('status.using_default', default_count)}{Style.RESET_ALL}")
                     return int(default_count)
 
                 count = int(user_input)
                 if count > 0:
                     return count
-                print(f"{Fore.RED}❌ Please enter a positive number{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.enter_positive_number')}{Style.RESET_ALL}")
             except ValueError:
-                print(f"{Fore.RED}❌ Please enter a valid number{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.enter_valid_number')}{Style.RESET_ALL}")
 
     def create_single_thing_type(self, thing_type, index, total):
         """Create or undeprecate a single thing type"""
         with self.thing_type_semaphore:
-            print(f"{Fore.BLUE}📋 Processing thing type {index}/{total}: {Fore.YELLOW}{thing_type}{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}{self.get_message('status.processing_thing_type', index, total)}: {Fore.YELLOW}{thing_type}{Style.RESET_ALL}")
 
             # Try to create thing type first (more efficient than checking existence)
             description = f"Template for {thing_type.replace('Vehicle', ' Vehicle')} category"
@@ -488,9 +521,9 @@ class IoTProvisioner:
             try:
                 try:
                     if self.debug_mode:
-                        print(f"\n🔍 DEBUG: Thing Type Create: {thing_type}")
-                        print("📤 API Call: create_thing_type")
-                        print("📥 Input Parameters:")
+                        print(f"\n{self.get_message('debug_thing_type_create', thing_type)}")
+                        print(self.get_message('debug_api_call_name', 'create_thing_type'))
+                        print(self.get_message('input_parameters'))
                         params = {
                             "thingTypeName": thing_type,
                             "thingTypeProperties": {
@@ -509,44 +542,44 @@ class IoTProvisioner:
                     )
 
                     if self.debug_mode:
-                        print("📤 API Response:")
+                        print(self.get_message('api_response'))
                         print(json.dumps(response, indent=2, default=str))
 
-                    print(f"{Fore.GREEN}✅ Created thing type: {thing_type}{Style.RESET_ALL}")
+                    print(f"{Fore.GREEN}{self.get_message('thing_type_created', thing_type)}{Style.RESET_ALL}")
                     return True
                 except ClientError as e:
                     if e.response["Error"]["Code"] == "ResourceAlreadyExistsException":
-                        print(f"{Fore.CYAN}🔍 Thing type exists, checking deprecation status...{Style.RESET_ALL}")
+                        print(f"{Fore.CYAN}{self.get_message('status.checking_deprecation')}{Style.RESET_ALL}")
                         # Check if deprecated
                         describe_response = self.iot_client.describe_thing_type(thingTypeName=thing_type)
                         deprecated = describe_response.get("thingTypeMetadata", {}).get("deprecated", False)
-                        print(f"{Fore.CYAN}📊 Thing type '{thing_type}' deprecated: {deprecated}{Style.RESET_ALL}")
+                        print(f"{Fore.CYAN}{self.get_message('status.thing_type_deprecated', thing_type, deprecated)}{Style.RESET_ALL}")
 
                         if deprecated:
-                            print(f"{Fore.YELLOW}🔄 Undeprecating thing type...{Style.RESET_ALL}")
+                            print(f"{Fore.YELLOW}{self.get_message('status.undeprecating')}{Style.RESET_ALL}")
                             self.iot_client.deprecate_thing_type(thingTypeName=thing_type, undoDeprecate=True)
-                            print(f"{Fore.GREEN}✅ Thing type undeprecated: {thing_type}{Style.RESET_ALL}")
+                            print(f"{Fore.GREEN}{self.get_message('status.thing_type_undeprecated')}: {thing_type}{Style.RESET_ALL}")
                         else:
-                            print(f"{Fore.GREEN}✅ Thing type already active: {thing_type}{Style.RESET_ALL}")
+                            print(f"{Fore.GREEN}{self.get_message('status.thing_type_active')}: {thing_type}{Style.RESET_ALL}")
                         return True
                     else:
-                        print(f"{Fore.RED}❌ Failed to create thing type: {e.response['Error']['Message']}{Style.RESET_ALL}")
+                        print(f"{Fore.RED}{self.get_message('errors.failed_create_thing_type')}: {e.response['Error']['Message']}{Style.RESET_ALL}")
                         return False
 
             except Exception as e:
-                print(f"{Fore.RED}❌ Error processing thing type '{thing_type}': {str(e)}{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.error_processing_thing_type', thing_type)}: {str(e)}{Style.RESET_ALL}")
                 return False
 
     def create_thing_types(self, thing_types):
         """Create or undeprecate thing types in parallel (or sequential in debug mode)"""
         if self.debug_mode:
-            print(f"{Fore.BLUE}🔧 Creating/updating AWS IoT thing types sequentially (debug mode)...{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}{self.get_message('status.creating_thing_types_sequential')}{Style.RESET_ALL}")
             success_count = 0
             for i, thing_type in enumerate(thing_types, 1):
                 if self.create_single_thing_type(thing_type, i, len(thing_types)):
                     success_count += 1
         else:
-            print(f"{Fore.BLUE}🔧 Creating/updating AWS IoT thing types in parallel...{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}{self.get_message('status.creating_thing_types_parallel')}{Style.RESET_ALL}")
             with ThreadPoolExecutor(max_workers=8) as executor:
                 futures = [
                     executor.submit(self.create_single_thing_type, thing_type, i, len(thing_types))
@@ -559,13 +592,13 @@ class IoTProvisioner:
                         if future.result():
                             success_count += 1
                     except Exception as e:
-                        print(f"{Fore.RED}❌ Thread execution failed: {e}{Style.RESET_ALL}")
+                        print(f"{Fore.RED}{self.get_message('thread_execution_failed', e)}{Style.RESET_ALL}")
 
-        print(f"{Fore.CYAN}📊 Thing types completed: {success_count}/{len(thing_types)} successful{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('status.thing_types_completed', success_count, len(thing_types))}{Style.RESET_ALL}")
 
     def enable_fleet_indexing(self):
         """Enable AWS IoT Fleet Indexing with $package shadow support"""
-        print(f"{Fore.BLUE}🔍 Enabling AWS IoT Fleet Indexing with $package shadow...{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{self.get_message('status.enabling_fleet_indexing')}{Style.RESET_ALL}")
 
         try:
             if self.debug_mode:
@@ -598,17 +631,17 @@ class IoTProvisioner:
                 print("📤 API Response:")
                 print(json.dumps(response, indent=2, default=str))
 
-            print(f"{Fore.GREEN}✅ AWS IoT Fleet Indexing enabled with $package shadow support{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{self.get_message('status.fleet_indexing_enabled')}{Style.RESET_ALL}")
             return True
         except Exception as e:
-            print(f"{Fore.RED}❌ Failed to enable AWS IoT Fleet Indexing: {str(e)}{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.failed_fleet_indexing', str(e))}{Style.RESET_ALL}")
             return False
 
     def create_s3_bucket(self):
         """Create Amazon S3 bucket for firmware storage with versioning enabled"""
         try:
             # Check for existing bucket with debug output
-            print(f"{Fore.BLUE}🔍 Checking for existing Amazon S3 buckets...{Style.RESET_ALL}")
+            print(f"{Fore.BLUE}{self.get_message('status.checking_s3_buckets')}{Style.RESET_ALL}")
 
             if self.debug_mode:
                 print("\n🔍 DEBUG: Check Existing Buckets")
@@ -627,7 +660,7 @@ class IoTProvisioner:
 
             if existing_buckets:
                 bucket_name = existing_buckets[0]
-                print(f"{Fore.GREEN}✅ Using existing Amazon S3 bucket: {Fore.YELLOW}{bucket_name}{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}{self.get_message('status.using_existing_bucket')}: {Fore.YELLOW}{bucket_name}{Style.RESET_ALL}")
                 return bucket_name
 
             # Create new bucket
@@ -661,12 +694,12 @@ class IoTProvisioner:
             )
 
             if versioning_response:
-                print(f"{Fore.GREEN}✅ Amazon S3 bucket versioning enabled{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}{self.get_message('status.bucket_versioning_enabled')}{Style.RESET_ALL}")
 
             return bucket_name
 
         except Exception as e:
-            print(f"{Fore.RED}❌ Failed to create Amazon S3 bucket: {str(e)}{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.failed_create_bucket', str(e))}{Style.RESET_ALL}")
             return None
 
     def upload_firmware_to_s3(self, bucket_name, package_name, version):
@@ -1200,9 +1233,9 @@ class IoTProvisioner:
 
     def educational_pause(self, title, description):
         """Pause execution with educational content"""
-        print(f"\n{Fore.YELLOW}📚 LEARNING MOMENT: {title}{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}{self.get_message('ui.learning_moment_prefix')}: {title}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{description}{Style.RESET_ALL}")
-        input(f"\n{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
+        input(f"\n{Fore.GREEN}{self.get_message('prompts.press_enter')}{Style.RESET_ALL}")
         print()
 
     def run(self):
@@ -1224,13 +1257,13 @@ class IoTProvisioner:
         selected_countries = self.get_country_selection(continent_choice)
         device_count = self.get_device_count()
 
-        print(f"\n{Fore.CYAN}🎯 Provisioning Plan:{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}📋 Thing types: {', '.join(thing_types)}{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}🌍 Continent: {CONTINENTS[continent_choice]['name']}{Style.RESET_ALL}")
+        print(f"\n{Fore.CYAN}{self.get_message('status.provisioning_plan')}:{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('status.thing_types_label')}: {', '.join(thing_types)}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('status.continent_label')}: {CONTINENTS[continent_choice]['name']}{Style.RESET_ALL}")
         print(
-            f"{Fore.GREEN}🇦 Countries: {', '.join(selected_countries)} ({len(selected_countries)} of {len(CONTINENTS[continent_choice]['countries'])}){Style.RESET_ALL}"
+            f"{Fore.GREEN}{self.get_message('status.countries_label')}: {', '.join(selected_countries)} ({len(selected_countries)} {self.get_message('ui.of')} {len(CONTINENTS[continent_choice]['countries'])}){Style.RESET_ALL}"
         )
-        print(f"{Fore.GREEN}📊 Device count: {device_count}{Style.RESET_ALL}\n")
+        print(f"{Fore.GREEN}{self.get_message('status.device_count_label')}: {device_count}{Style.RESET_ALL}\n")
 
         # Execute provisioning steps with timing
         start_time = time.time()
@@ -1344,39 +1377,45 @@ class IoTProvisioner:
         end_time = time.time()
         duration = end_time - start_time
 
-        print(f"\n{Fore.GREEN}🎉 Provisioning completed successfully!{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}📊 Created {device_count} devices across {len(selected_countries)} countries{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}⏱️  Total execution time: {duration:.2f} seconds{Style.RESET_ALL}")
+        print(f"\n{Fore.GREEN}{self.get_message('status.provisioning_complete')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('status.devices_created', device_count, len(selected_countries))}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('status.execution_time', duration)}{Style.RESET_ALL}")
 
-        print(f"\n{Fore.YELLOW}🎓 What You've Learned:{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}✅ AWS IoT Thing Types organize devices using CreateThingType API{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}✅ Fleet Indexing enables device search via UpdateIndexingConfiguration API{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}{self.get_message('status.what_learned')}:{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('learning.learned_thing_types')}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('learning.learned_fleet_indexing')}{Style.RESET_ALL}")
         print(
-            f"{Fore.GREEN}✅ Amazon S3 provides secure firmware storage using CreateBucket and PutObject APIs{Style.RESET_ALL}"
+            f"{Fore.GREEN}{self.get_message('learning.learned_s3_storage')}{Style.RESET_ALL}"
         )
         print(
-            f"{Fore.GREEN}✅ AWS IoT Software Package Catalog centralizes firmware using CreatePackage APIs{Style.RESET_ALL}"
+            f"{Fore.GREEN}{self.get_message('learning.learned_package_catalog')}{Style.RESET_ALL}"
         )
-        print(f"{Fore.GREEN}✅ IAM roles enable secure access through CreateRole and PutRolePolicy APIs{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('learning.learned_iam_roles')}{Style.RESET_ALL}")
         print(
-            f"{Fore.GREEN}✅ Package Configuration automates shadow updates via UpdatePackageConfiguration API{Style.RESET_ALL}"
+            f"{Fore.GREEN}{self.get_message('learning.learned_package_config')}{Style.RESET_ALL}"
         )
-        print(f"{Fore.GREEN}✅ Device fleet creation uses CreateThing and CreateThingGroup APIs{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('learning.learned_device_creation')}{Style.RESET_ALL}")
         print(
-            f"{Fore.GREEN}✅ Boto3 provides direct AWS API access with detailed request/response visibility{Style.RESET_ALL}"
+            f"{Fore.GREEN}{self.get_message('learning.learned_boto3')}{Style.RESET_ALL}"
         )
         print(
-            f"\n{Fore.CYAN}🚀 Next Steps: Use scripts/manage_dynamic_groups.py to create dynamic thing groups and scripts/create_job.py to deploy firmware updates!{Style.RESET_ALL}"
+            f"\n{Fore.CYAN}{self.get_message('status.next_steps')}{Style.RESET_ALL}"
         )
 
 
 if __name__ == "__main__":
+    # Get user's preferred language
+    USER_LANG = get_language()
+
+    # Load messages for this script and language
+    messages = load_messages("provision_script", USER_LANG)
+
     provisioner = IoTProvisioner()
     try:
         provisioner.run()
     except KeyboardInterrupt:
-        print(f"\n\n{Fore.YELLOW}👋 Provisioning cancelled by user. Goodbye!{Style.RESET_ALL}")
+        print(f"\n\n{Fore.YELLOW}{provisioner.get_message('errors.cancelled_by_user')}{Style.RESET_ALL}")
         sys.exit(0)
     except Exception as e:
-        print(f"\n\n{Fore.RED}❌ Provisioning failed with error: {str(e)}{Style.RESET_ALL}")
+        print(f"\n\n{Fore.RED}{provisioner.get_message('errors.provisioning_failed')}: {str(e)}{Style.RESET_ALL}")
         sys.exit(1)

@@ -1,5 +1,18 @@
 # AWS IoT Device Management - Learning Path - Basics
 
+## 🌍 Available Languages | Idiomas Disponibles | 利用可能な言語 | 사용 가능한 언어 | Idiomas Disponíveis | 可用语言
+
+| Language | README |
+|----------|---------|
+| 🇺🇸 English | [README.md](README.md) |
+| 🇪🇸 Español | [README.es.md](README.es.md) |
+| 🇯🇵 日本語 | [README.ja.md](README.ja.md) |
+| 🇰🇷 한국어 | [README.ko.md](README.ko.md) |
+| 🇧🇷 Português | [README.pt.md](README.pt.md) |
+| 🇨🇳 中文 | [README.zh.md](README.zh.md) |
+
+---
+
 A comprehensive demonstration of AWS IoT Device Management capabilities including device provisioning, over-the-air (OTA) updates, job management, and fleet operations using modern Python scripts with native AWS SDK (boto3) integration.
 
 ## 👥 Target Audience
@@ -100,14 +113,68 @@ python scripts/cleanup_script.py          # Clean up resources
 **Environment Variables** (optional):
 ```bash
 export AWS_DEFAULT_REGION=us-east-1
+export AWS_IOT_LANG=en                    # Set default language (en, es, fr, etc.)
 ```
 
 **Script Features**:
 - **Native AWS SDK**: Uses boto3 for better performance and reliability
+- **Multi-language Support**: Interactive language selection with fallback to English
 - **Debug Mode**: Shows all AWS API calls and responses
 - **Parallel Processing**: Concurrent operations when not in debug mode
 - **Rate Limiting**: Automatic AWS API throttling compliance
 - **Progress Tracking**: Real-time operation status
+
+## 🌍 Internationalization Support
+
+All scripts support multiple languages with automatic language detection and interactive selection.
+
+**Language Selection**:
+- **Interactive**: Scripts prompt for language selection on first run
+- **Environment Variable**: Set `AWS_IOT_LANG=en` to skip language selection
+- **Fallback**: Automatically falls back to English for missing translations
+
+**Supported Languages**:
+- **English (en)**: Complete translations ✅
+- **Spanish (es)**: Ready for translations
+- **Japanese (ja)**: Ready for translations  
+- **Chinese (zh-CN)**: Ready for translations
+- **Portuguese (pt-BR)**: Ready for translations
+- **Korean (ko)**: Ready for translations
+
+**Usage Examples**:
+```bash
+# Set language via environment variable (recommended for automation)
+export AWS_IOT_LANG=en
+python scripts/provision_script.py
+
+# Alternative language codes supported
+export AWS_IOT_LANG=spanish    # or "es", "español"
+export AWS_IOT_LANG=japanese   # or "ja", "日本語", "jp"
+export AWS_IOT_LANG=chinese    # or "zh-cn", "中文", "zh"
+export AWS_IOT_LANG=portuguese # or "pt", "pt-br", "português"
+export AWS_IOT_LANG=korean     # or "ko", "한국어", "kr"
+
+# Interactive language selection (default behavior)
+python scripts/manage_packages.py
+# Output: 🌍 Language Selection / Selección de Idioma / 言語選択 / 语言选择 / Seleção de Idioma / 언어 선택
+#         1. English
+#         2. Español (Spanish)
+#         3. 日本語 (Japanese)
+#         4. 中文 (Chinese)
+#         5. Português (Portuguese)
+#         6. 한국어 (Korean)
+#         Select language (1-6): 
+
+# All user-facing text will appear in selected language
+```
+
+**Message Categories**:
+- **UI Elements**: Titles, headers, separators
+- **User Prompts**: Input requests, confirmations
+- **Status Messages**: Progress updates, success/failure notifications
+- **Error Messages**: Detailed error descriptions and troubleshooting
+- **Debug Output**: API call information and responses
+- **Learning Content**: Educational moments and explanations
 
 ## 📖 Usage Examples
 
@@ -160,6 +227,131 @@ python scripts/cleanup_script.py
 - AWS IoT software packages
 - IAM roles and policies
 - Fleet Indexing configuration
+
+## 🔧 Developer Guide: Adding New Languages
+
+**Message File Structure**:
+```
+i18n/
+├── common.json                    # Shared messages across all scripts
+├── loader.py                      # Message loading utility
+├── language_selector.py           # Language selection interface
+└── {language_code}/               # Language-specific directory
+    ├── provision_script.json     # Script-specific messages
+    ├── manage_dynamic_groups.json
+    ├── manage_packages.json
+    ├── create_job.json
+    ├── simulate_job_execution.json
+    ├── explore_jobs.json
+    └── cleanup_script.json
+```
+
+**Adding a New Language**:
+
+1. **Create Language Directory**:
+   ```bash
+   mkdir i18n/{language_code}  # e.g., i18n/es for Spanish
+   ```
+
+2. **Copy English Templates**:
+   ```bash
+   cp i18n/en/*.json i18n/{language_code}/
+   ```
+
+3. **Translate Message Files**:
+   Each JSON file contains categorized messages:
+   ```json
+   {
+     "title": "📦 AWS IoT Software Package Manager (Boto3)",
+     "separator": "============================================",
+     "prompts": {
+       "debug_mode": "🔧 Enable debug mode? [y/N]: ",
+       "operation_choice": "Enter choice [1-11]: ",
+       "continue_operation": "Continue? [Y/n]: "
+     },
+     "status": {
+       "debug_enabled": "✅ Debug mode enabled",
+       "package_created": "✅ Package created successfully",
+       "clients_initialized": "🔍 DEBUG: Client configuration:"
+     },
+     "errors": {
+       "invalid_choice": "❌ Invalid choice. Please enter 1-11",
+       "package_not_found": "❌ Package '{}' not found",
+       "api_error": "❌ Error in {} {}: {}"
+     },
+     "debug": {
+       "api_call": "📤 API Call: {}",
+       "api_response": "📤 API Response:",
+       "debug_operation": "🔍 DEBUG: {}: {}"
+     },
+     "ui": {
+       "operation_menu": "🎯 Select Operation:",
+       "create_package": "1. Create Software Package",
+       "goodbye": "👋 Thank you for using Package Manager!"
+     },
+     "learning": {
+       "package_management_title": "Software Package Management",
+       "package_management_description": "Educational content..."
+     }
+   }
+   ```
+
+4. **Update Language Selector** (if adding new language):
+   Add your language to `i18n/language_selector.py`:
+   ```python
+   LANGUAGE_SELECTION = {
+       "options": [
+           "1. English",
+           "2. Español (Spanish)",
+           "3. Your Language Name",  # Add new option
+           # ... existing languages
+       ],
+   }
+   
+   LANGUAGE_CODES = {
+       "1": "en", 
+       "2": "es", 
+       "3": "your_code",  # Add new language code
+       # ... existing mappings
+   }
+   ```
+
+5. **Test Translation**:
+   ```bash
+   export AWS_IOT_LANG={language_code}
+   python scripts/provision_script.py
+   ```
+
+**Translation Guidelines**:
+- **Preserve Formatting**: Keep emojis, colors, and special characters
+- **Maintain Placeholders**: Keep `{}` placeholders for dynamic content
+- **Technical Terms**: Keep AWS service names in English
+- **Cultural Adaptation**: Adapt examples and references appropriately
+- **Consistency**: Use consistent terminology across all files
+
+**Message Key Patterns**:
+- `title`: Script main title
+- `separator`: Visual separators and dividers  
+- `prompts.*`: User input requests and confirmations
+- `status.*`: Progress updates and operation results
+- `errors.*`: Error messages and warnings
+- `debug.*`: Debug output and API information
+- `ui.*`: User interface elements (menus, labels, buttons)
+- `results.*`: Operation results and data display
+- `learning.*`: Educational content and explanations
+- `warnings.*`: Warning messages and important notices
+- `explanations.*`: Additional context and help text
+
+**Testing Your Translation**:
+```bash
+# Test specific script with your language
+export AWS_IOT_LANG=your_language_code
+python scripts/manage_packages.py
+
+# Test fallback behavior (use non-existent language)
+export AWS_IOT_LANG=xx
+python scripts/provision_script.py  # Should fall back to English
+```
 
 ## 📚 Documentation
 

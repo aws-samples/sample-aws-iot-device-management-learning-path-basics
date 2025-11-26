@@ -1,0 +1,150 @@
+{
+  "title": "🤖 AWS IoT 作业执行模拟器 (Boto3)",
+  "separator": "===========================================",
+  "learning_goal": "📚 学习目标：",
+  "learning_description": "此脚本在 IoT 作业执行期间模拟真实的设备行为。它处理\nOTA 作业（带有 Amazon S3 固件下载）和自定义作业（无下载）。\n设备处理作业文档，在需要时下载工件，并基于可配置的成功率\n向 AWS IoT 报告成功/失败状态。",
+  "region_label": "📍 区域：",
+  "account_id_label": "🆔 账户 ID：",
+  "jobs_endpoint_label": "🔗 作业端点：",
+  
+  "warnings": {
+    "debug_warning": "⚠️  警告：调试模式会暴露敏感信息（ARN、账户 ID、API 响应）"
+  },
+  
+  "prompts": {
+    "verbose_mode": "🔧 启用详细模式（显示作业查询的输入/输出）？[y/N]：",
+    "debug_mode": "🔧 启用调试模式（显示所有 AWS API 调用和响应）？[y/N]：",
+    "enter_job_id": "📝 输入要模拟的作业 ID：",
+    "execution_scope": "🎯 处理所有执行或指定数量？[ALL/数字]：",
+    "success_percentage": "📈 输入成功百分比（0-100）：",
+    "proceed_simulation": "🚀 准备模拟作业执行。继续？[Y/n]：",
+    "press_enter": "按回车继续..."
+  },
+  
+  "status": {
+    "verbose_enabled": "✅ 详细模式已启用",
+    "debug_enabled": "✅ 调试模式已启用",
+    "clients_initialized": "🔍 调试：客户端配置：",
+    "iot_service": "   IoT 服务：{}",
+    "jobs_endpoint": "   作业端点：{}",
+    "scanning_jobs": "🔍 扫描活动 IoT 作业...",
+    "getting_executions": "📊 获取作业执行：{}",
+    "checking_statuses": "🔧 并行检查执行状态...",
+    "checking_sequential": "🔧 顺序检查执行状态（调试模式）...",
+    "checking_status": "📊 检查 {} 个执行...",
+    "total_executions": "📊 找到的总执行数：{}",
+    "found_executions": "📊 找到 {} 个待处理作业执行",
+    "plan_prepared": "✅ 执行计划已准备！",
+    "processing_executions": "🚀 并行处理 {} 个作业执行（150 TPS）...",
+    "simulation_completed": "🎉 作业执行模拟完成！",
+    "processed_summary": "📊 已处理 {} 个执行：{} 成功，{} 失败",
+    "execution_time": "⏱️  总执行时间：{:.2f} 秒",
+    "cleanup_completed": "✅ 清理完成",
+    "preparing_plan": "📋 准备执行计划 - 扫描设备并分配成功/失败...",
+    "plan_assignment": "📋 [{}/{}] {} -> {}",
+    "progress_update": "📊 进度：{}/{} 个执行已处理，{} 成功，{} 失败",
+    "processing_execution": "🔧 处理执行 {}/{} 设备：{}",
+    "job_succeeded": "✅ {}：作业执行成功",
+    "job_failed": "❌ {}：作业执行失败",
+    "updating_succeeded": "✅ 更新作业执行为成功",
+    "updating_failed": "❌ 更新作业执行为失败",
+    "downloading_firmware": "⬇️  {}：从 Amazon S3 下载固件...",
+    "extracting_url": "⬇️  从作业文档提取 S3 预签名 URL...",
+    "found_url": "🔗 找到 S3 预签名 URL",
+    "downloading_artifact": "📥 从 Amazon S3 下载工件...",
+    "downloaded_firmware": "📦 {}：已下载 {} 固件",
+    "artifact_downloaded": "📦 工件已下载：{}（{}）",
+    "artifact_cleanup": "🗑️  工件已清理",
+    "processing_custom": "⚙️  {}：处理自定义作业操作...",
+    "custom_completed": "✅ {}：自定义操作完成",
+    "job_details_retrieved": "📤 输出 - 作业执行详情已检索",
+    "job_document_retrieved": "📄 作业文档已检索",
+    "getting_job_details": "📥 输入 - 获取 {} 的作业执行详情",
+    "cleaning_temp": "🧹 清理临时文件..."
+  },
+  
+  "errors": {
+    "invalid_job_id": "❌ 无效作业 ID",
+    "invalid_percentage": "❌ 请输入 0 到 100 之间的数字",
+    "invalid_number": "❌ 请输入有效数字",
+    "no_active_jobs": "❌ 未找到活动作业",
+    "no_pending_executions": "❌ 作业 {} 未找到待处理作业执行",
+    "failed_list_jobs": "❌ 列出活动作业失败",
+    "failed_job_details": "❌ 获取 {} 的作业执行详情失败",
+    "no_presigned_url": "❌ 作业文档中未找到 S3 预签名 URL",
+    "download_failed": "❌ 下载失败 - 将作业执行标记为失败",
+    "failed_download": "❌ 下载工件失败：{}",
+    "empty_file": "❌ 下载的文件为空或无效",
+    "no_job_document": "❌ 未找到 {} 的作业文档",
+    "parse_error": "❌ 解析作业文档错误：{}",
+    "client_init_error": "❌ 初始化 AWS 客户端错误：{}",
+    "api_error": "❌ {} {} 错误：{}",
+    "general_error": "❌ 错误：{}",
+    "cleanup_warning": "⚠️  清理警告：{}"
+  },
+  
+  "debug": {
+    "debug_operation": "🔍 调试：{}：{}",
+    "api_call": "📤 API 调用：{}",
+    "input_params": "📥 输入参数：",
+    "api_response": "📤 API 响应：",
+    "resource_not_found": "📝 资源未找到：{}",
+    "full_error": "🔍 调试：完整错误响应：",
+    "full_traceback": "🔍 调试：完整回溯：",
+    "job_document": "📋 调试 - 作业文档：{}",
+    "found_package": "🔧 调试 - 在软件包中找到预签名 URL：{}",
+    "presigned_url": "🔗 调试 - 预签名 URL：{}",
+    "download_path": "🔧 调试 - 下载到：{}",
+    "http_status": "🔧 调试 - HTTP 响应状态：{}"
+  },
+  
+  "ui": {
+    "active_jobs": "📋 活动作业：",
+    "no_active_jobs": "未找到活动作业",
+    "execution_plan": "🎯 执行计划摘要：",
+    "success_label": "✅ 成功：{} 个执行",
+    "failure_label": "❌ 失败：{} 个执行",
+    "total_label": "📊 总计：{} 个执行",
+    "job_document_title": "📋 作业文档 - OTA 更新指令",
+    "separator_line": "==================================================",
+    "ota_config": "🚀 OTA 配置：",
+    "firmware_packages": "  📦 固件包：",
+    "package_label": "    • 软件包：{}",
+    "version_label": "      版本：{}",
+    "artifact_details": "      📁 工件详情：",
+    "s3_bucket": "        Amazon S3 存储桶：{}",
+    "s3_key": "        Amazon S3 键：{}",
+    "version_id": "        版本 ID：{}",
+    "presigned_url_available": "        🔗 预签名 URL：可用（1 小时后过期）",
+    "file_id": "        文件 ID：{}",
+    "stream_name": "  🌊 流名称：{}",
+    "iam_role": "  🔐 IAM 角色：{}",
+    "additional_params": "📄 其他作业参数：",
+    "raw_job_document": "📋 原始作业文档：",
+    "cancelled": "👋 用户取消作业模拟。再见！",
+    "cancelled_user": "👋 用户取消模拟",
+    "created_date": "（创建时间：{}）",
+    "status_in_progress": "进行中",
+    "status_queued": "排队",
+    "executions_found": "📋 {} 个作业执行：{}",
+    "no_executions": "  ℹ️  未找到 {} 执行",
+    "success_status": "成功",
+    "failure_status": "失败"
+  },
+  
+  "results": {
+    "no_active_jobs_found": "未找到活动作业",
+    "found_executions": "📊 找到 {} 个待处理作业执行"
+  },
+  
+  "learning": {
+    "job_discovery_title": "作业发现 - 查找活动部署",
+    "job_discovery_description": "我们将扫描具有待处理执行的活动 IoT 作业。处于 IN_PROGRESS 状态的作业\n包含处于 QUEUED（等待开始）或 IN_PROGRESS\n（当前正在处理）状态的设备执行。此模拟将充当这些设备，下载\n固件并报告成功或失败状态。\n\n🔄 下一步：我们将扫描活动作业及其待处理执行",
+    
+    "execution_discovery_title": "执行发现 - 查找待处理设备任务",
+    "execution_discovery_description": "现在我们将发现所选作业的所有待处理作业执行。每个执行\n代表需要接收固件更新的特定设备。执行\n可以处于 QUEUED（未开始）或 IN_PROGRESS（设备正在处理）状态。\n\n🔄 下一步：我们将找到作业 '{}' 的所有待处理执行",
+    
+    "execution_simulation_title": "执行模拟 - 设备固件更新过程",
+    "execution_simulation_description": "我们现在将模拟完整的设备作业执行过程。对于每个设备：\n1. 从 AWS IoT 获取作业执行详情和作业文档\n2. 检查作业是否需要 Amazon S3 下载（OTA）或是自定义操作\n3. 对于 OTA 作业：从 Amazon S3 下载固件并处理\n4. 对于自定义作业：模拟操作处理\n5. 向 AWS IoT 报告成功或失败状态\n\n🔄 下一步：我们将处理 {} 个执行，成功率为 {}%\n模拟将自动检测作业类型并相应处理。"
+  }
+}

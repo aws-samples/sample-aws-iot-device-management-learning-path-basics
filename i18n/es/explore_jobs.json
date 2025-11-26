@@ -1,0 +1,150 @@
+{
+  "title": "🔍 Explorador de Trabajos de AWS IoT (Boto3)",
+  "separator": "==================================",
+  "learning_goal": "📚 OBJETIVO DE APRENDIZAJE:",
+  "learning_description": "Este script le ayuda a explorar y entender los Trabajos de AWS IoT en detalle. Aprenderá cómo\ninspeccionar configuraciones de trabajos, monitorear ejecuciones de trabajos a través de dispositivos, y entender\nreportes de estado de trabajos. Esto es esencial para gestionar despliegues OTA y solucionar problemas\nde actualización de dispositivos en entornos IoT de producción.",
+  "region_label": "📍 Región:",
+  "account_id_label": "🆔 ID de Cuenta:",
+  "jobs_endpoint_label": "🔗 Endpoint de Trabajos:",
+  
+  "warnings": {
+    "debug_warning": "⚠️  ADVERTENCIA: El modo de depuración expone información sensible (ARNs, IDs de cuenta, respuestas de API)"
+  },
+  
+  "prompts": {
+    "debug_mode": "🔧 ¿Habilitar modo de depuración (mostrar todas las llamadas y respuestas de API)? [y/N]: ",
+    "exploration_choice": "Ingrese opción [1-4]: ",
+    "choose_option": "Elija opción [1-2]: ",
+    "select_job": "Seleccione trabajo [1-{}]: ",
+    "enter_job_id": "📝 Ingrese ID de Trabajo: ",
+    "enter_job_id_explore": "📝 Ingrese ID de Trabajo a explorar: ",
+    "enter_job_id_executions": "📝 Ingrese ID de Trabajo para explorar ejecuciones: ",
+    "enter_thing_name": "Ingrese Nombre de Dispositivo/Objeto: ",
+    "continue_exploration": "¿Le gustaría explorar más? [Y/n]: "
+  },
+  
+  "status": {
+    "debug_enabled": "✅ Modo de depuración habilitado",
+    "clients_initialized": "🔍 DEBUG: Configuración del cliente:",
+    "iot_service": "   Servicio IoT: {}",
+    "jobs_endpoint": "   Endpoint de Trabajos: {}",
+    "scanning_jobs": "🔍 Escaneando trabajos IoT a través de todos los estados...",
+    "checking_parallel": "🔧 Verificando estados de trabajos en paralelo...",
+    "checking_sequential": "🔧 Verificando estados de trabajos secuencialmente (modo de depuración)...",
+    "checking_status": "📊 Verificando {} trabajos...",
+    "found_jobs": "  ✅ Se encontraron {} trabajos {}",
+    "no_jobs_status": "  ℹ️  No se encontraron trabajos {}",
+    "getting_job_details": "🔍 Obteniendo información detallada para trabajo: {}",
+    "getting_execution_details": "🔍 Obteniendo detalles de ejecución de trabajo para dispositivo: {}",
+    "job_label": "   Trabajo: {}",
+    "getting_executions": "🔍 Obteniendo ejecuciones de trabajo para trabajo: {}",
+    "checking_execution_statuses": "🔧 Verificando estados de ejecución en paralelo...",
+    "checking_execution_sequential": "🔧 Verificando estados de ejecución secuencialmente (modo de depuración)...",
+    "checking_execution_status": "📊 Verificando {} ejecuciones...",
+    "found_executions": "  ✅ Se encontraron {} ejecuciones {}",
+    "no_executions_status": "  ℹ️  No se encontraron ejecuciones {}",
+    "starting_exploration": "🚀 Iniciando exploración...",
+    "exploration_completed": "🎉 ¡Exploración completada!",
+    "exploration_info": "💡 Use esta información para entender el estado de su despliegue IoT y solucionar problemas."
+  },
+  
+  "errors": {
+    "invalid_choice": "❌ Opción inválida. Por favor ingrese 1-4",
+    "invalid_number": "❌ Por favor ingrese un número válido",
+    "invalid_selection": "❌ Selección inválida",
+    "job_id_required": "❌ Se requiere ID de Trabajo",
+    "both_required": "❌ Se requieren tanto ID de Trabajo como Nombre de Objeto",
+    "failed_job_details": "❌ Error al obtener detalles del trabajo. El trabajo podría no existir.",
+    "failed_execution_details": "❌ Error al obtener detalles de ejecución del trabajo. Verifique ID de trabajo y nombre de objeto.",
+    "client_init_error": "❌ Error inicializando clientes AWS: {}",
+    "api_error": "❌ Error en {} {}: {}",
+    "general_error": "❌ Error: {}"
+  },
+  
+  "debug": {
+    "debug_operation": "🔍 DEBUG: {}: {}",
+    "api_call": "📤 Llamada API: {}",
+    "input_params": "📥 Parámetros de Entrada:",
+    "api_response": "📤 Respuesta API:",
+    "resource_not_found": "📝 Recurso no encontrado: {}",
+    "full_error": "🔍 DEBUG: Respuesta de error completa:",
+    "full_traceback": "🔍 DEBUG: Rastreo completo:"
+  },
+  
+  "ui": {
+    "exploration_menu": "🎯 Seleccione opción de exploración:",
+    "list_all_jobs": "1. Listar todos los trabajos (resumen)",
+    "explore_specific_job": "2. Explorar trabajo específico por ID",
+    "explore_job_execution": "3. Explorar ejecución de trabajo por dispositivo e ID de trabajo",
+    "list_job_executions": "4. Listar ejecuciones de trabajo para un trabajo específico",
+    "available_job_ids": "📝 IDs de Trabajo Disponibles:",
+    "options_label": "Opciones:",
+    "select_from_list": "1. Seleccionar de la lista anterior (ingrese número)",
+    "enter_custom": "2. Ingresar ID de Trabajo personalizado",
+    "job_details": "📋 Detalles del Trabajo:",
+    "job_id_label": "🆔 ID de Trabajo: {}",
+    "status_label": "📊 Estado: {}",
+    "description_label": "📝 Descripción: {}",
+    "target_selection_label": "🎯 Selección de Objetivo: {}",
+    "created_label": "📅 Creado: {}",
+    "completed_label": "✅ Completado: {}",
+    "job_targets": "🎯 Objetivos del Trabajo ({}):",
+    "target_item": "  • {}",
+    "job_document": "📄 Documento de Trabajo:",
+    "job_execution_config": "⚙️  Configuración de Ejecución de Trabajo:",
+    "presigned_url_config": "🔗 Configuración de URL Prefirmada:",
+    "role_arn": "🔐 ARN del Rol: {}",
+    "expires_in": "⏰ Expira En: {} segundos",
+    "job_execution_details": "📋 Detalles de Ejecución de Trabajo:",
+    "thing_name_label": "📱 Nombre del Objeto: {}",
+    "execution_number": "🔢 Número de Ejecución: {}",
+    "queued_at": "📅 En Cola En: {}",
+    "started_at": "🚀 Iniciado En: {}",
+    "last_updated": "✅ Última Actualización: {}",
+    "version_number": "📈 Número de Versión: {}",
+    "status_details": "📊 Detalles del Estado:",
+    "job_document_execution": "📄 Documento de Trabajo para esta Ejecución:",
+    "execution_summary": "📊 Resumen de Ejecución:",
+    "no_job_document": "  No hay documento de trabajo disponible",
+    "table_headers": {
+      "jobs": "ID de Trabajo                  Estado          Creado              Completado          ",
+      "executions": "Nombre del Objeto         Estado       Ejecución #  En Cola En          ",
+      "separator": "-------------------------------------------------------------------------------------",
+      "executions_separator": "---------------------------------------------------------------------------"
+    },
+    "goodbye": "👋 ¡Gracias por explorar Trabajos de AWS IoT!",
+    "cancelled": "👋 Exploración de trabajos cancelada por el usuario. ¡Adiós!"
+  },
+  
+  "results": {
+    "no_jobs_found": "ℹ️  No se encontraron trabajos en su cuenta",
+    "found_total_jobs": "📋 Se encontraron {} trabajos totales:",
+    "no_executions_found": "ℹ️  No se encontraron ejecuciones de trabajo para trabajo: {}",
+    "found_total_executions": "📋 Se encontraron {} ejecuciones de trabajo totales:",
+    "na": "N/A"
+  },
+  
+  "learning": {
+    "job_status_tip": "💡 Consejo de Aprendizaje: Los estados de trabajo indican el progreso general de su despliegue OTA.",
+    "in_progress_tip": "   Los trabajos IN_PROGRESS están desplegando activamente a dispositivos.",
+    "job_document_tip": "💡 Consejo de Aprendizaje: El documento de trabajo contiene las instrucciones enviadas a dispositivos.",
+    "presigned_url_tip": "   Las URLs prefirmadas permiten acceso seguro a S3 sin credenciales de dispositivo.",
+    "execution_status_tip": "💡 Consejo de Aprendizaje: Las ejecuciones de trabajo rastrean el progreso de dispositivos individuales.",
+    "status_details_tip": "   Los detalles de estado contienen información reportada por dispositivo sobre éxito/falla.",
+    "execution_progress_tip": "💡 Consejo de Aprendizaje: El estado de ejecución de trabajo muestra cómo progresa su despliegue OTA.",
+    "succeeded_tip": "   SUCCEEDED significa que el dispositivo completó exitosamente la actualización.",
+    "api_access_note": "💡 Nota: Este script ahora puede acceder a detalles de ejecución de trabajos para trabajos en cualquier estado (incluyendo COMPLETED, FAILED, etc.)"
+  },
+  
+  "statuses": {
+    "completed": "COMPLETED",
+    "in_progress": "IN_PROGRESS", 
+    "canceled": "CANCELED",
+    "succeeded": "SUCCEEDED",
+    "failed": "FAILED",
+    "timed_out": "TIMED_OUT",
+    "rejected": "REJECTED",
+    "queued": "QUEUED",
+    "removed": "REMOVED"
+  }
+}

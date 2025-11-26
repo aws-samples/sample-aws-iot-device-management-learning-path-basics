@@ -13,8 +13,18 @@ import boto3
 from botocore.exceptions import ClientError
 from colorama import Fore, Style, init
 
+# Add i18n to path
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "i18n"))
+
+from language_selector import get_language
+from loader import load_messages
+
 # Initialize colorama
 init()
+
+# Global variables for i18n
+USER_LANG = "en"
+messages = {}
 
 
 class PackageManager:
@@ -32,19 +42,38 @@ class PackageManager:
         self.api_semaphore = Semaphore(10)
         self.shadow_semaphore = Semaphore(20)
 
+    def get_message(self, key, *args):
+        """Get localized message with optional formatting"""
+        # Handle nested keys like 'warnings.debug_warning'
+        if '.' in key:
+            keys = key.split('.')
+            msg = messages
+            for k in keys:
+                if isinstance(msg, dict) and k in msg:
+                    msg = msg[k]
+                else:
+                    msg = key  # Fallback to key if not found
+                    break
+        else:
+            msg = messages.get(key, key)
+        
+        if args and isinstance(msg, str):
+            return msg.format(*args)
+        return msg
+
     def safe_api_call(self, func, operation_name, resource_name, debug=False, **kwargs):
         """Safely execute AWS API call with error handling and optional debug info"""
         try:
             if debug or self.debug_mode:
-                print(f"\n🔍 DEBUG: {operation_name}: {resource_name}")
-                print(f"📤 API Call: {func.__name__}")
-                print("📥 Input Parameters:")
+                print(f"\n{self.get_message('debug.debug_operation', operation_name, resource_name)}")
+                print(f"{self.get_message('debug.api_call', func.__name__)}")
+                print(self.get_message('debug.input_params'))
                 print(json.dumps(kwargs, indent=2, default=str))
 
             response = func(**kwargs)
 
             if debug or self.debug_mode:
-                print("📤 API Response:")
+                print(self.get_message('debug.api_response'))
                 print(json.dumps(response, indent=2, default=str))
 
             time.sleep(0.1)  # Rate limiting  # nosemgrep: arbitrary-sleep
@@ -53,21 +82,21 @@ class PackageManager:
             error_code = e.response["Error"]["Code"]
             if error_code in ["ResourceNotFoundException", "ResourceNotFound"]:
                 if debug or self.debug_mode:
-                    print(f"📝 Resource not found: {resource_name}")
+                    print(f"{self.get_message('debug.resource_not_found', resource_name)}")
                 return None
             else:
-                print(f"❌ Error in {operation_name} {resource_name}: {e.response['Error']['Message']}")
+                print(f"{self.get_message('errors.api_error', operation_name, resource_name, e.response['Error']['Message'])}")
                 if debug or self.debug_mode:
-                    print("🔍 DEBUG: Full error response:")
+                    print(self.get_message('debug.full_error'))
                     print(json.dumps(e.response, indent=2, default=str))
             time.sleep(0.1)  # nosemgrep: arbitrary-sleep
             return None
         except Exception as e:
-            print(f"❌ Error: {str(e)}")
+            print(f"{self.get_message('errors.general_error', str(e))}")
             if debug or self.debug_mode:
                 import traceback
 
-                print("🔍 DEBUG: Full traceback:")
+                print(self.get_message('debug.full_traceback'))
                 traceback.print_exc()
             time.sleep(0.1)  # nosemgrep: arbitrary-sleep
             return None
@@ -86,91 +115,82 @@ class PackageManager:
             self.account_id = identity["Account"]
 
             if self.debug_mode:
-                print("🔍 DEBUG: Client configuration:")
-                print(f"   IoT Service: {self.iot_client.meta.service_model.service_name}")
-                print(f"   API Version: {self.iot_client.meta.service_model.api_version}")
+                print(self.get_message('status.clients_initialized'))
+                print(f"{self.get_message('status.iot_service', self.iot_client.meta.service_model.service_name)}")
+                print(f"{self.get_message('status.api_version', self.iot_client.meta.service_model.api_version)}")
 
             return True
         except Exception as e:
-            print(f"❌ Error initializing AWS clients: {str(e)}")
+            print(f"{self.get_message('errors.client_init_error', str(e))}")
             return False
 
     def print_header(self):
-        print(f"{Fore.CYAN}📦 AWS IoT Software Package Manager (Boto3){Style.RESET_ALL}")
-        print(f"{Fore.CYAN}============================================{Style.RESET_ALL}\n")
+        print(f"{Fore.CYAN}{self.get_message('title')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('separator')}{Style.RESET_ALL}\n")
 
-        print(f"{Fore.YELLOW}📚 LEARNING GOAL:{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}{self.get_message('learning_goal')}{Style.RESET_ALL}")
         print(
-            f"{Fore.CYAN}This script manages AWS IoT Software Package Catalog for firmware distribution. Packages provide{Style.RESET_ALL}"
-        )
-        print(
-            f"{Fore.CYAN}centralized version control, Amazon S3 integration for secure firmware storage, and automatic{Style.RESET_ALL}"
-        )
-        print(
-            f"{Fore.CYAN}device shadow updates when jobs complete. You can create packages, add versions with{Style.RESET_ALL}"
-        )
-        print(
-            f"{Fore.CYAN}Amazon S3 artifacts, and inspect package details for comprehensive firmware lifecycle management.{Style.RESET_ALL}\n"
+            f"{Fore.CYAN}{self.get_message('learning_description')}{Style.RESET_ALL}\n"
         )
 
         # Initialize clients and display info
         if not self.initialize_clients():
             print(
-                f"{Fore.RED}❌ Failed to initialize AWS clients. Please check your credentials and try again.{Style.RESET_ALL}"
+                f"{Fore.RED}{self.get_message('errors.client_init_failed')}{Style.RESET_ALL}"
             )
             return False
 
-        print(f"{Fore.CYAN}📍 Region: {Fore.GREEN}{self.region}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}🆔 Account ID: {Fore.GREEN}{self.account_id}{Style.RESET_ALL}\n")
+        print(f"{Fore.CYAN}{self.get_message('region_label')} {Fore.GREEN}{self.region}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('account_id_label')} {Fore.GREEN}{self.account_id}{Style.RESET_ALL}\n")
         return True
 
     def get_debug_mode(self):
         """Ask user for debug mode"""
         print(
-            f"{Fore.RED}⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses){Style.RESET_ALL}"
+            f"{Fore.RED}{self.get_message('warnings.debug_warning')}{Style.RESET_ALL}"
         )
         choice = (
-            input(f"{Fore.YELLOW}🔧 Enable debug mode (show all API calls and responses)? [y/N]: {Style.RESET_ALL}")
+            input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}")
             .strip()
             .lower()
         )
         self.debug_mode = choice in ["y", "yes"]
 
         if self.debug_mode:
-            print(f"{Fore.GREEN}✅ Debug mode enabled{Style.RESET_ALL}\n")
+            print(f"{Fore.GREEN}{self.get_message('status.debug_enabled')}{Style.RESET_ALL}\n")
 
     def get_operation_choice(self):
         """Get operation choice from user"""
-        print(f"{Fore.BLUE}🎯 Select Operation:{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}1. Create Software Package{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}2. Create Package Version{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}3. List Packages{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}4. Describe Package{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}5. Describe Package Version{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}6. Check Package Configuration{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}7. Enable Package Configuration{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}8. Disable Package Configuration{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}9. Check Device Package Version{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}10. Revert Device Versions{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}11. Exit{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{self.get_message('ui.operation_menu')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.create_package')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.create_version')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.list_packages')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.describe_package')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.describe_version')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.check_config')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.enable_config')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.disable_config')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.check_device_version')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.revert_versions')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.exit')}{Style.RESET_ALL}")
 
         while True:
             try:
-                choice = int(input(f"{Fore.YELLOW}Enter choice [1-11]: {Style.RESET_ALL}"))
+                choice = int(input(f"{Fore.YELLOW}{self.get_message('prompts.operation_choice')}{Style.RESET_ALL}"))
                 if 1 <= choice <= 11:
                     return choice
-                print(f"{Fore.RED}❌ Invalid choice. Please enter 1-11{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.invalid_choice')}{Style.RESET_ALL}")
             except ValueError:
-                print(f"{Fore.RED}❌ Please enter a valid number{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.invalid_number')}{Style.RESET_ALL}")
 
     def create_package(self):
         """Create a new software package"""
-        print(f"\n{Fore.BLUE}📦 Create AWS IoT Software Package{Style.RESET_ALL}\n")
+        print(f"\n{Fore.BLUE}{self.get_message('ui.create_package')}{Style.RESET_ALL}\n")
 
-        package_name = input(f"{Fore.YELLOW}Enter package name (e.g., SedanVehicle): {Style.RESET_ALL}").strip()
+        package_name = input(f"{Fore.YELLOW}{self.get_message('prompts.package_name')}{Style.RESET_ALL}").strip()
 
         if not package_name:
-            print(f"{Fore.RED}❌ Package name cannot be empty{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.package_name_empty')}{Style.RESET_ALL}")
             return
 
         # Check if package exists using efficient pagination
@@ -183,10 +203,10 @@ class PackageManager:
                 page_names = [p["packageName"] for p in packages]
                 package_names.extend(page_names)
                 if package_name in page_names:
-                    print(f"{Fore.YELLOW}⚠️  Package '{package_name}' already exists{Style.RESET_ALL}")
+                    print(f"{Fore.YELLOW}{self.get_message('errors.package_exists', package_name)}{Style.RESET_ALL}")
                     return
         except Exception as e:
-            print(f"{Fore.RED}❌ Failed to check existing packages: {str(e)}{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.failed_check_packages', str(e))}{Style.RESET_ALL}")
             return
 
         # Create package
@@ -195,11 +215,11 @@ class PackageManager:
         )
 
         if response:
-            print(f"{Fore.GREEN}✅ Package created successfully{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}🏷️  Name: {response.get('packageName', 'N/A')}{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}🔗 ARN: {response.get('packageArn', 'N/A')}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{self.get_message('status.package_created')}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{self.get_message('ui.package_name_label', response.get('packageName', 'N/A'))}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{self.get_message('ui.package_arn', response.get('packageArn', 'N/A'))}{Style.RESET_ALL}")
         else:
-            print(f"{Fore.RED}❌ Failed to create package{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.failed_create_package')}{Style.RESET_ALL}")
 
     def get_s3_bucket(self):
         """Get or create Amazon S3 bucket for firmware storage"""
@@ -212,15 +232,15 @@ class PackageManager:
 
             if existing_buckets:
                 bucket_name = existing_buckets[0]
-                print(f"{Fore.GREEN}✅ Using existing Amazon S3 bucket: {Fore.YELLOW}{bucket_name}{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}{self.get_message('ui.using_bucket', bucket_name)}{Style.RESET_ALL}")
                 return bucket_name
         except Exception as e:
-            print(f"{Fore.RED}❌ Failed to list S3 buckets: {str(e)}{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.failed_list_buckets', str(e))}{Style.RESET_ALL}")
             return None
 
         # Create new bucket
         bucket_name = f"iot-firmware-{self.region}-{int(time.time())}"
-        print(f"{Fore.BLUE}🪣 Creating Amazon S3 bucket: {Fore.YELLOW}{bucket_name}{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{self.get_message('ui.creating_bucket', bucket_name)}{Style.RESET_ALL}")
 
         if self.region == "us-east-1":
             bucket_response = self.safe_api_call(
@@ -237,7 +257,7 @@ class PackageManager:
             )
 
         if bucket_response:
-            print(f"{Fore.GREEN}✅ Amazon S3 bucket created successfully{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{self.get_message('status.bucket_created')}{Style.RESET_ALL}")
 
             # Enable versioning
             versioning_response = self.safe_api_call(
@@ -250,11 +270,11 @@ class PackageManager:
             )
 
             if versioning_response:
-                print(f"{Fore.GREEN}✅ Amazon S3 bucket versioning enabled{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}{self.get_message('status.bucket_versioning')}{Style.RESET_ALL}")
 
             return bucket_name
         else:
-            print(f"{Fore.RED}❌ Failed to create Amazon S3 bucket{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.failed_create_bucket')}{Style.RESET_ALL}")
             return None
 
     def upload_firmware_to_s3(self, bucket_name, package_name, version):
@@ -267,17 +287,17 @@ class PackageManager:
         clean_version = safe_version.replace(".", "_")
         key = f"{safe_package_name}_v{clean_version}.zip"
 
-        print(f"{Fore.BLUE}⬆️  Uploading firmware to Amazon S3: {Fore.YELLOW}{key}{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{self.get_message('ui.uploading_firmware', key)}{Style.RESET_ALL}")
 
         # Check if file already exists
         try:
             response = self.s3_client.head_object(Bucket=bucket_name, Key=key)
             version_id = response.get("VersionId", "")
-            print(f"{Fore.GREEN}✅ Firmware already exists (Version: {version_id}){Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{self.get_message('status.firmware_exists', version_id)}{Style.RESET_ALL}")
             return version_id, key
         except ClientError as e:
             if e.response["Error"]["Code"] != "404":
-                print(f"{Fore.RED}❌ Error checking file: {e.response['Error']['Message']}{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.failed_check_file', e.response['Error']['Message'])}{Style.RESET_ALL}")
                 return None, key
 
         # Create dummy firmware zip file
@@ -304,7 +324,7 @@ class PackageManager:
 
             if response:
                 version_id = response.get("VersionId", "")
-                print(f"{Fore.GREEN}✅ Firmware uploaded successfully (Version: {version_id}){Style.RESET_ALL}")
+                print(f"{Fore.GREEN}{self.get_message('status.firmware_uploaded', version_id)}{Style.RESET_ALL}")
                 return version_id, key
             else:
                 return None, key
@@ -313,7 +333,7 @@ class PackageManager:
 
     def create_package_version(self):
         """Create a new package version with Amazon S3 integration"""
-        print(f"\n{Fore.BLUE}📦 Create AWS IoT Software Package Version{Style.RESET_ALL}\n")
+        print(f"\n{Fore.BLUE}{self.get_message('ui.create_version')}{Style.RESET_ALL}\n")
 
         # List available packages for selection
         packages_response = self.safe_api_call(
@@ -321,44 +341,41 @@ class PackageManager:
         )
 
         if not packages_response:
-            print(f"{Fore.RED}❌ Failed to list packages{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.failed_list_packages')}{Style.RESET_ALL}")
             return
 
         packages = packages_response.get("packageSummaries", [])
 
         if not packages:
-            print(f"{Fore.YELLOW}📭 No packages found. Create a package first.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}{self.get_message('results.no_packages')}{Style.RESET_ALL}")
             return
 
-        print(f"{Fore.GREEN}📦 Available Packages:{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('ui.available_packages')}{Style.RESET_ALL}")
         for i, pkg in enumerate(packages, 1):
             print(f"{i}. {pkg['packageName']} (Created: {pkg.get('creationDate', 'Unknown')})")
 
         # Get package selection
         try:
-            choice = int(input(f"\n{Fore.YELLOW}Select package number: {Style.RESET_ALL}")) - 1
+            choice = int(input(f"\n{Fore.YELLOW}{self.get_message('prompts.select_package')}{Style.RESET_ALL}")) - 1
             if choice < 0 or choice >= len(packages):
-                print(f"{Fore.RED}❌ Invalid selection{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.invalid_selection')}{Style.RESET_ALL}")
                 return
 
             package_name = packages[choice]["packageName"]
-            print(f"{Fore.GREEN}✅ Selected package: {package_name}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{self.get_message('status.selected_package', package_name)}{Style.RESET_ALL}")
         except (ValueError, IndexError):
-            print(f"{Fore.RED}❌ Invalid input{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.invalid_input')}{Style.RESET_ALL}")
             return
 
         self.educational_pause(
-            "Package Version Creation - Firmware Lifecycle Management",
-            "Creating a package version involves multiple steps: version validation, Amazon S3 artifact\n"
-            "upload, version creation with metadata, and publishing for deployment. Each version\n"
-            "is immutable once published, ensuring firmware integrity and enabling safe rollbacks.\n\n"
-            "🔄 NEXT: We'll validate the version name and check for conflicts",
+            self.get_message("learning.version_creation_title"),
+            self.get_message("learning.version_creation_description"),
         )
 
-        version = input(f"\n{Fore.YELLOW}Enter version (e.g., 1.0.0): {Style.RESET_ALL}").strip()
+        version = input(f"\n{Fore.YELLOW}{self.get_message('prompts.version_input')}{Style.RESET_ALL}").strip()
 
         if not version:
-            print(f"{Fore.RED}❌ Version cannot be empty{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.version_empty')}{Style.RESET_ALL}")
             return
 
         # Check if version exists
@@ -372,17 +389,14 @@ class PackageManager:
         )
 
         if version_response:
-            print(f"{Fore.YELLOW}⚠️  Version '{version}' already exists for package '{package_name}'{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}{self.get_message('errors.version_exists', version, package_name)}{Style.RESET_ALL}")
             return
 
-        print(f"{Fore.GREEN}✅ Version '{version}' is available{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('status.version_available', version)}{Style.RESET_ALL}")
 
         self.educational_pause(
-            "Amazon S3 Bucket Management - Secure Firmware Storage",
-            "AWS IoT requires firmware artifacts to be stored in Amazon S3 with proper versioning enabled.\n"
-            "The bucket provides secure, durable storage with access control and audit trails.\n"
-            "Versioning ensures each firmware upload is immutable and traceable.\n\n"
-            "🔄 NEXT: We'll locate or create an Amazon S3 bucket for firmware storage",
+            self.get_message("learning.s3_bucket_title"),
+            self.get_message("learning.s3_bucket_description"),
         )
 
         # Get or create Amazon S3 bucket
@@ -392,11 +406,8 @@ class PackageManager:
             return
 
         self.educational_pause(
-            "Firmware Artifact Creation - Simulated Deployment Package",
-            "In production, firmware artifacts are compiled binaries, but for this demo we create\n"
-            "a simulated ZIP package. The artifact includes version metadata and is uploaded to\n"
-            "Amazon S3 with a unique key for traceability and integrity verification.\n\n"
-            "🔄 NEXT: We'll create and upload the firmware artifact to Amazon S3",
+            self.get_message("learning.firmware_artifact_title"),
+            self.get_message("learning.firmware_artifact_description"),
         )
 
         # Upload firmware to S3
@@ -406,11 +417,8 @@ class PackageManager:
             return
 
         self.educational_pause(
-            "Package Version Registration - AWS IoT Integration",
-            "Now we register the Amazon S3 artifact with AWS IoT as a package version. This creates\n"
-            "the link between the IoT service and the firmware file, enabling job deployments.\n"
-            "The version includes metadata like Amazon S3 location and custom attributes.\n\n"
-            "🔄 NEXT: We'll create the package version with Amazon S3 artifact reference",
+            self.get_message("learning.version_registration_title"),
+            self.get_message("learning.version_registration_description"),
         )
 
         # Create package version
@@ -426,14 +434,11 @@ class PackageManager:
         )
 
         if version_response:
-            print(f"{Fore.GREEN}✅ Package version created successfully{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{self.get_message('status.package_version_created')}{Style.RESET_ALL}")
 
             self.educational_pause(
-                "Version Publishing - Making Firmware Available for Deployment",
-                "Publishing makes the version available for IoT Jobs. Only published versions can\n"
-                "be deployed to devices. This final step validates the artifact and enables the\n"
-                "version for production use with automatic device shadow updates.\n\n"
-                "🔄 NEXT: We'll publish the version for deployment availability",
+                self.get_message("learning.version_publishing_title"),
+                self.get_message("learning.version_publishing_description"),
             )
 
             # Publish the package version
@@ -448,56 +453,56 @@ class PackageManager:
             )
 
             if publish_response:
-                print(f"{Fore.GREEN}✅ Package version published successfully{Style.RESET_ALL}")
-                print(f"{Fore.GREEN}🏷️  Package: {package_name}{Style.RESET_ALL}")
-                print(f"{Fore.GREEN}📦 Version: {version}{Style.RESET_ALL}")
-                print(f"{Fore.GREEN}🔗 ARN: {version_response.get('packageVersionArn', 'N/A')}{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}{self.get_message('status.package_version_published')}{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}{self.get_message('ui.package_name_label', package_name)}{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}{self.get_message('ui.version_number', version)}{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}{self.get_message('ui.package_arn', version_response.get('packageVersionArn', 'N/A'))}{Style.RESET_ALL}")
                 print(f"{Fore.GREEN}🪣 Amazon S3 Location: s3://{bucket_name}/{key}{Style.RESET_ALL}")
             else:
-                print(f"{Fore.RED}❌ Failed to publish package version{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.failed_publish_version')}{Style.RESET_ALL}")
         else:
-            print(f"{Fore.RED}❌ Failed to create package version{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.failed_create_version')}{Style.RESET_ALL}")
 
     def list_packages(self):
         """List all software packages with interactive options"""
-        print(f"\n{Fore.BLUE}📋 AWS IoT Software Packages{Style.RESET_ALL}\n")
+        print(f"\n{Fore.BLUE}{self.get_message('ui.list_packages')}{Style.RESET_ALL}\n")
 
         response = self.safe_api_call(self.iot_client.list_packages, "Package List", "all packages", debug=self.debug_mode)
 
         if not response:
-            print(f"{Fore.RED}❌ Failed to list packages{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.failed_list_packages')}{Style.RESET_ALL}")
             return
 
         packages = response.get("packageSummaries", [])
 
         if not packages:
-            print(f"{Fore.YELLOW}📭 No packages found{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}{self.get_message('results.no_packages_found')}{Style.RESET_ALL}")
             return
 
-        print(f"{Fore.GREEN}📦 Found {len(packages)} package(s):{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('results.found_packages', len(packages))}{Style.RESET_ALL}")
         for i, pkg in enumerate(packages, 1):
             print(f"{i}. {pkg['packageName']} (Created: {pkg.get('creationDate', 'Unknown')})")
 
         # Ask if user wants to describe a package
-        choice = input(f"\n{Fore.YELLOW}Describe a package? [y/N]: {Style.RESET_ALL}").strip().lower()
+        choice = input(f"\n{Fore.YELLOW}{self.get_message('prompts.describe_package')}{Style.RESET_ALL}").strip().lower()
         if choice in ["y", "yes"]:
             try:
-                pkg_choice = int(input(f"{Fore.YELLOW}Select package number: {Style.RESET_ALL}")) - 1
+                pkg_choice = int(input(f"{Fore.YELLOW}{self.get_message('prompts.select_package')}{Style.RESET_ALL}")) - 1
                 if 0 <= pkg_choice < len(packages):
                     self.describe_package_interactive(packages[pkg_choice]["packageName"])
                 else:
-                    print(f"{Fore.RED}❌ Invalid selection{Style.RESET_ALL}")
+                    print(f"{Fore.RED}{self.get_message('errors.invalid_selection')}{Style.RESET_ALL}")
             except ValueError:
-                print(f"{Fore.RED}❌ Invalid input{Style.RESET_ALL}")
+                print(f"{Fore.RED}{self.get_message('errors.invalid_input')}{Style.RESET_ALL}")
 
     def describe_package(self):
         """Describe a specific package and its versions"""
-        print(f"\n{Fore.BLUE}🔍 Describe AWS IoT Software Package{Style.RESET_ALL}\n")
+        print(f"\n{Fore.BLUE}{self.get_message('ui.describe_package')}{Style.RESET_ALL}\n")
 
-        package_name = input(f"{Fore.YELLOW}Enter package name: {Style.RESET_ALL}").strip()
+        package_name = input(f"{Fore.YELLOW}{self.get_message('prompts.package_name')}{Style.RESET_ALL}").strip()
 
         if not package_name:
-            print(f"{Fore.RED}❌ Package name cannot be empty{Style.RESET_ALL}")
+            print(f"{Fore.RED}{self.get_message('errors.package_name_empty')}{Style.RESET_ALL}")
             return
 
         self.describe_package_interactive(package_name)
@@ -1025,9 +1030,9 @@ class PackageManager:
 
     def educational_pause(self, title, description):
         """Pause execution with educational content"""
-        print(f"\n{Fore.YELLOW}📚 LEARNING MOMENT: {title}{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}{self.get_message('learning_goal')} {title}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{description}{Style.RESET_ALL}")
-        input(f"\n{Fore.GREEN}Press Enter to continue...{Style.RESET_ALL}")
+        input(f"\n{Fore.GREEN}{self.get_message('prompts.press_enter')}{Style.RESET_ALL}")
         print()
 
     def run(self):
@@ -1040,13 +1045,8 @@ class PackageManager:
 
         # Educational pause
         self.educational_pause(
-            "Software Package Management - Firmware Lifecycle Control",
-            "AWS IoT Software Package Catalog provides centralized firmware version management with Amazon S3 integration.\n"
-            "AWS IoT Software Packages organize firmware by AWS IoT device type, while versions track different releases with\n"
-            "immutable Amazon S3 artifacts. Published versions can be deployed via AWS IoT Jobs with automatic\n"
-            "AWS IoT Device Shadow updates. This creates a complete firmware lifecycle from development\n"
-            "through deployment with full traceability and rollback capabilities.\n\n"
-            "🔄 NEXT: Choose an operation to manage your software packages and versions",
+            self.get_message("learning.package_management_title"),
+            self.get_message("learning.package_management_description"),
         )
 
         while True:
@@ -1074,25 +1074,29 @@ class PackageManager:
             elif operation == 10:
                 self.revert_device_versions()
             elif operation == 11:
-                print(f"\n{Fore.GREEN}👋 Thank you for using Package Manager!{Style.RESET_ALL}")
+                print(f"\n{Fore.GREEN}{self.get_message('ui.goodbye')}{Style.RESET_ALL}")
                 break
 
             # Ask if user wants to continue (except for exit)
             if operation != 11:
-                print(f"\n{Fore.CYAN}{'='*50}{Style.RESET_ALL}")
+                print(f"\n{Fore.CYAN}{self.get_message('ui.separator_line')}{Style.RESET_ALL}")
                 continue_choice = (
-                    input(f"{Fore.YELLOW}Continue with another operation? [Y/n]: {Style.RESET_ALL}").strip().lower()
+                    input(f"{Fore.YELLOW}{self.get_message('prompts.continue_operation')}{Style.RESET_ALL}").strip().lower()
                 )
                 if continue_choice in ["n", "no"]:
-                    print(f"\n{Fore.GREEN}👋 Thank you for using Package Manager!{Style.RESET_ALL}")
+                    print(f"\n{Fore.GREEN}{self.get_message('ui.goodbye')}{Style.RESET_ALL}")
                     break
                 print()
 
 
 if __name__ == "__main__":
+    # Initialize language
+    USER_LANG = get_language()
+    messages = load_messages("manage_packages", USER_LANG)
+    
     manager = PackageManager()
     try:
         manager.run()
     except KeyboardInterrupt:
-        print(f"\n\n{Fore.YELLOW}👋 Package management cancelled by user. Goodbye!{Style.RESET_ALL}")
+        print(f"\n\n{Fore.YELLOW}{manager.get_message('ui.cancelled')}{Style.RESET_ALL}")
         sys.exit(0)
