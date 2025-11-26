@@ -1,0 +1,150 @@
+{
+  "title": "🔍 AWS IoT 작업 탐색기 (Boto3)",
+  "separator": "==================================",
+  "learning_goal": "📚 학습 목표:",
+  "learning_description": "이 스크립트는 AWS IoT 작업을 자세히 탐색하고 이해하는 데 도움을 줍니다.\n작업 구성을 검사하고, 디바이스 전체의 작업 실행을 모니터링하며,\n작업 상태 보고를 이해하는 방법을 배웁니다. 이는 OTA 배포 관리 및\n프로덕션 IoT 환경에서 디바이스 업데이트 문제 해결에 필수적입니다.",
+  "region_label": "📍 리전:",
+  "account_id_label": "🆔 계정 ID:",
+  "jobs_endpoint_label": "🔗 작업 엔드포인트:",
+  
+  "warnings": {
+    "debug_warning": "⚠️  경고: 디버그 모드는 민감한 정보(ARN, 계정 ID, API 응답)를 노출합니다"
+  },
+  
+  "prompts": {
+    "debug_mode": "🔧 디버그 모드를 활성화하시겠습니까 (모든 API 호출 및 응답 표시)? [y/N]: ",
+    "exploration_choice": "선택을 입력하세요 [1-4]: ",
+    "choose_option": "옵션 선택 [1-2]: ",
+    "select_job": "작업 선택 [1-{}]: ",
+    "enter_job_id": "📝 작업 ID를 입력하세요: ",
+    "enter_job_id_explore": "📝 탐색할 작업 ID를 입력하세요: ",
+    "enter_job_id_executions": "📝 실행을 탐색할 작업 ID를 입력하세요: ",
+    "enter_thing_name": "디바이스/사물 이름을 입력하세요: ",
+    "continue_exploration": "더 탐색하시겠습니까? [Y/n]: "
+  },
+  
+  "status": {
+    "debug_enabled": "✅ 디버그 모드 활성화됨",
+    "clients_initialized": "🔍 디버그: 클라이언트 구성:",
+    "iot_service": "   IoT 서비스: {}",
+    "jobs_endpoint": "   작업 엔드포인트: {}",
+    "scanning_jobs": "🔍 모든 상태의 IoT 작업을 스캔하는 중...",
+    "checking_parallel": "🔧 작업 상태를 병렬로 확인하는 중...",
+    "checking_sequential": "🔧 작업 상태를 순차적으로 확인하는 중 (디버그 모드)...",
+    "checking_status": "📊 {} 작업을 확인하는 중...",
+    "found_jobs": "  ✅ {} {} 작업을 찾았습니다",
+    "no_jobs_status": "  ℹ️  {} 작업을 찾을 수 없습니다",
+    "getting_job_details": "🔍 작업의 세부 정보를 가져오는 중: {}",
+    "getting_execution_details": "🔍 디바이스의 작업 실행 세부 정보를 가져오는 중: {}",
+    "job_label": "   작업: {}",
+    "getting_executions": "🔍 작업의 작업 실행을 가져오는 중: {}",
+    "checking_execution_statuses": "🔧 실행 상태를 병렬로 확인하는 중...",
+    "checking_execution_sequential": "🔧 실행 상태를 순차적으로 확인하는 중 (디버그 모드)...",
+    "checking_execution_status": "📊 {} 실행을 확인하는 중...",
+    "found_executions": "  ✅ {} {} 실행을 찾았습니다",
+    "no_executions_status": "  ℹ️  {} 실행을 찾을 수 없습니다",
+    "starting_exploration": "🚀 탐색을 시작합니다...",
+    "exploration_completed": "🎉 탐색이 완료되었습니다!",
+    "exploration_info": "💡 이 정보를 사용하여 IoT 배포 상태를 이해하고 문제를 해결하세요."
+  },
+  
+  "errors": {
+    "invalid_choice": "❌ 잘못된 선택입니다. 1-4를 입력하세요",
+    "invalid_number": "❌ 유효한 숫자를 입력하세요",
+    "invalid_selection": "❌ 잘못된 선택입니다",
+    "job_id_required": "❌ 작업 ID가 필요합니다",
+    "both_required": "❌ 작업 ID와 사물 이름이 모두 필요합니다",
+    "failed_job_details": "❌ 작업 세부 정보를 가져오는데 실패했습니다. 작업이 존재하지 않을 수 있습니다.",
+    "failed_execution_details": "❌ 작업 실행 세부 정보를 가져오는데 실패했습니다. 작업 ID와 사물 이름을 확인하세요.",
+    "client_init_error": "❌ AWS 클라이언트 초기화 중 오류: {}",
+    "api_error": "❌ {} {} 중 오류: {}",
+    "general_error": "❌ 오류: {}"
+  },
+  
+  "debug": {
+    "debug_operation": "🔍 디버그: {}: {}",
+    "api_call": "📤 API 호출: {}",
+    "input_params": "📥 입력 매개변수:",
+    "api_response": "📤 API 응답:",
+    "resource_not_found": "📝 리소스를 찾을 수 없음: {}",
+    "full_error": "🔍 디버그: 전체 오류 응답:",
+    "full_traceback": "🔍 디버그: 전체 추적:"
+  },
+  
+  "ui": {
+    "exploration_menu": "🎯 탐색 옵션 선택:",
+    "list_all_jobs": "1. 모든 작업 나열 (개요)",
+    "explore_specific_job": "2. ID로 특정 작업 탐색",
+    "explore_job_execution": "3. 디바이스 및 작업 ID로 작업 실행 탐색",
+    "list_job_executions": "4. 특정 작업의 작업 실행 나열",
+    "available_job_ids": "📝 사용 가능한 작업 ID:",
+    "options_label": "옵션:",
+    "select_from_list": "1. 위 목록에서 선택 (번호 입력)",
+    "enter_custom": "2. 사용자 정의 작업 ID 입력",
+    "job_details": "📋 작업 세부 정보:",
+    "job_id_label": "🆔 작업 ID: {}",
+    "status_label": "📊 상태: {}",
+    "description_label": "📝 설명: {}",
+    "target_selection_label": "🎯 대상 선택: {}",
+    "created_label": "📅 생성일: {}",
+    "completed_label": "✅ 완료일: {}",
+    "job_targets": "🎯 작업 대상 ({}):",
+    "target_item": "  • {}",
+    "job_document": "📄 작업 문서:",
+    "job_execution_config": "⚙️  작업 실행 구성:",
+    "presigned_url_config": "🔗 사전 서명된 URL 구성:",
+    "role_arn": "🔐 역할 ARN: {}",
+    "expires_in": "⏰ 만료 시간: {}초",
+    "job_execution_details": "📋 작업 실행 세부 정보:",
+    "thing_name_label": "📱 사물 이름: {}",
+    "execution_number": "🔢 실행 번호: {}",
+    "queued_at": "📅 대기열 추가 시간: {}",
+    "started_at": "🚀 시작 시간: {}",
+    "last_updated": "✅ 마지막 업데이트: {}",
+    "version_number": "📈 버전 번호: {}",
+    "status_details": "📊 상태 세부 정보:",
+    "job_document_execution": "📄 이 실행의 작업 문서:",
+    "execution_summary": "📊 실행 요약:",
+    "no_job_document": "  사용 가능한 작업 문서가 없습니다",
+    "table_headers": {
+      "jobs": "작업 ID                         상태          생성일              완료일           ",
+      "executions": "사물 이름                상태       실행 #  대기열 추가 시간           ",
+      "separator": "-------------------------------------------------------------------------------------",
+      "executions_separator": "---------------------------------------------------------------------------"
+    },
+    "goodbye": "👋 AWS IoT 작업 탐색을 이용해 주셔서 감사합니다!",
+    "cancelled": "👋 사용자가 작업 탐색을 취소했습니다. 안녕히 가세요!"
+  },
+  
+  "results": {
+    "no_jobs_found": "ℹ️  계정에서 작업을 찾을 수 없습니다",
+    "found_total_jobs": "📋 총 {} 작업을 찾았습니다:",
+    "no_executions_found": "ℹ️  작업 {}에 대한 작업 실행을 찾을 수 없습니다",
+    "found_total_executions": "📋 총 {} 작업 실행을 찾았습니다:",
+    "na": "해당 없음"
+  },
+  
+  "learning": {
+    "job_status_tip": "💡 학습 팁: 작업 상태는 OTA 배포의 전체 진행 상황을 나타냅니다.",
+    "in_progress_tip": "   IN_PROGRESS 작업은 디바이스에 적극적으로 배포되고 있습니다.",
+    "job_document_tip": "💡 학습 팁: 작업 문서에는 디바이스에 전송되는 지침이 포함되어 있습니다.",
+    "presigned_url_tip": "   사전 서명된 URL을 통해 디바이스 자격 증명 없이 안전한 S3 액세스가 가능합니다.",
+    "execution_status_tip": "💡 학습 팁: 작업 실행은 개별 디바이스 진행 상황을 추적합니다.",
+    "status_details_tip": "   상태 세부 정보에는 성공/실패에 대한 디바이스 보고 정보가 포함됩니다.",
+    "execution_progress_tip": "💡 학습 팁: 작업 실행 상태는 OTA 배포가 어떻게 진행되고 있는지 보여줍니다.",
+    "succeeded_tip": "   SUCCEEDED는 디바이스가 업데이트를 성공적으로 완료했음을 의미합니다.",
+    "api_access_note": "💡 참고: 이 스크립트는 이제 모든 상태(COMPLETED, FAILED 등 포함)의 작업에 대한 작업 실행 세부 정보에 액세스할 수 있습니다"
+  },
+  
+  "statuses": {
+    "completed": "완료됨",
+    "in_progress": "진행 중", 
+    "canceled": "취소됨",
+    "succeeded": "성공",
+    "failed": "실패",
+    "timed_out": "시간 초과",
+    "rejected": "거부됨",
+    "queued": "대기 중",
+    "removed": "제거됨"
+  }
+}

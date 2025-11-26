@@ -1,0 +1,150 @@
+{
+  "title": "🔍 AWS IoT Jobs Explorer (Boto3)",
+  "separator": "==================================",
+  "learning_goal": "📚 LEARNING GOAL:",
+  "learning_description": "This script helps you explore and understand AWS IoT Jobs in detail. You'll learn how\nto inspect job configurations, monitor job executions across devices, and understand\njob status reporting. This is essential for managing OTA deployments and troubleshooting\ndevice update issues in production IoT environments.",
+  "region_label": "📍 Region:",
+  "account_id_label": "🆔 Account ID:",
+  "jobs_endpoint_label": "🔗 Jobs Endpoint:",
+  
+  "warnings": {
+    "debug_warning": "⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses)"
+  },
+  
+  "prompts": {
+    "debug_mode": "🔧 Enable debug mode (show all API calls and responses)? [y/N]: ",
+    "exploration_choice": "Enter choice [1-4]: ",
+    "choose_option": "Choose option [1-2]: ",
+    "select_job": "Select job [1-{}]: ",
+    "enter_job_id": "📝 Enter Job ID: ",
+    "enter_job_id_explore": "📝 Enter Job ID to explore: ",
+    "enter_job_id_executions": "📝 Enter Job ID to explore executions: ",
+    "enter_thing_name": "Enter Device/Thing Name: ",
+    "continue_exploration": "Would you like to explore more? [Y/n]: "
+  },
+  
+  "status": {
+    "debug_enabled": "✅ Debug mode enabled",
+    "clients_initialized": "🔍 DEBUG: Client configuration:",
+    "iot_service": "   IoT Service: {}",
+    "jobs_endpoint": "   Jobs Endpoint: {}",
+    "scanning_jobs": "🔍 Scanning for IoT jobs across all statuses...",
+    "checking_parallel": "🔧 Checking job statuses in parallel...",
+    "checking_sequential": "🔧 Checking job statuses sequentially (debug mode)...",
+    "checking_status": "📊 Checking {} jobs...",
+    "found_jobs": "  ✅ Found {} {} jobs",
+    "no_jobs_status": "  ℹ️  No {} jobs found",
+    "getting_job_details": "🔍 Getting detailed information for job: {}",
+    "getting_execution_details": "🔍 Getting job execution details for device: {}",
+    "job_label": "   Job: {}",
+    "getting_executions": "🔍 Getting job executions for job: {}",
+    "checking_execution_statuses": "🔧 Checking execution statuses in parallel...",
+    "checking_execution_sequential": "🔧 Checking execution statuses sequentially (debug mode)...",
+    "checking_execution_status": "📊 Checking {} executions...",
+    "found_executions": "  ✅ Found {} {} executions",
+    "no_executions_status": "  ℹ️  No {} executions found",
+    "starting_exploration": "🚀 Starting exploration...",
+    "exploration_completed": "🎉 Exploration completed!",
+    "exploration_info": "💡 Use this information to understand your IoT deployment status and troubleshoot issues."
+  },
+  
+  "errors": {
+    "invalid_choice": "❌ Invalid choice. Please enter 1-4",
+    "invalid_number": "❌ Please enter a valid number",
+    "invalid_selection": "❌ Invalid selection",
+    "job_id_required": "❌ Job ID is required",
+    "both_required": "❌ Both Job ID and Thing Name are required",
+    "failed_job_details": "❌ Failed to get job details. Job might not exist.",
+    "failed_execution_details": "❌ Failed to get job execution details. Check job ID and thing name.",
+    "client_init_error": "❌ Error initializing AWS clients: {}",
+    "api_error": "❌ Error in {} {}: {}",
+    "general_error": "❌ Error: {}"
+  },
+  
+  "debug": {
+    "debug_operation": "🔍 DEBUG: {}: {}",
+    "api_call": "📤 API Call: {}",
+    "input_params": "📥 Input Parameters:",
+    "api_response": "📤 API Response:",
+    "resource_not_found": "📝 Resource not found: {}",
+    "full_error": "🔍 DEBUG: Full error response:",
+    "full_traceback": "🔍 DEBUG: Full traceback:"
+  },
+  
+  "ui": {
+    "exploration_menu": "🎯 Select exploration option:",
+    "list_all_jobs": "1. List all jobs (overview)",
+    "explore_specific_job": "2. Explore specific job by ID",
+    "explore_job_execution": "3. Explore job execution by device and job ID",
+    "list_job_executions": "4. List job executions for a specific job",
+    "available_job_ids": "📝 Available Job IDs:",
+    "options_label": "Options:",
+    "select_from_list": "1. Select from list above (enter number)",
+    "enter_custom": "2. Enter custom Job ID",
+    "job_details": "📋 Job Details:",
+    "job_id_label": "🆔 Job ID: {}",
+    "status_label": "📊 Status: {}",
+    "description_label": "📝 Description: {}",
+    "target_selection_label": "🎯 Target Selection: {}",
+    "created_label": "📅 Created: {}",
+    "completed_label": "✅ Completed: {}",
+    "job_targets": "🎯 Job Targets ({}):",
+    "target_item": "  • {}",
+    "job_document": "📄 Job Document:",
+    "job_execution_config": "⚙️  Job Execution Configuration:",
+    "presigned_url_config": "🔗 Presigned URL Configuration:",
+    "role_arn": "🔐 Role ARN: {}",
+    "expires_in": "⏰ Expires In: {} seconds",
+    "job_execution_details": "📋 Job Execution Details:",
+    "thing_name_label": "📱 Thing Name: {}",
+    "execution_number": "🔢 Execution Number: {}",
+    "queued_at": "📅 Queued At: {}",
+    "started_at": "🚀 Started At: {}",
+    "last_updated": "✅ Last Updated: {}",
+    "version_number": "📈 Version Number: {}",
+    "status_details": "📊 Status Details:",
+    "job_document_execution": "📄 Job Document for this Execution:",
+    "execution_summary": "📊 Execution Summary:",
+    "no_job_document": "  No job document available",
+    "table_headers": {
+      "jobs": "Job ID                         Status          Created              Completed           ",
+      "executions": "Thing Name                Status       Execution #  Queued At           ",
+      "separator": "-------------------------------------------------------------------------------------",
+      "executions_separator": "---------------------------------------------------------------------------"
+    },
+    "goodbye": "👋 Thank you for exploring AWS IoT Jobs!",
+    "cancelled": "👋 Job exploration cancelled by user. Goodbye!"
+  },
+  
+  "results": {
+    "no_jobs_found": "ℹ️  No jobs found in your account",
+    "found_total_jobs": "📋 Found {} total jobs:",
+    "no_executions_found": "ℹ️  No job executions found for job: {}",
+    "found_total_executions": "📋 Found {} total job executions:",
+    "na": "N/A"
+  },
+  
+  "learning": {
+    "job_status_tip": "💡 Learning Tip: Job statuses indicate the overall progress of your OTA deployment.",
+    "in_progress_tip": "   IN_PROGRESS jobs are actively deploying to devices.",
+    "job_document_tip": "💡 Learning Tip: The job document contains the instructions sent to devices.",
+    "presigned_url_tip": "   Presigned URLs allow secure S3 access without device credentials.",
+    "execution_status_tip": "💡 Learning Tip: Job executions track individual device progress.",
+    "status_details_tip": "   Status details contain device-reported information about success/failure.",
+    "execution_progress_tip": "💡 Learning Tip: Job execution status shows how your OTA deployment is progressing.",
+    "succeeded_tip": "   SUCCEEDED means the device successfully completed the update.",
+    "api_access_note": "💡 Note: This script can now access job execution details for jobs in any status (including COMPLETED, FAILED, etc.)"
+  },
+  
+  "statuses": {
+    "completed": "COMPLETED",
+    "in_progress": "IN_PROGRESS", 
+    "canceled": "CANCELED",
+    "succeeded": "SUCCEEDED",
+    "failed": "FAILED",
+    "timed_out": "TIMED_OUT",
+    "rejected": "REJECTED",
+    "queued": "QUEUED",
+    "removed": "REMOVED"
+  }
+}

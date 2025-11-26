@@ -1,0 +1,150 @@
+{
+  "title": "🤖 AWS IoTジョブ実行シミュレーター (Boto3)",
+  "separator": "===========================================",
+  "learning_goal": "📚 学習目標:",
+  "learning_description": "このスクリプトは、IoTジョブ実行中のリアルなデバイス動作をシミュレートします。\nOTAジョブ（Amazon S3ファームウェアダウンロード付き）とカスタムジョブ（ダウンロードなし）の両方を処理します。\nデバイスはジョブドキュメントを処理し、必要に応じてアーティファクトをダウンロードし、\n設定可能な成功率に基づいてAWS IoTに成功/失敗ステータスを報告します。",
+  "region_label": "📍 リージョン:",
+  "account_id_label": "🆔 アカウントID:",
+  "jobs_endpoint_label": "🔗 ジョブエンドポイント:",
+  
+  "warnings": {
+    "debug_warning": "⚠️  警告: デバッグモードは機密情報（ARN、アカウントID、APIレスポンス）を公開します"
+  },
+  
+  "prompts": {
+    "verbose_mode": "🔧 詳細モード（ジョブクエリの入出力を表示）を有効にしますか？ [y/N]: ",
+    "debug_mode": "🔧 デバッグモード（すべてのAWS API呼び出しとレスポンスを表示）を有効にしますか？ [y/N]: ",
+    "enter_job_id": "📝 シミュレートするジョブIDを入力:",
+    "execution_scope": "🎯 すべての実行を処理するか、数を指定しますか？ [ALL/数値]:",
+    "success_percentage": "📈 成功率を入力（0-100）:",
+    "proceed_simulation": "🚀 ジョブ実行をシミュレートする準備ができました。続行しますか？ [Y/n]: ",
+    "press_enter": "Enterキーを押して続行..."
+  },
+  
+  "status": {
+    "verbose_enabled": "✅ 詳細モードが有効になりました",
+    "debug_enabled": "✅ デバッグモードが有効になりました",
+    "clients_initialized": "🔍 DEBUG: クライアント設定:",
+    "iot_service": "   IoTサービス: {}",
+    "jobs_endpoint": "   ジョブエンドポイント: {}",
+    "scanning_jobs": "🔍 アクティブなIoTジョブをスキャン中...",
+    "getting_executions": "📊 ジョブの実行を取得中: {}",
+    "checking_statuses": "🔧 実行ステータスを並列チェック中...",
+    "checking_sequential": "🔧 実行ステータスを順次チェック中（デバッグモード）...",
+    "checking_status": "📊 {}個の実行をチェック中...",
+    "total_executions": "📊 見つかった総実行数: {}",
+    "found_executions": "📊 {}個の保留中ジョブ実行が見つかりました",
+    "plan_prepared": "✅ 実行計画が準備されました！",
+    "processing_executions": "🚀 {}個のジョブ実行を並列処理中（150 TPS）...",
+    "simulation_completed": "🎉 ジョブ実行シミュレーションが完了しました！",
+    "processed_summary": "📊 {}個の実行を処理: {}成功、{}失敗",
+    "execution_time": "⏱️  総実行時間: {:.2f}秒",
+    "cleanup_completed": "✅ クリーンアップが完了しました",
+    "preparing_plan": "📋 実行計画を準備中 - デバイスをスキャンし、成功/失敗を割り当て中...",
+    "plan_assignment": "📋 [{}/{}] {} -> {}",
+    "progress_update": "📊 進行状況: {}/{}個の実行処理済み、{}成功、{}失敗",
+    "processing_execution": "🔧 実行{}/{}をモノ{}で処理中",
+    "job_succeeded": "✅ {}: ジョブ実行が成功しました",
+    "job_failed": "❌ {}: ジョブ実行が失敗しました",
+    "updating_succeeded": "✅ ジョブ実行を成功に更新中",
+    "updating_failed": "❌ ジョブ実行を失敗に更新中",
+    "downloading_firmware": "⬇️  {}: Amazon S3からファームウェアをダウンロード中...",
+    "extracting_url": "⬇️  ジョブドキュメントからS3事前署名URLを抽出中...",
+    "found_url": "🔗 S3事前署名URLが見つかりました",
+    "downloading_artifact": "📥 Amazon S3からアーティファクトをダウンロード中...",
+    "downloaded_firmware": "📦 {}: {}ファームウェアをダウンロードしました",
+    "artifact_downloaded": "📦 アーティファクトをダウンロード: {} ({})",
+    "artifact_cleanup": "🗑️  アーティファクトをクリーンアップしました",
+    "processing_custom": "⚙️  {}: カスタムジョブ操作を処理中...",
+    "custom_completed": "✅ {}: カスタム操作が完了しました",
+    "job_details_retrieved": "📤 出力 - ジョブ実行詳細を取得しました",
+    "job_document_retrieved": "📄 ジョブドキュメントを取得しました",
+    "getting_job_details": "📥 入力 - {}のジョブ実行詳細を取得中",
+    "cleaning_temp": "🧹 一時ファイルをクリーンアップ中..."
+  },
+  
+  "errors": {
+    "invalid_job_id": "❌ 無効なジョブIDです",
+    "invalid_percentage": "❌ 0から100の間の数値を入力してください",
+    "invalid_number": "❌ 有効な数値を入力してください",
+    "no_active_jobs": "❌ アクティブなジョブが見つかりません",
+    "no_pending_executions": "❌ ジョブ{}の保留中ジョブ実行が見つかりません",
+    "failed_list_jobs": "❌ アクティブなジョブの一覧取得に失敗しました",
+    "failed_job_details": "❌ {}のジョブ実行詳細の取得に失敗しました",
+    "no_presigned_url": "❌ ジョブドキュメントにS3事前署名URLが見つかりません",
+    "download_failed": "❌ ダウンロードに失敗 - ジョブ実行を失敗としてマーク中",
+    "failed_download": "❌ アーティファクトのダウンロードに失敗: {}",
+    "empty_file": "❌ ダウンロードしたファイルが空または無効です",
+    "no_job_document": "❌ {}のジョブドキュメントが見つかりません",
+    "parse_error": "❌ ジョブドキュメントの解析エラー: {}",
+    "client_init_error": "❌ AWSクライアントの初期化エラー: {}",
+    "api_error": "❌ {} {}のエラー: {}",
+    "general_error": "❌ エラー: {}",
+    "cleanup_warning": "⚠️  クリーンアップ警告: {}"
+  },
+  
+  "debug": {
+    "debug_operation": "🔍 DEBUG: {}: {}",
+    "api_call": "📤 API呼び出し: {}",
+    "input_params": "📥 入力パラメータ:",
+    "api_response": "📤 APIレスポンス:",
+    "resource_not_found": "📝 リソースが見つかりません: {}",
+    "full_error": "🔍 DEBUG: 完全なエラーレスポンス:",
+    "full_traceback": "🔍 DEBUG: 完全なトレースバック:",
+    "job_document": "📋 DEBUG - ジョブドキュメント: {}",
+    "found_package": "🔧 DEBUG - パッケージで事前署名URLが見つかりました: {}",
+    "presigned_url": "🔗 DEBUG - 事前署名URL: {}",
+    "download_path": "🔧 DEBUG - ダウンロード先: {}",
+    "http_status": "🔧 DEBUG - HTTPレスポンスステータス: {}"
+  },
+  
+  "ui": {
+    "active_jobs": "📋 アクティブなジョブ:",
+    "no_active_jobs": "アクティブなジョブが見つかりません",
+    "execution_plan": "🎯 実行計画サマリー:",
+    "success_label": "✅ 成功: {}個の実行",
+    "failure_label": "❌ 失敗: {}個の実行",
+    "total_label": "📊 合計: {}個の実行",
+    "job_document_title": "📋 ジョブドキュメント - OTA更新指示",
+    "separator_line": "==================================================",
+    "ota_config": "🚀 OTA設定:",
+    "firmware_packages": "  📦 ファームウェアパッケージ:",
+    "package_label": "    • パッケージ: {}",
+    "version_label": "      バージョン: {}",
+    "artifact_details": "      📁 アーティファクト詳細:",
+    "s3_bucket": "        Amazon S3バケット: {}",
+    "s3_key": "        Amazon S3キー: {}",
+    "version_id": "        バージョンID: {}",
+    "presigned_url_available": "        🔗 事前署名URL: 利用可能（1時間で期限切れ）",
+    "file_id": "        ファイルID: {}",
+    "stream_name": "  🌊 ストリーム名: {}",
+    "iam_role": "  🔐 IAMロール: {}",
+    "additional_params": "📄 追加ジョブパラメータ:",
+    "raw_job_document": "📋 生ジョブドキュメント:",
+    "cancelled": "👋 ユーザーによりジョブシミュレーションがキャンセルされました。さようなら！",
+    "cancelled_user": "👋 ユーザーによりシミュレーションがキャンセルされました",
+    "created_date": "（作成日: {}）",
+    "status_in_progress": "進行中",
+    "status_queued": "キュー待ち",
+    "executions_found": "📋 {}個のジョブ実行: {}",
+    "no_executions": "  ℹ️  {}実行が見つかりません",
+    "success_status": "成功",
+    "failure_status": "失敗"
+  },
+  
+  "results": {
+    "no_active_jobs_found": "アクティブなジョブが見つかりません",
+    "found_executions": "📊 {}個の保留中ジョブ実行が見つかりました"
+  },
+  
+  "learning": {
+    "job_discovery_title": "ジョブ発見 - アクティブな展開の検索",
+    "job_discovery_description": "保留中の実行があるアクティブなIoTジョブをスキャンします。IN_PROGRESSステータスのジョブには、\nQUEUED（開始待ち）またはIN_PROGRESS（現在処理中）のデバイス実行が含まれています。\nこのシミュレーションは、それらのデバイスとして動作し、ファームウェアをダウンロードして\n成功または失敗ステータスを報告します。\n\n🔄 次: アクティブなジョブとその保留中実行をスキャンします",
+    
+    "execution_discovery_title": "実行発見 - 保留中デバイスタスクの検索",
+    "execution_discovery_description": "選択されたジョブのすべての保留中ジョブ実行を発見します。各実行は\nファームウェア更新を受信する必要がある特定のデバイスを表します。実行は\nQUEUED（未開始）またはIN_PROGRESS（デバイスが処理中）ステータスになります。\n\n🔄 次: ジョブ'{}'のすべての保留中実行を見つけます",
+    
+    "execution_simulation_title": "実行シミュレーション - デバイスファームウェア更新プロセス",
+    "execution_simulation_description": "完全なデバイスジョブ実行プロセスをシミュレートします。各デバイスで:\n1. AWS IoTからジョブ実行詳細とジョブドキュメントを取得\n2. ジョブがAmazon S3ダウンロード（OTA）またはカスタム操作を必要とするかチェック\n3. OTAジョブの場合: Amazon S3からファームウェアをダウンロードして処理\n4. カスタムジョブの場合: 操作処理をシミュレート\n5. AWS IoTに成功または失敗ステータスを報告\n\n🔄 次: {}%の成功率で{}個の実行を処理します\nシミュレーションは自動的にジョブタイプを検出し、適切に処理します。"
+  }
+}

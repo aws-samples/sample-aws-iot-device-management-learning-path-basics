@@ -403,3 +403,200 @@ Most scripts support verbose mode:
 1. **Verify results**: Use explore scripts to check outcomes
 2. **Clean up test resources**: Use cleanup script for temporary resources
 3. **Monitor costs**: Check AWS billing for unexpected charges
+## Inte
+rnationalization Issues
+
+### Problem: Scripts showing raw message keys instead of translated text
+**Symptoms**: Scripts display text like `warnings.debug_warning` and `prompts.debug_mode` instead of actual messages
+
+**Example**:
+```
+🧹 AWS IoT Cleanup Script (Boto3)
+===================================
+📚 LEARNING GOAL:
+This script demonstrates proper AWS IoT resource cleanup...
+📍 Region: eu-west-1
+🆔 Account ID: 278816698247
+warnings.debug_warning
+prompts.debug_mode
+```
+
+**Root Cause**: This issue occurs when:
+1. Language code mismatch between language selector and directory structure
+2. Missing nested key handling in `get_message()` function
+3. Incorrect message file loading
+
+**Solution**:
+
+1. **Verify Language Code Mapping**: Ensure language codes match directory structure:
+   ```
+   i18n/
+   ├── en/     # English
+   ├── es/     # Spanish  
+   ├── ja/     # Japanese
+   ├── ko/     # Korean
+   ├── pt/     # Portuguese
+   ├── zh/     # Chinese
+   ```
+
+2. **Check get_message() Implementation**: Scripts should handle nested keys with dot notation:
+   ```python
+   def get_message(self, key, *args):
+       """Get localized message with optional formatting"""
+       # Handle nested keys like 'warnings.debug_warning'
+       if '.' in key:
+           keys = key.split('.')
+           msg = messages
+           for k in keys:
+               if isinstance(msg, dict) and k in msg:
+                   msg = msg[k]
+               else:
+                   msg = key  # Fallback to key if not found
+                   break
+       else:
+           msg = messages.get(key, key)
+       
+       if args and isinstance(msg, str):
+           return msg.format(*args)
+       return msg
+   ```
+
+3. **Test Language Loading**:
+   ```bash
+   # Test with environment variable
+   export AWS_IOT_LANG=en
+   python scripts/cleanup_script.py
+   
+   # Test different languages
+   export AWS_IOT_LANG=es  # Spanish
+   export AWS_IOT_LANG=ja  # Japanese
+   export AWS_IOT_LANG=zh  # Chinese
+   ```
+
+4. **Verify Message Files Exist**:
+   ```bash
+   # Check if translation files exist
+   ls i18n/en/cleanup_script.json
+   ls i18n/es/cleanup_script.json
+   # etc.
+   ```
+
+**Prevention**: When adding new scripts or languages:
+- Use the correct `get_message()` implementation from working scripts
+- Ensure language codes match directory names exactly
+- Test with multiple languages before deployment
+- Use the validation scripts in `docs/templates/validation_scripts/`
+
+### Problem: Language selection not working with environment variables
+**Symptoms**: Scripts always prompt for language selection despite setting `AWS_IOT_LANG`
+
+**Solution**:
+1. **Check Environment Variable Format**:
+   ```bash
+   # Supported formats
+   export AWS_IOT_LANG=en        # English
+   export AWS_IOT_LANG=english   # English
+   export AWS_IOT_LANG=es        # Spanish
+   export AWS_IOT_LANG=español   # Spanish
+   export AWS_IOT_LANG=ja        # Japanese
+   export AWS_IOT_LANG=japanese  # Japanese
+   export AWS_IOT_LANG=zh        # Chinese
+   export AWS_IOT_LANG=chinese   # Chinese
+   export AWS_IOT_LANG=pt        # Portuguese
+   export AWS_IOT_LANG=português # Portuguese
+   export AWS_IOT_LANG=ko        # Korean
+   export AWS_IOT_LANG=korean    # Korean
+   ```
+
+2. **Verify Environment Variable is Set**:
+   ```bash
+   echo $AWS_IOT_LANG
+   ```
+
+3. **Test Language Selection**:
+   ```bash
+   python3 -c "
+   import sys, os
+   sys.path.append('i18n')
+   from language_selector import get_language
+   print('Selected language:', get_language())
+   "
+   ```
+
+### Problem: Missing translations for new languages
+**Symptoms**: Scripts fall back to English or show message keys for unsupported languages
+
+**Solution**:
+1. **Add Language Directory**: Create directory structure for new language
+2. **Copy Translation Files**: Use existing translations as templates
+3. **Update Language Selector**: Add new language to supported list
+4. **Test Thoroughly**: Verify all scripts work with new language
+
+For detailed instructions, see `docs/templates/NEW_LANGUAGE_TEMPLATE.md`.
+#
+# AWS IoT Jobs API Limitations
+
+### Problem: Cannot access job execution details for completed jobs
+**Symptoms**: Error when trying to explore job execution details for completed, failed, or canceled jobs
+
+**Example Error**:
+```
+❌ Error in Job Execution Detail upgradeSedanvehicle110_1761321268 on Vehicle-VIN-016: 
+Job Execution has reached terminal state. It is neither IN_PROGRESS nor QUEUED
+❌ Failed to get job execution details. Check job ID and thing name.
+```
+
+**Root Cause**: AWS provides two different APIs for accessing job execution details:
+
+1. **IoT Jobs Data API** (`iot-jobs-data` service):
+   - Endpoint: `describe_job_execution`
+   - **Limitation**: Only works for jobs in `IN_PROGRESS` or `QUEUED` status
+   - **Error**: Returns "Job Execution has reached terminal state" for completed jobs
+   - **Use Case**: Designed for devices to get their current job instructions
+
+2. **IoT API** (`iot` service):
+   - Endpoint: `describe_job_execution`
+   - **Capability**: Works for jobs in ANY status (COMPLETED, FAILED, CANCELED, etc.)
+   - **No Restrictions**: Can access historical job execution data
+   - **Use Case**: Designed for management and monitoring of all job executions
+
+**Solution**: The explore_jobs script has been updated to use the IoT API instead of the IoT Jobs Data API.
+
+**Code Change**:
+```python
+# Before (limited to active jobs only)
+execution_response = self.iot_jobs_data_client.describe_job_execution(
+    jobId=job_id,
+    thingName=thing_name,
+    includeJobDocument=True
+)
+
+# After (works for all job statuses)
+execution_response = self.iot_client.describe_job_execution(
+    jobId=job_id,
+    thingName=thing_name
+)
+```
+
+**Verification**: After the fix, you can now explore job execution details for:
+- ✅ COMPLETED jobs
+- ✅ FAILED jobs  
+- ✅ CANCELED jobs
+- ✅ IN_PROGRESS jobs
+- ✅ QUEUED jobs
+- ✅ Any other job status
+
+**Additional Benefits**:
+- Access to historical job execution data
+- Better troubleshooting capabilities for failed deployments
+- Complete audit trail of device update attempts
+
+### Problem: Job document not available in execution details
+**Symptoms**: Job execution details show but job document is missing
+
+**Solution**: The script now includes a fallback mechanism:
+1. First tries to get job document from execution details
+2. If not available, retrieves it from the main job details
+3. Displays appropriate message if job document is not available
+
+This ensures you can always see the job instructions that were sent to the device, regardless of the job status or API limitations.

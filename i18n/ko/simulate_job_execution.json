@@ -1,0 +1,150 @@
+{
+  "title": "🤖 AWS IoT 작업 실행 시뮬레이터 (Boto3)",
+  "separator": "===========================================",
+  "learning_goal": "📚 학습 목표:",
+  "learning_description": "이 스크립트는 IoT 작업 실행 중 현실적인 디바이스 동작을 시뮬레이션합니다.\nOTA 작업(Amazon S3 펌웨어 다운로드 포함)과 사용자 정의 작업(다운로드 없음) 모두를 처리합니다.\n디바이스는 작업 문서를 처리하고, 필요할 때 아티팩트를 다운로드하며,\n구성 가능한 성공률에 따라 AWS IoT에 성공/실패 상태를 다시 보고합니다.",
+  "region_label": "📍 리전:",
+  "account_id_label": "🆔 계정 ID:",
+  "jobs_endpoint_label": "🔗 작업 엔드포인트:",
+  
+  "warnings": {
+    "debug_warning": "⚠️  경고: 디버그 모드는 민감한 정보(ARN, 계정 ID, API 응답)를 노출합니다"
+  },
+  
+  "prompts": {
+    "verbose_mode": "🔧 상세 모드를 활성화하시겠습니까 (작업 쿼리의 입력/출력 표시)? [y/N]: ",
+    "debug_mode": "🔧 디버그 모드를 활성화하시겠습니까 (모든 AWS API 호출 및 응답 표시)? [y/N]: ",
+    "enter_job_id": "📝 시뮬레이션할 작업 ID를 입력하세요:",
+    "execution_scope": "🎯 모든 실행을 처리하거나 숫자를 지정하시겠습니까? [ALL/숫자]:",
+    "success_percentage": "📈 성공 백분율을 입력하세요 (0-100):",
+    "proceed_simulation": "🚀 작업 실행을 시뮬레이션할 준비가 되었습니다. 계속하시겠습니까? [Y/n]: ",
+    "press_enter": "계속하려면 Enter를 누르세요..."
+  },
+  
+  "status": {
+    "verbose_enabled": "✅ 상세 모드 활성화됨",
+    "debug_enabled": "✅ 디버그 모드 활성화됨",
+    "clients_initialized": "🔍 디버그: 클라이언트 구성:",
+    "iot_service": "   IoT 서비스: {}",
+    "jobs_endpoint": "   작업 엔드포인트: {}",
+    "scanning_jobs": "🔍 활성 IoT 작업을 스캔하는 중...",
+    "getting_executions": "📊 작업의 작업 실행을 가져오는 중: {}",
+    "checking_statuses": "🔧 실행 상태를 병렬로 확인하는 중...",
+    "checking_sequential": "🔧 실행 상태를 순차적으로 확인하는 중 (디버그 모드)...",
+    "checking_status": "📊 {} 실행을 확인하는 중...",
+    "total_executions": "📊 총 실행 수: {}",
+    "found_executions": "📊 {} 대기 중인 작업 실행을 찾았습니다",
+    "plan_prepared": "✅ 실행 계획이 준비되었습니다!",
+    "processing_executions": "🚀 {} 작업 실행을 병렬로 처리하는 중 (150 TPS)...",
+    "simulation_completed": "🎉 작업 실행 시뮬레이션이 완료되었습니다!",
+    "processed_summary": "📊 {} 실행 처리됨: {} 성공, {} 실패",
+    "execution_time": "⏱️  총 실행 시간: {:.2f}초",
+    "cleanup_completed": "✅ 정리 완료",
+    "preparing_plan": "📋 실행 계획 준비 중 - 디바이스를 스캔하고 성공/실패를 할당하는 중...",
+    "plan_assignment": "📋 [{}/{}] {} -> {}",
+    "progress_update": "📊 진행 상황: {}/{} 실행 처리됨, {} 성공, {} 실패",
+    "processing_execution": "🔧 사물 {}에 대한 실행 {}/{} 처리 중",
+    "job_succeeded": "✅ {}: 작업 실행 성공",
+    "job_failed": "❌ {}: 작업 실행 실패",
+    "updating_succeeded": "✅ 작업 실행을 성공으로 업데이트하는 중",
+    "updating_failed": "❌ 작업 실행을 실패로 업데이트하는 중",
+    "downloading_firmware": "⬇️  {}: Amazon S3에서 펌웨어를 다운로드하는 중...",
+    "extracting_url": "⬇️  작업 문서에서 S3 사전 서명된 URL을 추출하는 중...",
+    "found_url": "🔗 S3 사전 서명된 URL을 찾았습니다",
+    "downloading_artifact": "📥 Amazon S3에서 아티팩트를 다운로드하는 중...",
+    "downloaded_firmware": "📦 {}: {} 펌웨어를 다운로드했습니다",
+    "artifact_downloaded": "📦 아티팩트 다운로드됨: {} ({})",
+    "artifact_cleanup": "🗑️  아티팩트 정리됨",
+    "processing_custom": "⚙️  {}: 사용자 정의 작업 작업을 처리하는 중...",
+    "custom_completed": "✅ {}: 사용자 정의 작업 완료",
+    "job_details_retrieved": "📤 출력 - 작업 실행 세부 정보 검색됨",
+    "job_document_retrieved": "📄 작업 문서 검색됨",
+    "getting_job_details": "📥 입력 - {}에 대한 작업 실행 세부 정보를 가져오는 중",
+    "cleaning_temp": "🧹 임시 파일을 정리하는 중..."
+  },
+  
+  "errors": {
+    "invalid_job_id": "❌ 잘못된 작업 ID입니다",
+    "invalid_percentage": "❌ 0과 100 사이의 숫자를 입력하세요",
+    "invalid_number": "❌ 유효한 숫자를 입력하세요",
+    "no_active_jobs": "❌ 활성 작업을 찾을 수 없습니다",
+    "no_pending_executions": "❌ 작업 {}에 대한 대기 중인 작업 실행을 찾을 수 없습니다",
+    "failed_list_jobs": "❌ 활성 작업 목록 조회에 실패했습니다",
+    "failed_job_details": "❌ {}에 대한 작업 실행 세부 정보 조회에 실패했습니다",
+    "no_presigned_url": "❌ 작업 문서에서 S3 사전 서명된 URL을 찾을 수 없습니다",
+    "download_failed": "❌ 다운로드 실패 - 작업 실행을 실패로 표시합니다",
+    "failed_download": "❌ 아티팩트 다운로드에 실패했습니다: {}",
+    "empty_file": "❌ 다운로드된 파일이 비어있거나 잘못되었습니다",
+    "no_job_document": "❌ {}에 대한 작업 문서를 찾을 수 없습니다",
+    "parse_error": "❌ 작업 문서 파싱 중 오류: {}",
+    "client_init_error": "❌ AWS 클라이언트 초기화 중 오류: {}",
+    "api_error": "❌ {} {} 중 오류: {}",
+    "general_error": "❌ 오류: {}",
+    "cleanup_warning": "⚠️  정리 경고: {}"
+  },
+  
+  "debug": {
+    "debug_operation": "🔍 디버그: {}: {}",
+    "api_call": "📤 API 호출: {}",
+    "input_params": "📥 입력 매개변수:",
+    "api_response": "📤 API 응답:",
+    "resource_not_found": "📝 리소스를 찾을 수 없음: {}",
+    "full_error": "🔍 디버그: 전체 오류 응답:",
+    "full_traceback": "🔍 디버그: 전체 추적:",
+    "job_document": "📋 디버그 - 작업 문서: {}",
+    "found_package": "🔧 디버그 - 패키지에서 사전 서명된 URL을 찾았습니다: {}",
+    "presigned_url": "🔗 디버그 - 사전 서명된 URL: {}",
+    "download_path": "🔧 디버그 - 다운로드 위치: {}",
+    "http_status": "🔧 디버그 - HTTP 응답 상태: {}"
+  },
+  
+  "ui": {
+    "active_jobs": "📋 활성 작업:",
+    "no_active_jobs": "활성 작업을 찾을 수 없습니다",
+    "execution_plan": "🎯 실행 계획 요약:",
+    "success_label": "✅ 성공: {} 실행",
+    "failure_label": "❌ 실패: {} 실행",
+    "total_label": "📊 총계: {} 실행",
+    "job_document_title": "📋 작업 문서 - OTA 업데이트 지침",
+    "separator_line": "==================================================",
+    "ota_config": "🚀 OTA 구성:",
+    "firmware_packages": "  📦 펌웨어 패키지:",
+    "package_label": "    • 패키지: {}",
+    "version_label": "      버전: {}",
+    "artifact_details": "      📁 아티팩트 세부 정보:",
+    "s3_bucket": "        Amazon S3 버킷: {}",
+    "s3_key": "        Amazon S3 키: {}",
+    "version_id": "        버전 ID: {}",
+    "presigned_url_available": "        🔗 사전 서명된 URL: 사용 가능 (1시간 후 만료)",
+    "file_id": "        파일 ID: {}",
+    "stream_name": "  🌊 스트림 이름: {}",
+    "iam_role": "  🔐 IAM 역할: {}",
+    "additional_params": "📄 추가 작업 매개변수:",
+    "raw_job_document": "📋 원시 작업 문서:",
+    "cancelled": "👋 사용자가 작업 시뮬레이션을 취소했습니다. 안녕히 가세요!",
+    "cancelled_user": "👋 사용자가 시뮬레이션을 취소했습니다",
+    "created_date": "(생성일: {})",
+    "status_in_progress": "진행 중",
+    "status_queued": "대기 중",
+    "executions_found": "📋 {} 작업 실행: {}",
+    "no_executions": "  ℹ️  {} 실행을 찾을 수 없습니다",
+    "success_status": "성공",
+    "failure_status": "실패"
+  },
+  
+  "results": {
+    "no_active_jobs_found": "활성 작업을 찾을 수 없습니다",
+    "found_executions": "📊 {} 대기 중인 작업 실행을 찾았습니다"
+  },
+  
+  "learning": {
+    "job_discovery_title": "작업 검색 - 활성 배포 찾기",
+    "job_discovery_description": "대기 중인 실행이 있는 활성 IoT 작업을 스캔합니다. IN_PROGRESS 상태의 작업에는\nQUEUED(시작 대기 중) 또는 IN_PROGRESS(현재 처리 중) 상태의 디바이스 실행이 포함됩니다.\n이 시뮬레이션은 해당 디바이스 역할을 하여 펌웨어를 다운로드하고\n성공 또는 실패 상태를 다시 보고합니다.\n\n🔄 다음: 활성 작업과 대기 중인 실행을 스캔합니다",
+    
+    "execution_discovery_title": "실행 검색 - 대기 중인 디바이스 작업 찾기",
+    "execution_discovery_description": "이제 선택된 작업에 대한 모든 대기 중인 작업 실행을 검색합니다. 각 실행은\n펌웨어 업데이트를 받아야 하는 특정 디바이스를 나타냅니다. 실행은\nQUEUED(시작되지 않음) 또는 IN_PROGRESS(디바이스가 처리 중) 상태일 수 있습니다.\n\n🔄 다음: 작업 '{}'에 대한 모든 대기 중인 실행을 찾습니다",
+    
+    "execution_simulation_title": "실행 시뮬레이션 - 디바이스 펌웨어 업데이트 프로세스",
+    "execution_simulation_description": "이제 완전한 디바이스 작업 실행 프로세스를 시뮬레이션합니다. 각 디바이스에 대해:\n1. AWS IoT에서 작업 실행 세부 정보와 작업 문서를 가져옵니다\n2. 작업이 Amazon S3 다운로드(OTA)가 필요한지 사용자 정의 작업인지 확인합니다\n3. OTA 작업의 경우: Amazon S3에서 펌웨어를 다운로드하고 처리합니다\n4. 사용자 정의 작업의 경우: 작업 처리를 시뮬레이션합니다\n5. AWS IoT에 SUCCESS 또는 FAILED 상태를 다시 보고합니다\n\n🔄 다음: {}% 성공률로 {} 실행을 처리합니다\n시뮬레이션은 자동으로 작업 유형을 감지하고 적절히 처리합니다."
+  }
+}
