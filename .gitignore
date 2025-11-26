@@ -75,3 +75,18 @@ temp/
 # Backup files
 *.bak
 *.backup
+
+# Test artifacts and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+*.cover
+.hypothesis/
+.pytest_cache/
+coverage.xml
+*.coveragerc
+
+# Workshop generator artifacts (generated during testing/demos)
+generated-workshops/
+cached-modules/
