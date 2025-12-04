@@ -31,6 +31,7 @@
 - **패키지 관리**: 자동화된 섀도우 업데이트를 통한 다중 펌웨어 버전 처리
 - **작업 실행**: 펌웨어 업데이트 중 현실적인 디바이스 동작 시뮬레이션
 - **버전 제어**: 디바이스를 이전 펌웨어 버전으로 롤백
+- **원격 명령**: AWS IoT Commands를 사용하여 디바이스에 실시간 명령 전송
 - **리소스 정리**: 불필요한 비용을 피하기 위한 AWS 리소스 적절한 관리
 
 ## 📋 전제 조건
@@ -49,11 +50,12 @@
 | **AWS IoT Core** | ~1,000개 메시지, 100-10,000개 디바이스 | $0.08 - $0.80 |
 | **AWS IoT Device Shadow** | ~200-2,000개 섀도우 작업 | $0.10 - $1.00 |
 | **AWS IoT Jobs** | ~10-100개 작업 실행 | $0.01 - $0.10 |
+| **AWS IoT Commands** | ~10-50개 명령 실행 | $0.01 - $0.05 |
 | **Amazon S3** | 펌웨어용 스토리지 + 요청 | $0.05 - $0.25 |
 | **AWS IoT Fleet Indexing** | 디바이스 쿼리 및 인덱싱 | $0.02 - $0.20 |
 | **AWS IoT Device Management Software Package Catalog** | 패키지 작업 | $0.01 - $0.05 |
 | **AWS Identity and Access Management (IAM)** | 역할/정책 관리 | $0.00 |
-| **총 예상 비용** | **완전한 데모 세션** | **$0.27 - $2.40** |
+| **총 예상 비용** | **완전한 데모 세션** | **$0.28 - $2.45** |
 
 **비용 요인:**
 - 디바이스 수 (100-10,000 구성 가능)
@@ -89,6 +91,7 @@ python scripts/manage_packages.py         # 펌웨어 패키지 관리
 python scripts/create_job.py              # 펌웨어 업데이트 배포
 python scripts/simulate_job_execution.py  # 디바이스 업데이트 시뮬레이션
 python scripts/explore_jobs.py            # 작업 진행 상황 모니터링
+python scripts/manage_commands.py         # 디바이스에 실시간 명령 전송
 python scripts/cleanup_script.py          # 리소스 정리
 ```
 
@@ -101,7 +104,8 @@ python scripts/cleanup_script.py          # 리소스 정리
 | **manage_packages.py** | 포괄적인 패키지 관리 | 패키지/버전 생성, Amazon S3 통합, 개별 되돌리기 상태를 통한 디바이스 추적 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptsmanage_packagespy) |
 | **create_job.py** | OTA 업데이트 작업 생성 | 다중 그룹 타겟팅, 사전 서명된 URL | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptscreate_jobpy) |
 | **simulate_job_execution.py** | 디바이스 업데이트 시뮬레이션 | 실제 Amazon S3 다운로드, 가시적 계획 준비, 디바이스별 진행 상황 추적 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptssimulate_job_executionpy) |
-| **explore_jobs.py** | 작업 진행 상황 모니터링 | 대화형 작업 탐색 및 문제 해결 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
+| **explore_jobs.py** | 작업 모니터링 및 관리 | 대화형 작업 탐색, 취소, 삭제 및 분석 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
+| **manage_commands.py** | 디바이스에 실시간 명령 전송 | 템플릿 관리, 명령 실행, 상태 모니터링, 기록 추적 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptsmanage_commandspy) |
 | **cleanup_script.py** | AWS 리소스 제거 | 선택적 정리, 비용 관리 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptscleanup_scriptpy) |
 
 > 📖 **상세 문서**: 포괄적인 스크립트 정보는 [docs/DETAILED_SCRIPTS.md](docs/DETAILED_SCRIPTS.md)를 참조하세요.
@@ -184,7 +188,8 @@ python scripts/manage_packages.py         # 3. 펌웨어 패키지 관리
 python scripts/create_job.py              # 4. 펌웨어 업데이트 배포
 python scripts/simulate_job_execution.py  # 5. 디바이스 업데이트 시뮬레이션
 python scripts/explore_jobs.py            # 6. 작업 진행 상황 모니터링
-python scripts/cleanup_script.py          # 7. 리소스 정리
+python scripts/manage_commands.py         # 7. 디바이스에 실시간 명령 전송
+python scripts/cleanup_script.py          # 8. 리소스 정리
 ```
 
 **개별 작업**:
@@ -223,6 +228,7 @@ python scripts/cleanup_script.py
 - 모든 AWS IoT 디바이스 및 그룹
 - Amazon S3 버킷 및 펌웨어 파일
 - AWS IoT 소프트웨어 패키지
+- AWS IoT 명령 템플릿
 - IAM 역할 및 정책
 - Fleet Indexing 구성
 

@@ -51,8 +51,8 @@ class IoTJobSimulator:
     def get_message(self, key, *args):
         """Get localized message with optional formatting"""
         # Handle nested keys like 'warnings.debug_warning'
-        if '.' in key:
-            keys = key.split('.')
+        if "." in key:
+            keys = key.split(".")
             msg = messages
             for k in keys:
                 if isinstance(msg, dict) and k in msg:
@@ -62,7 +62,7 @@ class IoTJobSimulator:
                     break
         else:
             msg = messages.get(key, key)
-        
+
         if args and isinstance(msg, str):
             return msg.format(*args)
         return msg
@@ -73,13 +73,13 @@ class IoTJobSimulator:
             if debug or self.debug_mode:
                 print(f"\n{self.get_message('debug.debug_operation', operation_name, resource_name)}")
                 print(f"{self.get_message('debug.api_call', func.__name__)}")
-                print(self.get_message('debug.input_params'))
+                print(self.get_message("debug.input_params"))
                 print(json.dumps(kwargs, indent=2, default=str))
 
             response = func(**kwargs)
 
             if debug or self.debug_mode:
-                print(self.get_message('debug.api_response'))
+                print(self.get_message("debug.api_response"))
                 print(json.dumps(response, indent=2, default=str))
 
             time.sleep(0.1)  # Rate limiting  # nosemgrep: arbitrary-sleep
@@ -88,21 +88,21 @@ class IoTJobSimulator:
             error_code = e.response["Error"]["Code"]
             if error_code in ["ResourceNotFoundException", "ResourceNotFound"]:
                 if debug or self.debug_mode:
-                    print(self.get_message('debug.resource_not_found', resource_name))
+                    print(self.get_message("debug.resource_not_found", resource_name))
                 return None
             else:
-                print(self.get_message('errors.api_error', operation_name, resource_name, e.response['Error']['Message']))
+                print(self.get_message("errors.api_error", operation_name, resource_name, e.response["Error"]["Message"]))
                 if debug or self.debug_mode:
-                    print(self.get_message('debug.full_error'))
+                    print(self.get_message("debug.full_error"))
                     print(json.dumps(e.response, indent=2, default=str))
             time.sleep(0.1)  # nosemgrep: arbitrary-sleep
             return None
         except Exception as e:
-            print(self.get_message('errors.general_error', str(e)))
+            print(self.get_message("errors.general_error", str(e)))
             if debug or self.debug_mode:
                 import traceback
 
-                print(self.get_message('debug.full_traceback'))
+                print(self.get_message("debug.full_traceback"))
                 traceback.print_exc()
             time.sleep(0.1)  # nosemgrep: arbitrary-sleep
             return None
@@ -127,13 +127,13 @@ class IoTJobSimulator:
             )
 
             if self.debug_mode:
-                print(self.get_message('status.clients_initialized'))
-                print(self.get_message('status.iot_service', self.iot_client.meta.service_model.service_name))
-                print(self.get_message('status.jobs_endpoint', self.jobs_endpoint))
+                print(self.get_message("status.clients_initialized"))
+                print(self.get_message("status.iot_service", self.iot_client.meta.service_model.service_name))
+                print(self.get_message("status.jobs_endpoint", self.jobs_endpoint))
 
             return True
         except Exception as e:
-            print(self.get_message('errors.client_init_error', str(e)))
+            print(self.get_message("errors.client_init_error", str(e)))
             return False
 
     def print_header(self):
@@ -153,11 +153,7 @@ class IoTJobSimulator:
 
     def get_verbose_mode(self):
         """Ask user for verbose mode"""
-        choice = (
-            input(f"{Fore.YELLOW}{self.get_message('prompts.verbose_mode')}{Style.RESET_ALL}")
-            .strip()
-            .lower()
-        )
+        choice = input(f"{Fore.YELLOW}{self.get_message('prompts.verbose_mode')}{Style.RESET_ALL}").strip().lower()
         self.verbose_mode = choice in ["y", "yes"]
 
         if self.verbose_mode:
@@ -166,11 +162,7 @@ class IoTJobSimulator:
     def get_debug_mode(self):
         """Ask user for debug mode"""
         print(f"{Fore.RED}{self.get_message('warnings.debug_warning')}{Style.RESET_ALL}")
-        choice = (
-            input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}")
-            .strip()
-            .lower()
-        )
+        choice = input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}").strip().lower()
         self.debug_mode = choice in ["y", "yes"]
 
         if self.debug_mode:
@@ -200,7 +192,9 @@ class IoTJobSimulator:
                     job_id = job.get("jobId", "N/A")
                     status = job.get("status", "N/A")
                     created_at = str(job.get("createdAt", "N/A"))[:19] if job.get("createdAt") else "N/A"
-                    print(f"{Fore.CYAN}• {job_id} - {status} {self.get_message('ui.created_date', created_at)}{Style.RESET_ALL}")
+                    print(
+                        f"{Fore.CYAN}• {job_id} - {status} {self.get_message('ui.created_date', created_at)}{Style.RESET_ALL}"
+                    )
             else:
                 print(f"{Fore.YELLOW}{self.get_message('ui.no_active_jobs')}{Style.RESET_ALL}")
 
@@ -352,7 +346,9 @@ class IoTJobSimulator:
                 if self.verbose_mode or self.debug_mode:
                     # Sanitize basename to prevent path traversal
                     safe_basename = re.sub(r"[^a-zA-Z0-9._-]", "_", os.path.basename(os.path.normpath(artifact_file)))
-                    print(f"{Fore.GREEN}{self.get_message('status.artifact_downloaded', safe_basename, file_size)}{Style.RESET_ALL}")
+                    print(
+                        f"{Fore.GREEN}{self.get_message('status.artifact_downloaded', safe_basename, file_size)}{Style.RESET_ALL}"
+                    )
 
                 # Simulate processing time (reduced for parallel execution)
                 time.sleep(0.1)  # Firmware processing simulation  # nosemgrep: arbitrary-sleep
@@ -504,7 +500,9 @@ class IoTJobSimulator:
         """Process a single job execution with rate limiting"""
         with self.job_execution_semaphore:
             if self.verbose_mode:  # Only show individual processing in verbose mode
-                print(f"{Fore.MAGENTA}{self.get_message('status.processing_execution', index, total, thing_name)}{Style.RESET_ALL}")
+                print(
+                    f"{Fore.MAGENTA}{self.get_message('status.processing_execution', index, total, thing_name)}{Style.RESET_ALL}"
+                )
 
             # Get job execution details
             if self.verbose_mode:
@@ -607,8 +605,8 @@ class IoTJobSimulator:
 
         # Step 1: Job Discovery
         self.educational_pause(
-            self.get_message('learning.job_discovery_title'),
-            self.get_message('learning.job_discovery_description'),
+            self.get_message("learning.job_discovery_title"),
+            self.get_message("learning.job_discovery_description"),
         )
 
         # Scan for active jobs
@@ -626,8 +624,8 @@ class IoTJobSimulator:
 
         # Step 2: Execution Discovery
         self.educational_pause(
-            self.get_message('learning.execution_discovery_title'),
-            self.get_message('learning.execution_discovery_description', selected_job_id),
+            self.get_message("learning.execution_discovery_title"),
+            self.get_message("learning.execution_discovery_description", selected_job_id),
         )
 
         # Get job executions
@@ -651,7 +649,9 @@ class IoTJobSimulator:
         # Success percentage
         while True:
             try:
-                success_percentage = int(input(f"{Fore.YELLOW}{self.get_message('prompts.success_percentage')}{Style.RESET_ALL}"))
+                success_percentage = int(
+                    input(f"{Fore.YELLOW}{self.get_message('prompts.success_percentage')}{Style.RESET_ALL}")
+                )
                 if 0 <= success_percentage <= 100:
                     break
                 print(f"{Fore.RED}{self.get_message('errors.invalid_percentage')}{Style.RESET_ALL}")
@@ -672,10 +672,12 @@ class IoTJobSimulator:
         execution_data = []
         for i, thing_name in enumerate(thing_names[:executions_to_process], 1):
             should_succeed = i <= success_count
-            status = self.get_message('ui.success_status') if should_succeed else self.get_message('ui.failure_status')
+            status = self.get_message("ui.success_status") if should_succeed else self.get_message("ui.failure_status")
 
             # Show progress for every device
-            print(f"{Fore.CYAN}{self.get_message('status.plan_assignment', i, executions_to_process, thing_name, status)}{Style.RESET_ALL}")
+            print(
+                f"{Fore.CYAN}{self.get_message('status.plan_assignment', i, executions_to_process, thing_name, status)}{Style.RESET_ALL}"
+            )
 
             # Get execution number
             exec_response = self.safe_api_call(
@@ -696,17 +698,15 @@ class IoTJobSimulator:
         print(f"\n{Fore.GREEN}{self.get_message('status.plan_prepared')}{Style.RESET_ALL}")
 
         # Ask user to proceed
-        proceed = (
-            input(f"\n{Fore.YELLOW}{self.get_message('prompts.proceed_simulation')}{Style.RESET_ALL}").strip().lower()
-        )
+        proceed = input(f"\n{Fore.YELLOW}{self.get_message('prompts.proceed_simulation')}{Style.RESET_ALL}").strip().lower()
         if proceed in ["n", "no"]:
             print(f"{Fore.YELLOW}{self.get_message('ui.cancelled_user')}{Style.RESET_ALL}")
             sys.exit(0)
 
         # Step 3: Execution Simulation
         self.educational_pause(
-            self.get_message('learning.execution_simulation_title'),
-            self.get_message('learning.execution_simulation_description', executions_to_process, success_percentage),
+            self.get_message("learning.execution_simulation_title"),
+            self.get_message("learning.execution_simulation_description", executions_to_process, success_percentage),
         )
 
         # Process job executions in parallel
@@ -729,13 +729,17 @@ class IoTJobSimulator:
 
                 # Progress update every 20 completions or show all in verbose mode
                 if completed % 20 == 0 or completed == executions_to_process or self.verbose_mode:
-                    print(f"{Fore.CYAN}{self.get_message('status.progress_update', completed, executions_to_process, success_count_actual, failed_count_actual)}{Style.RESET_ALL}")
+                    print(
+                        f"{Fore.CYAN}{self.get_message('status.progress_update', completed, executions_to_process, success_count_actual, failed_count_actual)}{Style.RESET_ALL}"
+                    )
 
         end_time = time.time()
         duration = end_time - start_time
 
         print(f"{Fore.GREEN}{self.get_message('status.simulation_completed')}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('status.processed_summary', executions_to_process, success_count_actual, failed_count_actual)}{Style.RESET_ALL}")
+        print(
+            f"{Fore.CYAN}{self.get_message('status.processed_summary', executions_to_process, success_count_actual, failed_count_actual)}{Style.RESET_ALL}"
+        )
         print(f"{Fore.CYAN}{self.get_message('status.execution_time', duration)}{Style.RESET_ALL}")
 
     def cleanup(self):
@@ -754,7 +758,7 @@ if __name__ == "__main__":
     # Initialize language and load messages
     USER_LANG = get_language()
     messages = load_messages("simulate_job_execution", USER_LANG)
-    
+
     simulator = IoTJobSimulator()
     try:
         simulator.run()

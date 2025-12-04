@@ -86,6 +86,7 @@ htmlcov/
 .pytest_cache/
 coverage.xml
 *.coveragerc
+tests/
 
 # Workshop generator artifacts (generated during testing/demos)
 generated-workshops/

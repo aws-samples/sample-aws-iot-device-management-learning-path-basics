@@ -45,8 +45,8 @@ class PackageManager:
     def get_message(self, key, *args):
         """Get localized message with optional formatting"""
         # Handle nested keys like 'warnings.debug_warning'
-        if '.' in key:
-            keys = key.split('.')
+        if "." in key:
+            keys = key.split(".")
             msg = messages
             for k in keys:
                 if isinstance(msg, dict) and k in msg:
@@ -56,7 +56,7 @@ class PackageManager:
                     break
         else:
             msg = messages.get(key, key)
-        
+
         if args and isinstance(msg, str):
             return msg.format(*args)
         return msg
@@ -67,13 +67,13 @@ class PackageManager:
             if debug or self.debug_mode:
                 print(f"\n{self.get_message('debug.debug_operation', operation_name, resource_name)}")
                 print(f"{self.get_message('debug.api_call', func.__name__)}")
-                print(self.get_message('debug.input_params'))
+                print(self.get_message("debug.input_params"))
                 print(json.dumps(kwargs, indent=2, default=str))
 
             response = func(**kwargs)
 
             if debug or self.debug_mode:
-                print(self.get_message('debug.api_response'))
+                print(self.get_message("debug.api_response"))
                 print(json.dumps(response, indent=2, default=str))
 
             time.sleep(0.1)  # Rate limiting  # nosemgrep: arbitrary-sleep
@@ -87,7 +87,7 @@ class PackageManager:
             else:
                 print(f"{self.get_message('errors.api_error', operation_name, resource_name, e.response['Error']['Message'])}")
                 if debug or self.debug_mode:
-                    print(self.get_message('debug.full_error'))
+                    print(self.get_message("debug.full_error"))
                     print(json.dumps(e.response, indent=2, default=str))
             time.sleep(0.1)  # nosemgrep: arbitrary-sleep
             return None
@@ -96,7 +96,7 @@ class PackageManager:
             if debug or self.debug_mode:
                 import traceback
 
-                print(self.get_message('debug.full_traceback'))
+                print(self.get_message("debug.full_traceback"))
                 traceback.print_exc()
             time.sleep(0.1)  # nosemgrep: arbitrary-sleep
             return None
@@ -115,7 +115,7 @@ class PackageManager:
             self.account_id = identity["Account"]
 
             if self.debug_mode:
-                print(self.get_message('status.clients_initialized'))
+                print(self.get_message("status.clients_initialized"))
                 print(f"{self.get_message('status.iot_service', self.iot_client.meta.service_model.service_name)}")
                 print(f"{self.get_message('status.api_version', self.iot_client.meta.service_model.api_version)}")
 
@@ -129,15 +129,11 @@ class PackageManager:
         print(f"{Fore.CYAN}{self.get_message('separator')}{Style.RESET_ALL}\n")
 
         print(f"{Fore.YELLOW}{self.get_message('learning_goal')}{Style.RESET_ALL}")
-        print(
-            f"{Fore.CYAN}{self.get_message('learning_description')}{Style.RESET_ALL}\n"
-        )
+        print(f"{Fore.CYAN}{self.get_message('learning_description')}{Style.RESET_ALL}\n")
 
         # Initialize clients and display info
         if not self.initialize_clients():
-            print(
-                f"{Fore.RED}{self.get_message('errors.client_init_failed')}{Style.RESET_ALL}"
-            )
+            print(f"{Fore.RED}{self.get_message('errors.client_init_failed')}{Style.RESET_ALL}")
             return False
 
         print(f"{Fore.CYAN}{self.get_message('region_label')} {Fore.GREEN}{self.region}{Style.RESET_ALL}")
@@ -146,14 +142,8 @@ class PackageManager:
 
     def get_debug_mode(self):
         """Ask user for debug mode"""
-        print(
-            f"{Fore.RED}{self.get_message('warnings.debug_warning')}{Style.RESET_ALL}"
-        )
-        choice = (
-            input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}")
-            .strip()
-            .lower()
-        )
+        print(f"{Fore.RED}{self.get_message('warnings.debug_warning')}{Style.RESET_ALL}")
+        choice = input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}").strip().lower()
         self.debug_mode = choice in ["y", "yes"]
 
         if self.debug_mode:
@@ -216,7 +206,9 @@ class PackageManager:
 
         if response:
             print(f"{Fore.GREEN}{self.get_message('status.package_created')}{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}{self.get_message('ui.package_name_label', response.get('packageName', 'N/A'))}{Style.RESET_ALL}")
+            print(
+                f"{Fore.GREEN}{self.get_message('ui.package_name_label', response.get('packageName', 'N/A'))}{Style.RESET_ALL}"
+            )
             print(f"{Fore.GREEN}{self.get_message('ui.package_arn', response.get('packageArn', 'N/A'))}{Style.RESET_ALL}")
         else:
             print(f"{Fore.RED}{self.get_message('errors.failed_create_package')}{Style.RESET_ALL}")
@@ -297,7 +289,9 @@ class PackageManager:
             return version_id, key
         except ClientError as e:
             if e.response["Error"]["Code"] != "404":
-                print(f"{Fore.RED}{self.get_message('errors.failed_check_file', e.response['Error']['Message'])}{Style.RESET_ALL}")
+                print(
+                    f"{Fore.RED}{self.get_message('errors.failed_check_file', e.response['Error']['Message'])}{Style.RESET_ALL}"
+                )
                 return None, key
 
         # Create dummy firmware zip file
@@ -456,7 +450,9 @@ class PackageManager:
                 print(f"{Fore.GREEN}{self.get_message('status.package_version_published')}{Style.RESET_ALL}")
                 print(f"{Fore.GREEN}{self.get_message('ui.package_name_label', package_name)}{Style.RESET_ALL}")
                 print(f"{Fore.GREEN}{self.get_message('ui.version_number', version)}{Style.RESET_ALL}")
-                print(f"{Fore.GREEN}{self.get_message('ui.package_arn', version_response.get('packageVersionArn', 'N/A'))}{Style.RESET_ALL}")
+                print(
+                    f"{Fore.GREEN}{self.get_message('ui.package_arn', version_response.get('packageVersionArn', 'N/A'))}{Style.RESET_ALL}"
+                )
                 print(f"{Fore.GREEN}🪣 Amazon S3 Location: s3://{bucket_name}/{key}{Style.RESET_ALL}")
             else:
                 print(f"{Fore.RED}{self.get_message('errors.failed_publish_version')}{Style.RESET_ALL}")
@@ -1093,7 +1089,7 @@ if __name__ == "__main__":
     # Initialize language
     USER_LANG = get_language()
     messages = load_messages("manage_packages", USER_LANG)
-    
+
     manager = PackageManager()
     try:
         manager.run()

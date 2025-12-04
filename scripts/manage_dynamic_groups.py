@@ -39,8 +39,8 @@ class DynamicGroupManager:
     def get_message(self, key, *args):
         """Get localized message with optional formatting"""
         # Handle nested keys like 'warnings.debug_warning'
-        if '.' in key:
-            keys = key.split('.')
+        if "." in key:
+            keys = key.split(".")
             msg = messages
             for k in keys:
                 if isinstance(msg, dict) and k in msg:
@@ -50,7 +50,7 @@ class DynamicGroupManager:
                     break
         else:
             msg = messages.get(key, key)
-        
+
         if args and isinstance(msg, str):
             return msg.format(*args)
         return msg
@@ -60,14 +60,14 @@ class DynamicGroupManager:
         try:
             if debug or self.debug_mode:
                 print(f"\n{self.get_message('debug.debug_operation', operation_name, resource_name)}")
-                print(self.get_message('debug.api_call', func.__name__))
-                print(self.get_message('debug.input_params'))
+                print(self.get_message("debug.api_call", func.__name__))
+                print(self.get_message("debug.input_params"))
                 print(json.dumps(kwargs, indent=2, default=str))
 
             response = func(**kwargs)
 
             if debug or self.debug_mode:
-                print(self.get_message('debug.api_response'))
+                print(self.get_message("debug.api_response"))
                 print(json.dumps(response, indent=2, default=str))
 
             time.sleep(0.1)  # Rate limiting  # nosemgrep: arbitrary-sleep
@@ -76,21 +76,21 @@ class DynamicGroupManager:
             error_code = e.response["Error"]["Code"]
             if error_code in ["ResourceNotFoundException", "ResourceNotFound"]:
                 if debug or self.debug_mode:
-                    print(self.get_message('debug.resource_not_found', resource_name))
+                    print(self.get_message("debug.resource_not_found", resource_name))
                 return None
             else:
-                print(self.get_message('errors.api_error', operation_name, resource_name, e.response['Error']['Message']))
+                print(self.get_message("errors.api_error", operation_name, resource_name, e.response["Error"]["Message"]))
                 if debug or self.debug_mode:
-                    print(self.get_message('debug.full_error'))
+                    print(self.get_message("debug.full_error"))
                     print(json.dumps(e.response, indent=2, default=str))
             time.sleep(0.1)  # nosemgrep: arbitrary-sleep
             return None
         except Exception as e:
-            print(self.get_message('errors.general_error', str(e)))
+            print(self.get_message("errors.general_error", str(e)))
             if debug or self.debug_mode:
                 import traceback
 
-                print(self.get_message('debug.full_traceback'))
+                print(self.get_message("debug.full_traceback"))
                 traceback.print_exc()
             time.sleep(0.1)  # nosemgrep: arbitrary-sleep
             return None
@@ -106,13 +106,13 @@ class DynamicGroupManager:
             self.account_id = identity["Account"]
 
             if self.debug_mode:
-                print(self.get_message('status.clients_initialized'))
-                print(self.get_message('status.iot_service', self.iot_client.meta.service_model.service_name))
-                print(self.get_message('status.api_version', self.iot_client.meta.service_model.api_version))
+                print(self.get_message("status.clients_initialized"))
+                print(self.get_message("status.iot_service", self.iot_client.meta.service_model.service_name))
+                print(self.get_message("status.api_version", self.iot_client.meta.service_model.api_version))
 
             return True
         except Exception as e:
-            print(self.get_message('errors.client_init_error', str(e)))
+            print(self.get_message("errors.client_init_error", str(e)))
             return False
 
     def print_header(self):
@@ -132,11 +132,7 @@ class DynamicGroupManager:
     def get_debug_mode(self):
         """Ask user for debug mode"""
         print(f"{Fore.RED}{self.get_message('warnings.debug_warning')}{Style.RESET_ALL}")
-        choice = (
-            input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}")
-            .strip()
-            .lower()
-        )
+        choice = input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}").strip().lower()
         self.debug_mode = choice in ["y", "yes"]
 
         if self.debug_mode:
@@ -648,7 +644,11 @@ class DynamicGroupManager:
         # Get user selection
         while True:
             try:
-                choice = int(input(f"\n{Fore.YELLOW}{self.get_message('prompts.group_select_delete', len(dynamic_groups))}{Style.RESET_ALL}"))
+                choice = int(
+                    input(
+                        f"\n{Fore.YELLOW}{self.get_message('prompts.group_select_delete', len(dynamic_groups))}{Style.RESET_ALL}"
+                    )
+                )
                 if 1 <= choice <= len(dynamic_groups):
                     selected_group = dynamic_groups[choice - 1]
                     break
@@ -724,8 +724,8 @@ class DynamicGroupManager:
     def run_create_operation(self):
         """Run create dynamic group operation"""
         self.educational_pause(
-            self.get_message('learning.dynamic_groups_title'),
-            self.get_message('learning.dynamic_groups_description'),
+            self.get_message("learning.dynamic_groups_title"),
+            self.get_message("learning.dynamic_groups_description"),
         )
 
         # Get user inputs
@@ -760,10 +760,18 @@ class DynamicGroupManager:
 
             print(f"\n{Fore.CYAN}{self.get_message('ui.group_configuration')}{Style.RESET_ALL}")
             print(f"{Fore.GREEN}{self.get_message('ui.group_name', group_name)}{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}{self.get_message('ui.countries', ', '.join(countries) if countries else self.get_message('results.any'))}{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}{self.get_message('ui.thing_type', thing_type or self.get_message('results.any'))}{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}{self.get_message('ui.versions', ', '.join(versions) if versions else self.get_message('results.any'))}{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}{self.get_message('ui.battery_level', battery_level or self.get_message('results.any'))}{Style.RESET_ALL}")
+            print(
+                f"{Fore.GREEN}{self.get_message('ui.countries', ', '.join(countries) if countries else self.get_message('results.any'))}{Style.RESET_ALL}"
+            )
+            print(
+                f"{Fore.GREEN}{self.get_message('ui.thing_type', thing_type or self.get_message('results.any'))}{Style.RESET_ALL}"
+            )
+            print(
+                f"{Fore.GREEN}{self.get_message('ui.versions', ', '.join(versions) if versions else self.get_message('results.any'))}{Style.RESET_ALL}"
+            )
+            print(
+                f"{Fore.GREEN}{self.get_message('ui.battery_level', battery_level or self.get_message('results.any'))}{Style.RESET_ALL}"
+            )
 
         print(f"{Fore.GREEN}{self.get_message('ui.query', query_string)}{Style.RESET_ALL}")
 
@@ -813,7 +821,9 @@ class DynamicGroupManager:
 
             # Ask if user wants to continue
             print(f"\n{Fore.CYAN}{self.get_message('ui.separator_line')}{Style.RESET_ALL}")
-            continue_choice = input(f"{Fore.YELLOW}{self.get_message('prompts.continue_operation')}{Style.RESET_ALL}").strip().lower()
+            continue_choice = (
+                input(f"{Fore.YELLOW}{self.get_message('prompts.continue_operation')}{Style.RESET_ALL}").strip().lower()
+            )
             if continue_choice in ["n", "no"]:
                 print(f"\n{Fore.GREEN}{self.get_message('ui.goodbye')}{Style.RESET_ALL}")
                 break

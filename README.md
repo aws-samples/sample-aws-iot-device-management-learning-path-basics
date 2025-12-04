@@ -31,6 +31,7 @@ A comprehensive demonstration of AWS IoT Device Management capabilities includin
 - **Package Management**: Handle multiple firmware versions with automated shadow updates
 - **Job Execution**: Simulate realistic device behavior during firmware updates
 - **Version Control**: Rollback devices to previous firmware versions
+- **Remote Commands**: Send real-time commands to devices using AWS IoT Commands
 - **Resource Cleanup**: Properly manage AWS resources to avoid unnecessary costs
 
 
@@ -51,11 +52,12 @@ A comprehensive demonstration of AWS IoT Device Management capabilities includin
 | **AWS IoT Core** | ~1,000 messages, 100-10,000 devices | $0.08 - $0.80 |
 | **AWS IoT Device Shadow** | ~200-2,000 shadow operations | $0.10 - $1.00 |
 | **AWS IoT Jobs** | ~10-100 job executions | $0.01 - $0.10 |
+| **AWS IoT Commands** | ~10-50 command executions | $0.01 - $0.05 |
 | **Amazon S3** | Storage + requests for firmware | $0.05 - $0.25 |
 | **AWS IoT Fleet Indexing** | Device queries and indexing | $0.02 - $0.20 |
 | **AWS IoT Device Management Software Package Catalog** | Package operations | $0.01 - $0.05 |
 | **AWS Identity and Access Management (IAM)** | Role/policy management | $0.00 |
-| **Total Estimated** | **Complete demo session** | **$0.27 - $2.40** |
+| **Total Estimated** | **Complete demo session** | **$0.28 - $2.45** |
 
 **Cost Factors:**
 - Device count (100-10,000 configurable)
@@ -91,6 +93,7 @@ python scripts/manage_packages.py         # Manage firmware packages
 python scripts/create_job.py              # Deploy firmware updates
 python scripts/simulate_job_execution.py  # Simulate device updates
 python scripts/explore_jobs.py            # Monitor job progress
+python scripts/manage_commands.py         # Send real-time commands to devices
 python scripts/cleanup_script.py          # Clean up resources
 ```
 
@@ -103,7 +106,8 @@ python scripts/cleanup_script.py          # Clean up resources
 | **manage_packages.py** | Comprehensive package management | Create packages/versions, Amazon S3 integration, device tracking with individual revert status | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptsmanage_packagespy) |
 | **create_job.py** | Create OTA update jobs | Multi-group targeting, presigned URLs | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptscreate_jobpy) |
 | **simulate_job_execution.py** | Simulate device updates | Real Amazon S3 downloads, visible plan preparation, per-device progress tracking | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptssimulate_job_executionpy) |
-| **explore_jobs.py** | Monitor job progress | Interactive job exploration and troubleshooting | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
+| **explore_jobs.py** | Monitor and manage jobs | Interactive job exploration, cancellation, deletion, and analytics | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
+| **manage_commands.py** | Send real-time commands to devices | Template management, command execution, status monitoring, history tracking | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptsmanage_commandspy) |
 | **cleanup_script.py** | Remove AWS resources | Selective cleanup, cost management | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptscleanup_scriptpy) |
 
 > 📖 **Detailed Documentation**: See [docs/DETAILED_SCRIPTS.md](docs/DETAILED_SCRIPTS.md) for comprehensive script information.
@@ -186,7 +190,8 @@ python scripts/manage_packages.py         # 3. Manage firmware packages
 python scripts/create_job.py              # 4. Deploy firmware updates
 python scripts/simulate_job_execution.py  # 5. Simulate device updates
 python scripts/explore_jobs.py            # 6. Monitor job progress
-python scripts/cleanup_script.py          # 7. Clean up resources
+python scripts/manage_commands.py         # 7. Send real-time commands to devices
+python scripts/cleanup_script.py          # 8. Clean up resources
 ```
 
 **Individual Operations**:
@@ -225,6 +230,7 @@ python scripts/cleanup_script.py
 - All AWS IoT devices and groups
 - Amazon S3 buckets and firmware files
 - AWS IoT software packages
+- AWS IoT command templates
 - IAM roles and policies
 - Fleet Indexing configuration
 

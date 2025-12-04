@@ -6,319 +6,741 @@ Este documento proporciona ejemplos prácticos para escenarios comunes de AWS Io
 
 ### Configuración Básica de Flota
 ```bash
-# 1. Crear infraestructura
+# 1. Create infrastructure
 python scripts/provision_script.py
-# Elegir: SedanVehicle,SUVVehicle
-# Versiones: 1.0.0,1.1.0
-# Región: North America
-# Países: US,CA
-# Dispositivos: 100
+# Choose: SedanVehicle,SUVVehicle
+# Versions: 1.0.0,1.1.0
+# Region: North America
+# Countries: US,CA
+# Devices: 100
 
-# 2. Crear grupos dinámicos
+# 2. Create dynamic groups
 python scripts/manage_dynamic_groups.py
-# Operación: 1 (Crear)
-# Países: US
-# Tipo de cosa: SedanVehicle
-# Nivel de batería: <30
+# Operation: 1 (Create)
+# Countries: US
+# Thing type: SedanVehicle
+# Battery level: <30
 
-# 3. Crear trabajo de actualización de firmware
+# 3. Create firmware update job
 python scripts/create_job.py
-# Seleccionar: grupo USFleet
-# Paquete: SedanVehicle v1.1.0
+# Select: USFleet group
+# Package: SedanVehicle v1.1.0
 
-# 4. Simular actualizaciones de dispositivos
+# 4. Simulate device updates
 python scripts/simulate_job_execution.py
-# Tasa de éxito: 85%
-# Procesar: TODAS las ejecuciones
+# Success rate: 85%
+# Process: ALL executions
 ```
 
 ### Escenario de Reversión de Versión
 ```bash
-# Revertir todos los dispositivos SedanVehicle a la versión 1.0.0
+# Rollback all SedanVehicle devices to version 1.0.0
 python scripts/manage_packages.py
-# Seleccionar: 10. Revertir Versiones de Dispositivos
-# Tipo de cosa: SedanVehicle
-# Versión objetivo: 1.0.0
-# Confirmar: REVERT
+# Select: 10. Revert Device Versions
+# Thing type: SedanVehicle
+# Target version: 1.0.0
+# Confirm: REVERT
 ```
 
-### Monitoreo de Trabajos
+### Monitoreo y Gestión de Trabajos
 ```bash
-# Monitorear progreso del trabajo
+# Monitor job progress
 python scripts/explore_jobs.py
-# Opción 1: Listar todos los trabajos
-# Opción 4: Listar ejecuciones de trabajo para un trabajo específico
+# Option 1: List all jobs
+# Option 2: Explore specific job details
+# Option 4: List job executions for specific job
+# Option 7: View comprehensive statistics and health assessment
+
+# Cancel stuck or problematic jobs
+python scripts/explore_jobs.py
+# Option 5: Cancel job
+# - Shows impact analysis before cancellation
+# - Provides educational guidance
+# - Requires confirmation
+
+# Clean up completed jobs
+python scripts/explore_jobs.py
+# Option 6: Delete job
+# - Automatically handles force flag
+# - Shows completion timestamps
+# - Safe cleanup of old jobs
 ```
 
 ## Escenarios Avanzados
 
 ### Despliegue Multi-Región
 ```bash
-# Aprovisionar en múltiples regiones
+# Provision in multiple regions
 export AWS_DEFAULT_REGION=us-east-1
 python scripts/provision_script.py
-# Crear 500 dispositivos en América del Norte
+# Create 500 devices in North America
 
 export AWS_DEFAULT_REGION=eu-west-1  
 python scripts/provision_script.py
-# Crear 300 dispositivos en Europa
+# Create 300 devices in Europe
 ```
 
 ### Despliegue Escalonado
 ```bash
-# 1. Crear grupo de prueba
+# 1. Create test group
 python scripts/manage_dynamic_groups.py
-# Operación: 1 (Crear)
-# Países: US
-# Tipo de cosa: SedanVehicle
-# Versiones: 1.0.0
-# Nombre personalizado: TestFleet_SedanVehicle_US
+# Operation: 1 (Create)
+# Countries: US
+# Thing type: SedanVehicle
+# Versions: 1.0.0
+# Custom name: TestFleet_SedanVehicle_US
 
-# 2. Desplegar primero al grupo de prueba
+# 2. Deploy to test group first
 python scripts/create_job.py
-# Seleccionar: TestFleet_SedanVehicle_US
-# Paquete: SedanVehicle v1.1.0
+# Select: TestFleet_SedanVehicle_US
+# Package: SedanVehicle v1.1.0
 
-# 3. Monitorear despliegue de prueba
+# 3. Monitor test deployment
 python scripts/simulate_job_execution.py
-# Tasa de éxito: 95%
+# Success rate: 95%
 
-# 4. Desplegar a producción después de la validación
+# 4. Deploy to production after validation
 python scripts/create_job.py
-# Seleccionar: USFleet
-# Paquete: SedanVehicle v1.1.0
+# Select: USFleet
+# Package: SedanVehicle v1.1.0
 ```
 
 ### Mantenimiento Basado en Batería
 ```bash
-# Crear grupo de batería baja
+# Create low battery group
 python scripts/manage_dynamic_groups.py
-# Operación: 1 (Crear)
-# Método: 1 (Asistente guiado)
-# Países: (dejar vacío para todos)
-# Tipo de cosa: (dejar vacío para todos)
-# Nivel de batería: <20
-# Nombre personalizado: LowBatteryDevices
+# Operation: 1 (Create)
+# Method: 1 (Guided wizard)
+# Countries: (leave empty for all)
+# Thing type: (leave empty for all)
+# Battery level: <20
+# Custom name: LowBatteryDevices
 
-# Crear trabajo de mantenimiento
+# Create maintenance job
 python scripts/create_job.py
-# Seleccionar: LowBatteryDevices
-# Paquete: MaintenanceFirmware v2.0.0
+# Select: LowBatteryDevices
+# Package: MaintenanceFirmware v2.0.0
 ```
 
 ### Consulta Personalizada Avanzada
 ```bash
-# Crear grupo complejo con consulta personalizada
+# Create complex group with custom query
 python scripts/manage_dynamic_groups.py
-# Operación: 1 (Crear)
-# Método: 2 (Consulta personalizada)
-# Consulta: (thingTypeName:SedanVehicle OR thingTypeName:SUVVehicle) AND attributes.country:US AND shadow.reported.batteryStatus:[30 TO 80]
-# Nombre del grupo: USVehicles_MidBattery
+# Operation: 1 (Create)
+# Method: 2 (Custom query)
+# Query: (thingTypeName:SedanVehicle OR thingTypeName:SUVVehicle) AND attributes.country:US AND shadow.reported.batteryStatus:[30 TO 80]
+# Group name: USVehicles_MidBattery
 ```
 
 ### Gestión de Paquetes
 ```bash
-# Crear nuevo paquete y versiones
+# Create new package and versions
 python scripts/manage_packages.py
-# Operación: 1 (Crear Paquete)
-# Nombre del paquete: TestVehicle
+# Operation: 1 (Create Package)
+# Package name: TestVehicle
 
-# Agregar versión con carga a S3
-# Operación: 2 (Crear Versión)
-# Nombre del paquete: TestVehicle
-# Versión: 2.0.0
+# Add version with S3 upload
+# Operation: 2 (Create Version)
+# Package name: TestVehicle
+# Version: 2.0.0
 
-# Inspeccionar detalles del paquete
-# Operación: 4 (Describir Paquete)
-# Nombre del paquete: TestVehicle
+# Inspect package details
+# Operation: 4 (Describe Package)
+# Package name: TestVehicle
 ```
+
+### Ejemplos de AWS IoT Commands
+
+AWS IoT Commands permite enviar comandos en tiempo real a dispositivos IoT a través de tópicos MQTT. Estos ejemplos demuestran la creación de plantillas, ejecución de comandos, monitoreo de estado y simulación de dispositivos.
+
+#### Ejemplo 1: Crear y Ejecutar un Comando Simple
+
+Este ejemplo muestra cómo crear una plantilla de comando y ejecutar un comando simple de bloqueo de vehículo.
+
+```bash
+# 1. Start the manage_commands script
+python scripts/manage_commands.py
+
+# 2. Create a command template (Option 1)
+# Select: 1. Create Command Template
+# Template name: vehicle-lock
+# Description: Lock vehicle doors remotely
+# Payload format: {"action": "lock", "vehicleId": "{{vehicleId}}"}
+
+# Expected output:
+# ✓ Command template created successfully
+# Template ARN: arn:aws:iot:us-east-1:123456789012:commandtemplate/vehicle-lock
+# Template Name: vehicle-lock
+# Description: Lock vehicle doors remotely
+
+# 3. Execute the command (Option 5)
+# Select: 5. Execute Command
+# Select template: vehicle-lock
+# Target device: vehicle-001
+# Parameter vehicleId: vehicle-001
+
+# Expected output:
+# ✓ Command execution started
+# Command ID: cmd-12345678-1234-1234-1234-123456789012
+# Status: CREATED
+# Target: arn:aws:iot:us-east-1:123456789012:thing/vehicle-001
+# MQTT Topic: $aws/commands/things/vehicle-001/executions/exec-abc123/request/json
+```
+
+**Simulación de Dispositivo (usando mqtt_client_explorer.py):**
+```bash
+# In a separate terminal, subscribe to command topics
+python scripts/mqtt_client_explorer.py
+# Select: 2. Subscribe to topic
+# Topic: $aws/commands/things/vehicle-001/executions/+/request/#
+
+# When command is received, publish acknowledgment:
+# Select: 1. Publish message
+# Topic: $aws/commands/things/vehicle-001/executions/exec-abc123/response/json
+# Message: {"status": "SUCCEEDED", "statusReason": "Vehicle locked successfully"}
+```
+
+#### Ejemplo 2: Ejecutar Comando a Múltiples Dispositivos
+
+Este ejemplo demuestra la ejecución de un comando a múltiples dispositivos simultáneamente.
+
+```bash
+# 1. Start manage_commands script
+python scripts/manage_commands.py
+
+# 2. Use predefined template (Option 2 to list templates)
+# Select: 2. List Command Templates
+# View available templates including predefined ones
+
+# Expected output:
+# ┌─────────────────────┬──────────────────────────────┬─────────────────────┐
+# │ Template Name       │ Description                  │ Created At          │
+# ├─────────────────────┼──────────────────────────────┼─────────────────────┤
+# │ vehicle-lock        │ Lock vehicle doors remotely  │ 2024-12-02 10:00:00 │
+# │ vehicle-unlock      │ Unlock vehicle doors         │ 2024-12-02 10:00:00 │
+# │ start-engine        │ Start vehicle engine         │ 2024-12-02 10:00:00 │
+# │ set-climate         │ Set climate temperature      │ 2024-12-02 10:00:00 │
+# └─────────────────────┴──────────────────────────────┴─────────────────────┘
+
+# 3. Execute command to multiple devices (Option 5)
+# Select: 5. Execute Command
+# Select template: set-climate
+# Target type: Multiple devices
+# Devices: vehicle-001,vehicle-002,vehicle-003
+# Parameter temperature: 22
+# Parameter unit: celsius
+
+# Expected output:
+# ✓ Command executions created for 3 devices
+# Command IDs:
+#   - vehicle-001: cmd-11111111-1111-1111-1111-111111111111
+#   - vehicle-002: cmd-22222222-2222-2222-2222-222222222222
+#   - vehicle-003: cmd-33333333-3333-3333-3333-333333333333
+# Status: CREATED
+# All commands published to respective MQTT topics
+```
+
+#### Ejemplo 3: Monitorear Estado de Comando
+
+Este ejemplo muestra cómo verificar el estado de los comandos ejecutados.
+
+```bash
+# 1. View command status (Option 6)
+python scripts/manage_commands.py
+# Select: 6. View Command Status
+# Enter command ID: cmd-12345678-1234-1234-1234-123456789012
+
+# Expected output for IN_PROGRESS command:
+# Command Status
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Command ID: cmd-12345678-1234-1234-1234-123456789012
+# Template: vehicle-lock
+# Target: arn:aws:iot:us-east-1:123456789012:thing/vehicle-001
+# Status: IN_PROGRESS ⏳
+# Created: 2024-12-02 10:05:00
+# Last Updated: 2024-12-02 10:05:05
+# Duration: 5 seconds
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Expected output for SUCCEEDED command:
+# Command Status
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Command ID: cmd-12345678-1234-1234-1234-123456789012
+# Template: vehicle-lock
+# Target: arn:aws:iot:us-east-1:123456789012:thing/vehicle-001
+# Status: SUCCEEDED ✓
+# Created: 2024-12-02 10:05:00
+# Completed: 2024-12-02 10:05:15
+# Duration: 15 seconds
+# Status Reason: Vehicle locked successfully
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Expected output for FAILED command:
+# Command Status
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Command ID: cmd-12345678-1234-1234-1234-123456789012
+# Template: vehicle-unlock
+# Target: arn:aws:iot:us-east-1:123456789012:thing/vehicle-002
+# Status: FAILED ✗
+# Created: 2024-12-02 10:10:00
+# Completed: 2024-12-02 10:10:08
+# Duration: 8 seconds
+# Status Reason: Door sensor malfunction - unable to unlock
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+#### Ejemplo 4: Ver Historial de Comandos con Filtros
+
+Este ejemplo demuestra la visualización del historial de comandos con varios filtros.
+
+```bash
+# 1. View all command history (Option 7)
+python scripts/manage_commands.py
+# Select: 7. View Command History
+# Filter by: None (show all)
+# Page size: 10
+
+# Expected output:
+# Command History
+# ┌──────────────────────┬─────────────┬──────────────┬────────────┬─────────────────────┬─────────────────────┐
+# │ Command ID           │ Template    │ Target       │ Status     │ Created At          │ Completed At        │
+# ├──────────────────────┼─────────────┼──────────────┼────────────┼─────────────────────┼─────────────────────┤
+# │ cmd-12345678-...     │ vehicle-lock│ vehicle-001  │ SUCCEEDED  │ 2024-12-02 10:05:00 │ 2024-12-02 10:05:15 │
+# │ cmd-22222222-...     │ set-climate │ vehicle-002  │ SUCCEEDED  │ 2024-12-02 10:08:00 │ 2024-12-02 10:08:12 │
+# │ cmd-33333333-...     │ vehicle-unlock│ vehicle-003│ FAILED     │ 2024-12-02 10:10:00 │ 2024-12-02 10:10:08 │
+# │ cmd-44444444-...     │ start-engine│ vehicle-001  │ IN_PROGRESS│ 2024-12-02 10:12:00 │ -                   │
+# └──────────────────────┴─────────────┴──────────────┴────────────┴─────────────────────┴─────────────────────┘
+# Total: 4 commands | Page 1 of 1
+
+# 2. Filter by device (Option 7)
+# Select: 7. View Command History
+# Filter by: Device
+# Device name: vehicle-001
+
+# Expected output:
+# Command History (Filtered by device: vehicle-001)
+# ┌──────────────────────┬─────────────┬──────────────┬────────────┬─────────────────────┬─────────────────────┐
+# │ Command ID           │ Template    │ Target       │ Status     │ Created At          │ Completed At        │
+# ├──────────────────────┼─────────────┼──────────────┼────────────┼─────────────────────┼─────────────────────┤
+# │ cmd-12345678-...     │ vehicle-lock│ vehicle-001  │ SUCCEEDED  │ 2024-12-02 10:05:00 │ 2024-12-02 10:05:15 │
+# │ cmd-44444444-...     │ start-engine│ vehicle-001  │ SUCCEEDED  │ 2024-12-02 10:12:00 │ 2024-12-02 10:12:20 │
+# └──────────────────────┴─────────────┴──────────────┴────────────┴─────────────────────┴─────────────────────┘
+# Total: 2 commands
+
+# 3. Filter by status (Option 7)
+# Select: 7. View Command History
+# Filter by: Status
+# Status: FAILED
+
+# Expected output:
+# Command History (Filtered by status: FAILED)
+# ┌──────────────────────┬─────────────┬──────────────┬────────────┬─────────────────────┬─────────────────────┐
+# │ Command ID           │ Template    │ Target       │ Status     │ Created At          │ Completed At        │
+# ├──────────────────────┼─────────────┼──────────────┼────────────┼─────────────────────┼─────────────────────┤
+# │ cmd-33333333-...     │ vehicle-unlock│ vehicle-003│ FAILED     │ 2024-12-02 10:10:00 │ 2024-12-02 10:10:08 │
+# └──────────────────────┴─────────────┴──────────────┴────────────┴─────────────────────┴─────────────────────┘
+# Total: 1 command
+
+# 4. Filter by time range (Option 7)
+# Select: 7. View Command History
+# Filter by: Time range
+# Start time: 2024-12-02T10:00:00
+# End time: 2024-12-02T10:10:00
+
+# Expected output:
+# Command History (Time range: 2024-12-02 10:00:00 to 2024-12-02 10:10:00)
+# ┌──────────────────────┬─────────────┬──────────────┬────────────┬─────────────────────┬─────────────────────┐
+# │ Command ID           │ Template    │ Target       │ Status     │ Created At          │ Completed At        │
+# ├──────────────────────┼─────────────┼──────────────┼────────────┼─────────────────────┼─────────────────────┤
+# │ cmd-12345678-...     │ vehicle-lock│ vehicle-001  │ SUCCEEDED  │ 2024-12-02 10:05:00 │ 2024-12-02 10:05:15 │
+# │ cmd-22222222-...     │ set-climate │ vehicle-002  │ SUCCEEDED  │ 2024-12-02 10:08:00 │ 2024-12-02 10:08:12 │
+# └──────────────────────┴─────────────┴──────────────┴────────────┴─────────────────────┴─────────────────────┘
+# Total: 2 commands
+```
+
+#### Ejemplo 5: Cancelar un Comando en Ejecución
+
+Este ejemplo muestra cómo cancelar un comando que está en progreso.
+
+```bash
+# 1. Check current command status
+python scripts/manage_commands.py
+# Select: 6. View Command Status
+# Enter command ID: cmd-44444444-4444-4444-4444-444444444444
+
+# Expected output:
+# Command Status
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Command ID: cmd-44444444-4444-4444-4444-444444444444
+# Template: start-engine
+# Target: arn:aws:iot:us-east-1:123456789012:thing/vehicle-001
+# Status: IN_PROGRESS ⏳
+# Created: 2024-12-02 10:15:00
+# Last Updated: 2024-12-02 10:15:30
+# Duration: 30 seconds
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# 2. Cancel the command (Option 8)
+# Select: 8. Cancel Command
+# Enter command ID: cmd-44444444-4444-4444-4444-444444444444
+# Confirm cancellation: yes
+
+# Expected output:
+# ⚠ Cancel Command Confirmation
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Command ID: cmd-44444444-4444-4444-4444-444444444444
+# Template: start-engine
+# Target: vehicle-001
+# Current Status: IN_PROGRESS
+# 
+# Are you sure you want to cancel this command? (yes/no): yes
+# 
+# ✓ Command cancellation request sent
+# Command ID: cmd-44444444-4444-4444-4444-444444444444
+# New Status: CANCELED
+# Cancellation Reason: User requested cancellation
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# 3. Verify cancellation
+# Select: 6. View Command Status
+# Enter command ID: cmd-44444444-4444-4444-4444-444444444444
+
+# Expected output:
+# Command Status
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Command ID: cmd-44444444-4444-4444-4444-444444444444
+# Template: start-engine
+# Target: arn:aws:iot:us-east-1:123456789012:thing/vehicle-001
+# Status: CANCELED ⊗
+# Created: 2024-12-02 10:15:00
+# Canceled: 2024-12-02 10:15:45
+# Duration: 45 seconds
+# Status Reason: User requested cancellation
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# 4. Attempt to cancel completed command (will fail)
+# Select: 8. Cancel Command
+# Enter command ID: cmd-12345678-1234-1234-1234-123456789012
+
+# Expected output:
+# ✗ Cannot cancel command
+# Command ID: cmd-12345678-1234-1234-1234-123456789012
+# Current Status: SUCCEEDED
+# Reason: Command has already completed
+# 
+# Note: Only commands with status CREATED or IN_PROGRESS can be canceled
+```
+
+#### Ejemplo de Flujo de Trabajo Completo: Parada de Emergencia de Vehículo
+
+Este ejemplo completo demuestra el flujo de trabajo completo para un comando de parada de emergencia.
+
+```bash
+# Step 1: Set up device simulator (Terminal 2)
+# Navigate to IoT Core scripts directory
+cd githubsdks/sample-aws-iot-core-learning-path-basics/scripts
+
+# Set up device authentication
+python certificate_manager.py
+# Select device: vehicle-emergency-001
+# Create and attach certificate
+
+# Subscribe to command topics
+python mqtt_client_explorer.py
+# Select: 2. Subscribe to topic
+# Topic: $aws/commands/things/vehicle-emergency-001/executions/+/request/#
+
+# Step 2: Create emergency stop template (Terminal 1)
+cd githubsdks/sample-aws-iot-device-management-learning-path-basics/scripts
+python manage_commands.py
+
+# Select: 1. Create Command Template
+# Template name: emergency-stop
+# Description: Emergency vehicle stop command
+# Payload format: {"action": "emergency_stop", "vehicleId": "{{vehicleId}}", "reason": "{{reason}}"}
+
+# Step 3: Execute emergency stop command
+# Select: 5. Execute Command
+# Template: emergency-stop
+# Target: vehicle-emergency-001
+# Parameter vehicleId: vehicle-emergency-001
+# Parameter reason: Suspected theft
+
+# Expected output:
+# ✓ Command execution started
+# Command ID: cmd-emergency-12345
+# Status: CREATED
+# MQTT Topic: $aws/commands/things/vehicle-emergency-001/executions/exec-xyz/request/json
+
+# Step 4: Device receives command (Terminal 2 - mqtt_client_explorer)
+# Received message on topic: $aws/commands/things/vehicle-emergency-001/executions/exec-xyz/request/json
+# Payload: {"action": "emergency_stop", "vehicleId": "vehicle-emergency-001", "reason": "Suspected theft"}
+
+# Step 5: Device acknowledges (Terminal 2)
+# Select: 1. Publish message
+# Topic: $aws/commands/things/vehicle-emergency-001/executions/exec-xyz/response/json
+# Message: {"status": "SUCCEEDED", "statusReason": "Vehicle stopped and immobilized"}
+
+# Step 6: Verify command completion (Terminal 1)
+# Select: 6. View Command Status
+# Command ID: cmd-emergency-12345
+
+# Expected output:
+# Command Status
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Command ID: cmd-emergency-12345
+# Template: emergency-stop
+# Target: arn:aws:iot:us-east-1:123456789012:thing/vehicle-emergency-001
+# Status: SUCCEEDED ✓
+# Created: 2024-12-02 10:20:00
+# Completed: 2024-12-02 10:20:05
+# Duration: 5 seconds
+# Status Reason: Vehicle stopped and immobilized
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Step 7: View command in history
+# Select: 7. View Command History
+# Filter: None
+
+# Command appears in history with SUCCEEDED status
+```
+
+#### Mejores Prácticas para AWS IoT Commands
+
+1. **Template Management**
+   - Create reusable templates for common operations
+   - Use descriptive names and detailed descriptions
+   - Validate payload formats before creating templates
+   - Keep templates organized by use case
+
+2. **Command Execution**
+   - Always verify device is online before sending commands
+   - Use appropriate timeout values for command responses
+   - Monitor command status for critical operations
+   - Implement retry logic for failed commands
+
+3. **Device Simulation**
+   - Set up device simulator before executing commands
+   - Subscribe to command topics using wildcards for flexibility
+   - Test both success and failure scenarios
+   - Publish detailed status reasons for troubleshooting
+
+4. **Monitoring and Troubleshooting**
+   - Regularly check command history for patterns
+   - Filter history by device or status to identify issues
+   - Use command status to track execution progress
+   - Cancel stuck commands to free up resources
+
+5. **Integration with Other Services**
+   - Combine Commands with Device Shadow for state management
+   - Use Jobs for long-running operations
+   - Leverage Fleet Indexing to target devices dynamically
+   - Monitor command metrics in CloudWatch
 
 ## Flujos de Trabajo de Desarrollo
 
 ### Prueba de Nuevo Firmware
 ```bash
-# 1. Aprovisionar entorno de prueba
+# 1. Provision test environment
 python scripts/provision_script.py
-# Tipos de cosa: TestSensor
-# Versiones: 1.0.0,2.0.0-beta
-# Países: US
-# Dispositivos: 10
+# Thing types: TestSensor
+# Versions: 1.0.0,2.0.0-beta
+# Countries: US
+# Devices: 10
 
-# 2. Crear grupo de prueba beta
+# 2. Create beta test group
 python scripts/manage_dynamic_groups.py
-# Operación: 1 (Crear)
-# Tipo de cosa: TestSensor
-# Versiones: 1.0.0
-# Nombre personalizado: BetaTestGroup
+# Operation: 1 (Create)
+# Thing type: TestSensor
+# Versions: 1.0.0
+# Custom name: BetaTestGroup
 
-# 3. Desplegar firmware beta
+# 3. Deploy beta firmware
 python scripts/create_job.py
-# Seleccionar: BetaTestGroup
-# Paquete: TestSensor v2.0.0-beta
+# Select: BetaTestGroup
+# Package: TestSensor v2.0.0-beta
 
-# 4. Simular con alta tasa de fallo para pruebas
+# 4. Simulate with high failure rate for testing
 python scripts/simulate_job_execution.py
-# Tasa de éxito: 60%
+# Success rate: 60%
 
-# 5. Analizar resultados
+# 5. Analyze results
 python scripts/explore_jobs.py
-# Opción 4: Listar ejecuciones de trabajo
+# Option 4: List job executions
 ```
 
 ### Limpieza Después de Pruebas
 ```bash
-# Limpiar recursos de prueba
+# Clean up test resources
 python scripts/cleanup_script.py
-# Opción 1: TODOS los recursos
-# Confirmar: DELETE
+# Option 1: ALL resources
+# Confirm: DELETE
 ```
 
 ## Patrones de Gestión de Flota
 
 ### Despliegue Geográfico
 ```bash
-# Aprovisionar por continente
+# Provision by continent
 python scripts/provision_script.py
-# Continente: 1 (América del Norte)
-# Países: 3 (primeros 3 países)
-# Dispositivos: 1000
+# Continent: 1 (North America)
+# Countries: 3 (first 3 countries)
+# Devices: 1000
 
-# Crear grupos específicos por país (creados automáticamente como USFleet, CAFleet, MXFleet)
-# Desplegar firmware específico de región
+# Create country-specific groups (auto-created as USFleet, CAFleet, MXFleet)
+# Deploy region-specific firmware
 python scripts/create_job.py
-# Seleccionar: USFleet,CAFleet
-# Paquete: RegionalFirmware v1.2.0
+# Select: USFleet,CAFleet
+# Package: RegionalFirmware v1.2.0
 ```
 
-### Gestión de Tipos de Dispositivos
+### Gestión de Tipo de Dispositivo
 ```bash
-# Aprovisionar múltiples tipos de vehículos
+# Provision multiple vehicle types
 python scripts/provision_script.py
-# Tipos de cosa: SedanVehicle,SUVVehicle,TruckVehicle
-# Versiones: 1.0.0,1.1.0,2.0.0
-# Dispositivos: 500
+# Thing types: SedanVehicle,SUVVehicle,TruckVehicle
+# Versions: 1.0.0,1.1.0,2.0.0
+# Devices: 500
 
-# Crear grupos dinámicos específicos por tipo
+# Create type-specific dynamic groups
 python scripts/manage_dynamic_groups.py
-# Operación: 1 (Crear)
-# Tipo de cosa: TruckVehicle
-# Países: US,CA
-# Nombre personalizado: NorthAmericaTrucks
+# Operation: 1 (Create)
+# Thing type: TruckVehicle
+# Countries: US,CA
+# Custom name: NorthAmericaTrucks
 
-# Desplegar firmware específico para camiones
+# Deploy truck-specific firmware
 python scripts/create_job.py
-# Seleccionar: NorthAmericaTrucks
-# Paquete: TruckVehicle v2.0.0
+# Select: NorthAmericaTrucks
+# Package: TruckVehicle v2.0.0
 ```
 
 ### Programación de Mantenimiento
 ```bash
-# Encontrar dispositivos que necesitan actualizaciones
+# Find devices needing updates
 python scripts/manage_dynamic_groups.py
-# Operación: 1 (Crear)
-# Tipo de cosa: SedanVehicle
-# Versiones: 1.0.0  # Versión antigua
-# Nombre personalizado: SedanVehicle_NeedsUpdate
+# Operation: 1 (Create)
+# Thing type: SedanVehicle
+# Versions: 1.0.0  # Old version
+# Custom name: SedanVehicle_NeedsUpdate
 
-# Programar despliegue en ventana de mantenimiento
+# Schedule maintenance window deployment
 python scripts/create_job.py
-# Seleccionar: SedanVehicle_NeedsUpdate
-# Paquete: SedanVehicle v1.1.0
+# Select: SedanVehicle_NeedsUpdate
+# Package: SedanVehicle v1.1.0
 
-# Monitorear progreso del despliegue
+# Monitor deployment progress
 python scripts/explore_jobs.py
-# Opción 1: Listar todos los trabajos (verificar estado)
+# Option 1: List all jobs (check status)
 ```
 
 ## Ejemplos de Solución de Problemas
 
 ### Recuperación de Trabajo Fallido
 ```bash
-# 1. Verificar estado del trabajo
+# 1. Analyze job health and statistics
 python scripts/explore_jobs.py
-# Opción 2: Explorar trabajo específico
-# Ingresar ID de trabajo con fallos
+# Option 7: View statistics
+# - Get health assessment (Excellent/Good/Poor/Critical)
+# - See failure patterns and recommendations
+# - Understand execution distribution
 
-# 2. Verificar fallos de dispositivos individuales
+# 2. Check job status details
 python scripts/explore_jobs.py
-# Opción 3: Explorar ejecución de trabajo
-# Ingresar ID de trabajo y nombre del dispositivo fallido
+# Option 2: Explore specific job
+# Enter job ID with failures
 
-# 3. Revertir dispositivos fallidos
+# 3. Check individual device failures
+python scripts/explore_jobs.py
+# Option 3: Explore job execution
+# Enter job ID and failing device name
+
+# 4. Cancel problematic job if needed
+python scripts/explore_jobs.py
+# Option 5: Cancel job
+# - Review impact analysis
+# - Add cancellation comment for audit trail
+
+# 5. Rollback failed devices
 python scripts/manage_packages.py
-# Seleccionar: 10. Revertir Versiones de Dispositivos
-# Tipo de cosa: SedanVehicle
-# Versión objetivo: 1.0.0  # Versión anterior funcional
+# Select: 10. Revert Device Versions
+# Thing type: SedanVehicle
+# Target version: 1.0.0  # Previous working version
+
+# 6. Clean up canceled job
+python scripts/explore_jobs.py
+# Option 6: Delete job
+# - Remove canceled job from system
 ```
 
-### Verificación de Estado de Dispositivos
+### Verificación de Estado de Dispositivo
 ```bash
-# Verificar versiones actuales de firmware
+# Check current firmware versions
 python scripts/manage_dynamic_groups.py
-# Operación: 1 (Crear)
-# Tipo de cosa: SedanVehicle
-# Versiones: 1.1.0
-# Nombre personalizado: SedanVehicle_v1_1_0_Check
+# Operation: 1 (Create)
+# Thing type: SedanVehicle
+# Versions: 1.1.0
+# Custom name: SedanVehicle_v1_1_0_Check
 
-# Verificar membresía del grupo (debe coincidir con el conteo esperado)
+# Verify group membership (should match expected count)
 python scripts/explore_jobs.py
-# Usar para verificar estados de dispositivos
+# Use to verify device states
 ```
 
 ### Pruebas de Rendimiento
 ```bash
-# Probar con gran cantidad de dispositivos
+# Test with large device count
 python scripts/provision_script.py
-# Dispositivos: 5000
+# Devices: 5000
 
-# Probar rendimiento de ejecución de trabajos
+# Test job execution performance
 python scripts/simulate_job_execution.py
-# Procesar: TODOS
-# Tasa de éxito: 90%
-# Monitorear tiempo de ejecución y TPS
+# Process: ALL
+# Success rate: 90%
+# Monitor execution time and TPS
 ```
 
 ## Ejemplos Específicos de Entorno
 
 ### Entorno de Desarrollo
 ```bash
-# Escala pequeña para desarrollo
+# Small scale for development
 python scripts/provision_script.py
-# Tipos de cosa: DevSensor
-# Versiones: 1.0.0-dev
-# Países: US
-# Dispositivos: 5
+# Thing types: DevSensor
+# Versions: 1.0.0-dev
+# Countries: US
+# Devices: 5
 ```
 
 ### Entorno de Staging
 ```bash
-# Escala media para staging
+# Medium scale for staging
 python scripts/provision_script.py
-# Tipos de cosa: SedanVehicle,SUVVehicle
-# Versiones: 1.0.0,1.1.0-rc
-# Países: US,CA
-# Dispositivos: 100
+# Thing types: SedanVehicle,SUVVehicle
+# Versions: 1.0.0,1.1.0-rc
+# Countries: US,CA
+# Devices: 100
 ```
 
 ### Entorno de Producción
 ```bash
-# Escala grande para producción
+# Large scale for production
 python scripts/provision_script.py
-# Tipos de cosa: SedanVehicle,SUVVehicle,TruckVehicle
-# Versiones: 1.0.0,1.1.0,1.2.0
-# Continente: 1 (América del Norte)
-# Países: TODOS
-# Dispositivos: 10000
+# Thing types: SedanVehicle,SUVVehicle,TruckVehicle
+# Versions: 1.0.0,1.1.0,1.2.0
+# Continent: 1 (North America)
+# Countries: ALL
+# Devices: 10000
 ```
 
 ## Ejemplos de Integración
 
-### Integración con Pipeline CI/CD
+### Integración de Pipeline CI/CD
 ```bash
-# Verificación de sintaxis (automatizada)
+# Syntax check (automated)
 python scripts/check_syntax.py
 
-# Pruebas automatizadas
+# Automated testing
 python scripts/provision_script.py --automated
 python scripts/create_job.py --test-mode
 python scripts/simulate_job_execution.py --success-rate 95
@@ -327,29 +749,46 @@ python scripts/cleanup_script.py --force
 
 ### Integración de Monitoreo
 ```bash
-# Exportar métricas de trabajos
-python scripts/explore_jobs.py --export-json > job_status.json
+# View comprehensive job analytics
+python scripts/explore_jobs.py
+# Option 7: View statistics
+# - Health assessment with recommendations
+# - Execution distribution analysis
+# - Context-aware troubleshooting guidance
 
-# Verificar salud del despliegue
-python scripts/explore_jobs.py --health-check
+# Monitor active jobs
+python scripts/explore_jobs.py
+# Option 1: List all jobs (filter by status)
+
+# Cancel jobs programmatically (with confirmation)
+python scripts/explore_jobs.py
+# Option 5: Cancel job
+# - Impact analysis before action
+# - Audit trail with comments
+
+# Clean up old completed jobs
+python scripts/explore_jobs.py
+# Option 6: Delete job
+# - Batch cleanup of completed jobs
+# - Automatic force flag handling
 ```
 
 ## Ejemplos de Mejores Prácticas
 
 ### Despliegue Gradual
-1. Comenzar con 5% de la flota (grupo de prueba)
-2. Monitorear durante 24 horas
-3. Expandir a 25% si es exitoso
-4. Despliegue completo después de la validación
+1. Start with 5% of fleet (test group)
+2. Monitor for 24 hours
+3. Expand to 25% if successful
+4. Full deployment after validation
 
 ### Estrategia de Reversión
-1. Siempre probar el procedimiento de reversión
-2. Mantener versiones anteriores de firmware disponibles
-3. Monitorear salud del dispositivo post-despliegue
-4. Tener disparadores de reversión automatizados
+1. Always test rollback procedure
+2. Keep previous firmware versions available
+3. Monitor device health post-deployment
+4. Have automated rollback triggers
 
 ### Gestión de Recursos
-1. Usar script de limpieza después de pruebas
-2. Monitorear costos de AWS
-3. Limpiar versiones antiguas de firmware
-4. Eliminar grupos de cosas no utilizados
+1. Use cleanup script after testing
+2. Monitor AWS costs
+3. Clean up old firmware versions
+4. Remove unused thing groups
