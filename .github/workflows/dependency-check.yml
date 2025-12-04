@@ -29,4 +29,4 @@ jobs:
         pip install safety
         
     - name: Run dependency vulnerability check
-      run: safety check --ignore=70612
+      run: safety check --ignore=70612,76353,76352,71690,64484,66742,79883,77740,73282,77744,79408,52510

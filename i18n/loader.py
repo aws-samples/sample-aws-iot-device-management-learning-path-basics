@@ -2,7 +2,7 @@ import json
 import os
 
 
-def load_messages(script_name, language="en"):
+def load_messages(script_name, language):
     """Load messages for a specific script and language"""
     base_path = os.path.dirname(__file__)
 

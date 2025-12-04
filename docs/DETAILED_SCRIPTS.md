@@ -125,6 +125,9 @@ This document provides comprehensive information about each script in the AWS Io
 2. **Explore specific job** - Detailed job configuration with clean JSON formatting
 3. **Explore job execution** - Individual device progress using IoT Jobs Data API
 4. **List job executions** - All executions for a job with parallel status checking
+5. **Cancel job** - Cancel active jobs with impact analysis and educational guidance
+6. **Delete job** - Delete completed/canceled jobs with automatic force flag handling
+7. **View statistics** - Comprehensive job analytics with health assessment and recommendations
 
 **Features**:
 - **Native boto3 Implementation**: Direct API integration for better performance
@@ -136,6 +139,42 @@ This document provides comprehensive information about each script in the AWS Io
 - Execution summary statistics with color coding
 - **Enhanced Error Handling**: Robust boto3 exception management
 - Continuous exploration loop
+- **Job Lifecycle Management**: Cancel and delete operations with safety confirmations
+- **Advanced Analytics**: Comprehensive statistics with health assessments
+
+**Cancel Job Features**:
+- Scans for active jobs (IN_PROGRESS, SCHEDULED)
+- Shows job details and target count
+- Impact analysis with execution counts by status (QUEUED, IN_PROGRESS, SUCCEEDED, FAILED)
+- Educational content explaining when and why to cancel jobs
+- Safety confirmation requiring "CANCEL" to proceed
+- Optional cancellation comment for audit trail
+- Real-time status updates
+
+**Delete Job Features**:
+- Scans for deletable jobs (COMPLETED, CANCELED)
+- Shows job completion timestamps
+- Checks execution history to determine if force flag needed
+- Educational content about deletion implications
+- Automatic force flag when executions exist
+- Safety confirmation requiring "DELETE" to proceed
+- Explains difference between cancel and delete operations
+
+**View Statistics Features**:
+- Comprehensive job overview (status, created/completed dates, targets)
+- Execution statistics with percentages by status
+- Success/failure rate calculations
+- Detailed breakdown of all execution states
+- Health assessment (Excellent ≥95%, Good ≥80%, Poor ≥50%, Critical <50%)
+- Educational content about execution states and failure patterns
+- Context-aware recommendations based on job state:
+  - No executions: Check device connectivity and group membership
+  - Canceled early: Review cancellation reasons
+  - Devices removed: Verify device existence
+  - In progress: Wait and monitor
+  - High failure rate: Investigate and consider cancellation
+  - Moderate failure: Monitor closely
+  - Excellent performance: Document success patterns
 
 **Performance Improvements**:
 - **Parallel Processing**: Concurrent operations when not in debug mode
@@ -321,3 +360,483 @@ Scripts respect AWS API limits:
 - Temporary file cleanup
 - Efficient JSON parsing
 - Resource cleanup on exit
+
+
+---
+
+### scripts/manage_commands.py
+**Purpose**: Comprehensive management of AWS IoT Commands for sending real-time commands to IoT devices using native boto3 APIs.
+
+**Operations**:
+1. **Create Command** - Create new command templates with payload format definitions
+2. **List Commands** - Display all command templates (predefined and custom)
+3. **View Command Details** - Show complete command template specifications
+4. **Delete Command** - Remove custom command templates with safety confirmations
+5. **Execute Command** - Send commands to devices or thing groups
+6. **View Command Status** - Monitor command execution progress and results
+7. **View Command History** - Browse past command executions with filtering
+8. **Cancel Command** - Cancel pending or in-progress command executions
+9. **Enable/Disable Debug Mode** - Toggle detailed API logging
+10. **Exit** - Exit the script
+
+**Key Features**:
+- **Native boto3 Implementation**: Direct AWS IoT Commands API integration
+- **Predefined Automotive Templates**: Six ready-to-use vehicle command templates
+- **Command Template Management**: Create, list, view, and delete command templates
+- **Command Execution**: Send commands to individual devices or thing groups
+- **Status Monitoring**: Real-time command execution tracking with progress indicators
+- **Command History**: Browse and filter past command executions
+- **Command Cancellation**: Cancel pending or in-progress commands
+- **IoT Core Scripts Integration**: Seamless integration with certificate_manager and mqtt_client_explorer
+- **MQTT Topic Documentation**: Complete topic structure reference
+- **Device Simulation Examples**: Success and failure response payloads
+- **Educational Approach**: Learning moments throughout workflows
+- **Multilingual Support**: Full i18n support for 6 languages
+
+**Predefined Automotive Command Templates**:
+The script includes six predefined command templates for common vehicle operations:
+
+1. **vehicle-lock** - Lock vehicle doors remotely
+   - Payload: `{"action": "lock", "vehicleId": "string"}`
+   - Use case: Remote door locking for security
+
+2. **vehicle-unlock** - Unlock vehicle doors remotely
+   - Payload: `{"action": "unlock", "vehicleId": "string"}`
+   - Use case: Remote door unlocking for access
+
+3. **start-engine** - Start vehicle engine remotely
+   - Payload: `{"action": "start", "vehicleId": "string", "duration": "number"}`
+   - Use case: Remote engine start for climate control
+
+4. **stop-engine** - Stop vehicle engine remotely
+   - Payload: `{"action": "stop", "vehicleId": "string"}`
+   - Use case: Emergency engine shutdown
+
+5. **set-climate** - Set vehicle climate temperature
+   - Payload: `{"action": "setClimate", "vehicleId": "string", "temperature": "number", "unit": "string"}`
+   - Use case: Pre-conditioning vehicle temperature
+
+6. **activate-horn** - Activate vehicle horn
+   - Payload: `{"action": "horn", "vehicleId": "string", "duration": "number"}`
+   - Use case: Vehicle location assistance
+
+**Command Template Management**:
+
+**Create Command Template**:
+- Interactive prompts for command name, description, and payload format
+- JSON schema validation for payload structure
+- AWS-IoT namespace configuration
+- Binary blob payload handling with contentType
+- Automatic ARN generation and display
+- Validation against AWS IoT Commands requirements:
+  - Name: 1-128 characters, alphanumeric/hyphen/underscore, must start with alphanumeric
+  - Description: 1-256 characters
+  - Payload: Valid JSON schema, max 10KB complexity
+
+**List Command Templates**:
+- Displays both predefined and custom templates
+- Color-coded table format with:
+  - Template name
+  - Description
+  - Creation date
+  - Template ARN
+  - Status (ACTIVE, DEPRECATED, PENDING_DELETION)
+- Interactive navigation to view template details
+- Pagination support for large template lists
+
+**View Command Details**:
+- Complete payload format specification display
+- Parameter names, types, and constraints
+- Required vs optional fields
+- Example parameter values
+- Template metadata (creation date, ARN, status)
+- Clean JSON formatting for payload structure
+
+**Delete Command Template**:
+- Safety confirmation requiring "DELETE" to proceed
+- Verification that no active commands use the template
+- Protection against deleting predefined templates
+- Clear error messages for deletion failures
+- Automatic cleanup of template resources
+
+**Command Execution**:
+
+**Execute Command**:
+- Interactive command template selection from available templates
+- Target selection:
+  - Single device (thing name)
+  - Thing group (group name)
+- Target validation:
+  - Device existence check in IoT registry
+  - Thing group validation with member count display
+- Parameter collection matching template payload format
+- Configurable execution timeout (default 60 seconds)
+- Automatic MQTT topic publication to:
+  - `$aws/commands/things/<ThingName>/executions/<ExecutionId>/request/json`
+- Success display with:
+  - Command execution ID
+  - Initial status (CREATED/IN_PROGRESS)
+  - MQTT topic information
+- Multiple target support (creates separate executions per target)
+
+**Command Status Monitoring**:
+
+**View Command Status**:
+- Real-time status retrieval using GetCommandExecution API
+- Status display includes:
+  - Command execution ID
+  - Target device/group name
+  - Current status (CREATED, IN_PROGRESS, SUCCEEDED, FAILED, TIMED_OUT, CANCELED)
+  - Creation timestamp
+  - Last updated timestamp
+- Progress indicators for IN_PROGRESS status:
+  - Animated progress display
+  - Time elapsed since creation
+- Completed command information:
+  - Final status (SUCCEEDED/FAILED)
+  - Execution duration
+  - Status reason (if provided)
+  - Completion timestamp
+- Color-coded status indicators:
+  - Green: SUCCEEDED
+  - Yellow: IN_PROGRESS, CREATED
+  - Red: FAILED, TIMED_OUT, CANCELED
+
+**View Command History**:
+- Comprehensive command execution history
+- Filtering options:
+  - Device name filter
+  - Status filter (CREATED, IN_PROGRESS, SUCCEEDED, FAILED, TIMED_OUT, CANCELED)
+  - Time range filter (start/end timestamps)
+- Pagination support:
+  - Configurable page size (1-100, default 50)
+  - Next page navigation
+  - Total count display
+- History display includes:
+  - Command name
+  - Target device/group
+  - Execution status
+  - Creation time
+  - Completion time (if applicable)
+  - Execution duration
+- Empty history handling with informative message
+- Color-coded status for easy scanning
+
+**Command Cancellation**:
+
+**Cancel Command**:
+- Interactive command execution ID input
+- Safety confirmation requiring "CANCEL" to proceed
+- Cancellation request submission to AWS IoT
+- Status update verification (CANCELED)
+- Rejection handling for completed commands:
+  - Clear error message for already completed commands
+  - Current command state display
+- Failure information display:
+  - Failure reason
+  - Current command status
+  - Troubleshooting suggestions
+
+**IoT Core Scripts Integration**:
+
+The script provides comprehensive integration guidance for using AWS IoT Core scripts to simulate device-side command handling:
+
+**Certificate Manager Integration** (`certificate_manager.py`):
+- Device certificate creation and management
+- Certificate-to-policy association
+- Certificate-to-thing attachment
+- Authentication setup for MQTT connections
+- Step-by-step terminal setup instructions:
+  1. Open new terminal window (Terminal 2)
+  2. Copy AWS credentials from workshop environment
+  3. Navigate to IoT Core scripts directory
+  4. Run certificate_manager.py to set up device authentication
+
+**MQTT Client Explorer Integration** (`mqtt_client_explorer.py`):
+- Command topic subscription setup
+- Real-time command reception
+- Response payload publishing
+- Success/failure simulation
+- Step-by-step integration workflow:
+  1. Subscribe to command request topic: `$aws/commands/things/<ThingName>/executions/+/request/#`
+  2. Receive command payloads with execution ID
+  3. Publish execution result to response topic: `$aws/commands/things/<ThingName>/executions/<ExecutionId>/response/json`
+  4. Optionally subscribe to accepted/rejected topics for confirmation
+
+**Device Simulation Examples**:
+
+The script provides complete example payloads for simulating device responses:
+
+**Success Response Example**:
+```json
+{
+  "status": "SUCCEEDED",
+  "executionId": "<ExecutionId>",
+  "statusReason": "Vehicle doors locked successfully",
+  "timestamp": 1701518710000
+}
+```
+
+**Failure Response Example**:
+```json
+{
+  "status": "FAILED",
+  "executionId": "<ExecutionId>",
+  "statusReason": "Unable to lock vehicle - door sensor malfunction",
+  "timestamp": 1701518710000
+}
+```
+
+**Valid Status Values**: SUCCEEDED, FAILED, IN_PROGRESS, TIMED_OUT, REJECTED
+
+**MQTT Topic Structure**:
+
+The script documents the complete MQTT topic structure for AWS IoT Commands:
+
+**Command Request Topic** (device subscribes to receive commands):
+```
+$aws/commands/things/<ThingName>/executions/<ExecutionId>/request/<PayloadFormat>
+$aws/commands/things/<ThingName>/executions/<ExecutionId>/request
+```
+
+**Command Response Topic** (device publishes execution result):
+```
+$aws/commands/things/<ThingName>/executions/<ExecutionId>/response/<PayloadFormat>
+```
+
+**Response Accepted Topic** (device subscribes for confirmation):
+```
+$aws/commands/things/<ThingName>/executions/<ExecutionId>/response/accepted/<PayloadFormat>
+$aws/commands/things/<ThingName>/executions/<ExecutionId>/response/accepted
+```
+
+**Response Rejected Topic** (device subscribes for rejection notification):
+```
+$aws/commands/things/<ThingName>/executions/<ExecutionId>/response/rejected/<PayloadFormat>
+$aws/commands/things/<ThingName>/executions/<ExecutionId>/response/rejected
+```
+
+**Topic Component Explanations**:
+- `<ThingName>`: Name of the IoT thing or MQTT client ID
+- `<ExecutionId>`: Unique identifier for each command execution (use `+` wildcard to subscribe to all)
+- `<PayloadFormat>`: Format indicator (json, cbor) - may be omitted if not JSON/CBOR
+- Wildcard subscription: `$aws/commands/things/<ThingName>/executions/+/request/#`
+
+**AWS IoT Test Client Alternative**:
+- Console-based alternative to mqtt_client_explorer
+- Access via AWS IoT Console → Test → MQTT test client
+- Subscribe to command topics
+- Publish response payloads
+- Useful for quick testing without local scripts
+
+**Learning Moments**:
+
+The script includes contextual learning moments that automatically appear after key operations:
+
+1. **What are Command Templates?** - Displayed after first template creation
+   - Explains command template purpose and structure
+   - Describes payload format requirements
+   - Compares to other AWS IoT features
+
+2. **Commands vs Device Shadow vs Jobs** - Displayed after first command execution
+   - Comparison table showing when to use each feature
+   - Commands: Immediate, real-time device actions (seconds)
+   - Device Shadow: Desired state synchronization (eventual consistency)
+   - Jobs: Long-running operations, firmware updates (minutes to hours)
+   - Use case examples for each feature
+
+3. **MQTT Topic Structure** - Displayed when showing mqtt_client_explorer integration
+   - Complete topic pattern documentation
+   - Request/response topic explanations
+   - Wildcard subscription examples
+   - Topic component descriptions
+
+4. **Command Execution Lifecycle** - Displayed after viewing command status
+   - Status transition flow (CREATED → IN_PROGRESS → SUCCEEDED/FAILED)
+   - Timeout handling
+   - Cancellation behavior
+   - Best practices for monitoring
+
+5. **Best Practices** - Displayed after viewing command history
+   - Command naming conventions
+   - Timeout configuration guidance
+   - Error handling strategies
+   - Monitoring and alerting recommendations
+
+6. **Console Integration** - Displayed with Console Checkpoint reminder
+   - AWS IoT Console navigation
+   - Command template verification
+   - Execution timeline viewing
+   - CLI vs Console comparison
+
+**Error Handling**:
+
+The script implements comprehensive error handling with user-friendly messages:
+
+**Validation Errors**:
+- Command name validation (length, characters, format)
+- Description validation (length, content)
+- Payload format validation (JSON schema, complexity)
+- Target validation (device/group existence)
+- Parameter validation (type, required fields)
+- Clear error messages with correction guidance
+
+**AWS API Errors**:
+- ResourceNotFoundException: Command or target not found
+- InvalidRequestException: Invalid payload or parameters
+- ThrottlingException: Rate limit exceeded with retry guidance
+- UnauthorizedException: Insufficient permissions
+- Exponential backoff for rate limiting
+- Automatic retry for transient errors (up to 3 attempts)
+- Detailed error messages with troubleshooting suggestions
+
+**Network Errors**:
+- Connectivity issue detection
+- AWS credentials verification guidance
+- Region configuration checks
+- Retry options with user prompts
+
+**State Errors**:
+- Cancellation of completed commands
+- Deletion of in-use templates
+- Invalid status transitions
+- Clear explanations of current state
+
+**Debug Mode**:
+- Shows all AWS SDK (boto3) API calls with parameters
+- Displays complete API responses in JSON format
+- Provides detailed error information with full stack traces
+- Helps with troubleshooting and learning AWS APIs
+- Toggle on/off during script execution
+
+**Performance Characteristics**:
+- **Native boto3 Integration**: Direct AWS SDK calls for better performance
+- **Rate Limiting**: Respects AWS IoT Commands API limits
+- **Efficient Pagination**: Handles large command lists and history
+- **Memory Management**: Efficient JSON parsing and resource cleanup
+- **Error Recovery**: Automatic retry with exponential backoff
+
+**Educational Focus**:
+- Complete command lifecycle from template creation to execution
+- Real-time command delivery and acknowledgment
+- Device simulation using IoT Core scripts
+- MQTT topic structure and message flow
+- Commands vs Shadow vs Jobs decision guidance
+- Best practices for production deployments
+
+**Troubleshooting Guide**:
+
+**Common Issues and Solutions**:
+
+1. **Device Not Receiving Commands**
+   - Verify device is subscribed to command request topic
+   - Check MQTT connection status
+   - Confirm certificate and policy permissions
+   - Verify thing name matches target
+   - Ensure device simulator is running BEFORE executing commands
+
+2. **Template Validation Errors**
+   - Check JSON schema syntax
+   - Verify payload format complexity (max 10KB)
+   - Ensure required fields are defined
+   - Validate parameter types and constraints
+
+3. **Command Execution Failures**
+   - Verify target device/group exists
+   - Check IAM permissions for AWS IoT Commands
+   - Confirm AWS region configuration
+   - Review command timeout settings
+
+4. **Status Not Updating**
+   - Verify device published response to correct topic
+   - Check response payload format
+   - Confirm execution ID matches
+   - Review device logs for errors
+
+5. **Cancellation Failures**
+   - Verify command is not already completed
+   - Check command execution status
+   - Confirm IAM permissions for cancellation
+   - Review current command state
+
+**Integration Workflow** (Correct Order):
+
+⚠️ **CRITICAL**: The device simulator MUST be running and subscribed to command topics BEFORE executing commands. Commands are ephemeral by default - if no device is listening when the command is published, it will be lost.
+
+1. **Open Terminal 2 FIRST** - Copy AWS credentials
+2. Navigate to IoT Core scripts directory
+3. Run `certificate_manager.py` to set up device authentication
+4. Run `mqtt_client_explorer.py` to subscribe to command topics
+5. **Verify device simulator is ready** - Should show "Subscribed to command topics"
+6. **Now open Terminal 1** - Run `manage_commands.py`
+7. Create command template
+8. Execute command targeting the device
+9. **Device Simulator** (Terminal 2) receives command and displays payload
+10. **Device Simulator** publishes acknowledgment to response topic
+11. Return to Terminal 1 to view updated command status
+
+**Why This Order Matters**: Without persistent sessions enabled, MQTT messages are not queued for offline devices. The device must be actively subscribed to the command topic when AWS IoT publishes the command, otherwise the command will not be delivered.
+
+**Use Cases**:
+
+**Fleet-Wide Emergency Commands**:
+- Send emergency stop commands to all vehicles in a region
+- Execute safety recalls across entire fleet
+- Coordinate responses to security threats
+- Real-time fleet-wide configuration updates
+
+**Remote Diagnostics and Control**:
+- Lock/unlock vehicles remotely for customer support
+- Adjust climate settings before customer arrival
+- Activate horn for vehicle location assistance
+- Collect diagnostic data on demand
+
+**Production Deployment Patterns**:
+- Command template versioning and management
+- Multi-region command execution
+- Command execution monitoring and alerting
+- Integration with fleet management systems
+- Compliance and audit logging
+
+**Commands vs Device Shadow vs Jobs Decision Guide**:
+
+Use **Commands** when:
+- Immediate action required (seconds response time)
+- Real-time device control needed
+- Quick acknowledgment expected
+- Device must be online
+- Examples: lock/unlock, horn activation, emergency stop
+
+Use **Device Shadow** when:
+- Desired state synchronization needed
+- Offline device support required
+- Eventual consistency acceptable
+- State persistence important
+- Examples: temperature settings, configuration, desired state
+
+Use **Jobs** when:
+- Long-running operations required (minutes to hours)
+- Firmware updates needed
+- Batch device management
+- Progress tracking important
+- Examples: firmware updates, certificate rotation, bulk configuration
+
+**AWS Services Integration**:
+- **AWS IoT Core**: Command template storage and execution
+- **AWS IoT Device Management**: Fleet management and targeting
+- **AWS Identity and Access Management (IAM)**: Permissions and policies
+- **Amazon CloudWatch**: Monitoring and logging (optional)
+
+**Security Considerations**:
+- IAM permissions for command operations
+- Certificate-based device authentication
+- Policy-based authorization for MQTT topics
+- Command payload encryption in transit
+- Audit logging for compliance
+
+**Cost Optimization**:
+- Commands are charged per execution
+- No storage costs for command templates
+- Efficient targeting reduces unnecessary executions
+- Monitor command history for usage patterns
+- Consider batch operations for cost efficiency

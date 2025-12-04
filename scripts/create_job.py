@@ -39,7 +39,7 @@ class IoTJobCreator:
     def get_message(self, key, *args):
         """Get localized message with optional formatting"""
         # Handle dot notation for nested keys
-        keys = key.split('.')
+        keys = key.split(".")
         msg = messages
         for k in keys:
             if isinstance(msg, dict) and k in msg:
@@ -47,7 +47,7 @@ class IoTJobCreator:
             else:
                 msg = key  # Fallback to key if not found
                 break
-        
+
         if args and isinstance(msg, str):
             return msg.format(*args)
         return msg
@@ -58,13 +58,13 @@ class IoTJobCreator:
             if debug or self.debug_mode:
                 print(f"\n{self.get_message('debug.debug_operation', operation_name, resource_name)}")
                 print(f"{self.get_message('debug.api_call', func.__name__)}")
-                print(self.get_message('debug.input_params'))
+                print(self.get_message("debug.input_params"))
                 print(json.dumps(kwargs, indent=2, default=str))
 
             response = func(**kwargs)
 
             if debug or self.debug_mode:
-                print(self.get_message('debug.api_response'))
+                print(self.get_message("debug.api_response"))
                 print(json.dumps(response, indent=2, default=str))
 
             time.sleep(0.1)  # Rate limiting  # nosemgrep: arbitrary-sleep
@@ -78,7 +78,7 @@ class IoTJobCreator:
             else:
                 print(f"{self.get_message('errors.api_error', operation_name, resource_name, e.response['Error']['Message'])}")
                 if debug or self.debug_mode:
-                    print(self.get_message('debug.full_error'))
+                    print(self.get_message("debug.full_error"))
                     print(json.dumps(e.response, indent=2, default=str))
             time.sleep(0.1)  # nosemgrep: arbitrary-sleep
             return None
@@ -87,7 +87,7 @@ class IoTJobCreator:
             if debug or self.debug_mode:
                 import traceback
 
-                print(self.get_message('debug.full_traceback'))
+                print(self.get_message("debug.full_traceback"))
                 traceback.print_exc()
             time.sleep(0.1)  # nosemgrep: arbitrary-sleep
             return None
@@ -103,7 +103,7 @@ class IoTJobCreator:
             self.account_id = identity["Account"]
 
             if self.debug_mode:
-                print(self.get_message('status.clients_initialized'))
+                print(self.get_message("status.clients_initialized"))
                 print(f"{self.get_message('status.iot_service', self.iot_client.meta.service_model.service_name)}")
                 print(f"{self.get_message('status.api_version', self.iot_client.meta.service_model.api_version)}")
 
@@ -130,14 +130,8 @@ class IoTJobCreator:
 
     def get_debug_mode(self):
         """Ask user for debug mode"""
-        print(
-            f"{Fore.RED}{self.get_message('warnings.debug_warning')}{Style.RESET_ALL}"
-        )
-        choice = (
-            input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}")
-            .strip()
-            .lower()
-        )
+        print(f"{Fore.RED}{self.get_message('warnings.debug_warning')}{Style.RESET_ALL}")
+        choice = input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}").strip().lower()
         self.debug_mode = choice in ["y", "yes"]
 
         if self.debug_mode:
@@ -241,10 +235,16 @@ class IoTJobCreator:
 
         while True:
             try:
-                choice = int(input(f"{Fore.YELLOW}{self.get_message('prompts.select_package', len(available_packages))}{Style.RESET_ALL}"))
+                choice = int(
+                    input(
+                        f"{Fore.YELLOW}{self.get_message('prompts.select_package', len(available_packages))}{Style.RESET_ALL}"
+                    )
+                )
                 if 1 <= choice <= len(available_packages):
                     return available_packages[choice - 1]
-                print(f"{Fore.RED}{self.get_message('errors.invalid_package_choice', len(available_packages))}{Style.RESET_ALL}")
+                print(
+                    f"{Fore.RED}{self.get_message('errors.invalid_package_choice', len(available_packages))}{Style.RESET_ALL}"
+                )
             except ValueError:
                 print(f"{Fore.RED}{self.get_message('errors.invalid_number')}{Style.RESET_ALL}")
 
@@ -268,8 +268,10 @@ class IoTJobCreator:
                     version_name = version.get("versionName", "N/A")
                     status = version.get("status", "N/A")
                     created_date = version.get("creationDate", "N/A")
-                    status_color = Fore.GREEN if status == self.get_message('results.published') else Fore.YELLOW
-                    print(f"{Fore.CYAN}• {version_name} - {status_color}{status}{Style.RESET_ALL} {self.get_message('results.created_date', created_date)}")
+                    status_color = Fore.GREEN if status == self.get_message("results.published") else Fore.YELLOW
+                    print(
+                        f"{Fore.CYAN}• {version_name} - {status_color}{status}{Style.RESET_ALL} {self.get_message('results.created_date', created_date)}"
+                    )
 
         while True:
             version = input(f"{Fore.YELLOW}{self.get_message('prompts.enter_version')}{Style.RESET_ALL}").strip()
@@ -329,8 +331,8 @@ class IoTJobCreator:
     def get_rollout_config(self):
         """Configure job rollout settings"""
         self.educational_pause(
-            self.get_message('learning.rollout_config_title'),
-            self.get_message('learning.rollout_config_description'),
+            self.get_message("learning.rollout_config_title"),
+            self.get_message("learning.rollout_config_description"),
         )
 
         print(f"\n{Fore.BLUE}{self.get_message('ui.rollout_config')}{Style.RESET_ALL}")
@@ -358,7 +360,9 @@ class IoTJobCreator:
             except ValueError:
                 base_rate = 10
             try:
-                increment_input = input(f"{Fore.YELLOW}{self.get_message('prompts.increment_factor')}{Style.RESET_ALL}") or "2.0"
+                increment_input = (
+                    input(f"{Fore.YELLOW}{self.get_message('prompts.increment_factor')}{Style.RESET_ALL}") or "2.0"
+                )
                 if increment_input.lower() in ["nan", "inf", "-inf"]:
                     increment_factor = 2.0
                 else:
@@ -366,11 +370,15 @@ class IoTJobCreator:
             except ValueError:
                 increment_factor = 2.0
             try:
-                notify_threshold = int(input(f"{Fore.YELLOW}{self.get_message('prompts.notify_threshold')}{Style.RESET_ALL}") or "10")
+                notify_threshold = int(
+                    input(f"{Fore.YELLOW}{self.get_message('prompts.notify_threshold')}{Style.RESET_ALL}") or "10"
+                )
             except ValueError:
                 notify_threshold = 10
             try:
-                success_threshold = int(input(f"{Fore.YELLOW}{self.get_message('prompts.success_threshold')}{Style.RESET_ALL}") or "5")
+                success_threshold = int(
+                    input(f"{Fore.YELLOW}{self.get_message('prompts.success_threshold')}{Style.RESET_ALL}") or "5"
+                )
             except ValueError:
                 success_threshold = 5
 
@@ -390,8 +398,8 @@ class IoTJobCreator:
     def get_job_executions_config(self):
         """Configure job execution settings (rollout rate)"""
         self.educational_pause(
-            self.get_message('learning.execution_rate_title'),
-            self.get_message('learning.execution_rate_description'),
+            self.get_message("learning.execution_rate_title"),
+            self.get_message("learning.execution_rate_description"),
         )
 
         print(f"\n{Fore.BLUE}{self.get_message('ui.execution_config')}{Style.RESET_ALL}")
@@ -411,11 +419,15 @@ class IoTJobCreator:
 
         if use_exponential in ["y", "yes"]:
             try:
-                base_rate = int(input(f"{Fore.YELLOW}{self.get_message('prompts.base_execution_rate')}{Style.RESET_ALL}") or "10")
+                base_rate = int(
+                    input(f"{Fore.YELLOW}{self.get_message('prompts.base_execution_rate')}{Style.RESET_ALL}") or "10"
+                )
             except ValueError:
                 base_rate = 10
             try:
-                increment_input = input(f"{Fore.YELLOW}{self.get_message('prompts.execution_increment')}{Style.RESET_ALL}") or "1.5"
+                increment_input = (
+                    input(f"{Fore.YELLOW}{self.get_message('prompts.execution_increment')}{Style.RESET_ALL}") or "1.5"
+                )
                 if increment_input.lower() in ["nan", "inf", "-inf"]:
                     increment_factor = 1.5
                 else:
@@ -430,8 +442,8 @@ class IoTJobCreator:
     def get_abort_config(self):
         """Configure job abort criteria"""
         self.educational_pause(
-            self.get_message('learning.abort_config_title'),
-            self.get_message('learning.abort_config_description'),
+            self.get_message("learning.abort_config_title"),
+            self.get_message("learning.abort_config_description"),
         )
 
         print(f"\n{Fore.BLUE}{self.get_message('ui.abort_config')}{Style.RESET_ALL}")
@@ -477,8 +489,8 @@ class IoTJobCreator:
     def get_timeout_config(self):
         """Configure job timeout settings"""
         self.educational_pause(
-            self.get_message('learning.timeout_config_title'),
-            self.get_message('learning.timeout_config_description'),
+            self.get_message("learning.timeout_config_title"),
+            self.get_message("learning.timeout_config_description"),
         )
 
         print(f"\n{Fore.BLUE}{self.get_message('ui.timeout_config')}{Style.RESET_ALL}")
@@ -488,7 +500,9 @@ class IoTJobCreator:
             return None
 
         try:
-            timeout_minutes = int(input(f"{Fore.YELLOW}{self.get_message('prompts.timeout_minutes')}{Style.RESET_ALL}") or "60")
+            timeout_minutes = int(
+                input(f"{Fore.YELLOW}{self.get_message('prompts.timeout_minutes')}{Style.RESET_ALL}") or "60"
+            )
         except ValueError:
             timeout_minutes = 60
         return {"inProgressTimeoutInMinutes": timeout_minutes}
@@ -496,8 +510,8 @@ class IoTJobCreator:
     def get_target_selection(self):
         """Configure target selection type"""
         self.educational_pause(
-            self.get_message('learning.target_selection_title'),
-            self.get_message('learning.target_selection_description'),
+            self.get_message("learning.target_selection_title"),
+            self.get_message("learning.target_selection_description"),
         )
 
         print(f"\n{Fore.BLUE}{self.get_message('ui.target_selection_menu')}{Style.RESET_ALL}")
@@ -628,8 +642,8 @@ class IoTJobCreator:
 
         # Step 1: Resource Discovery
         self.educational_pause(
-            self.get_message('learning.resource_discovery_title'),
-            self.get_message('learning.resource_discovery_description'),
+            self.get_message("learning.resource_discovery_title"),
+            self.get_message("learning.resource_discovery_description"),
         )
 
         # Get available resources
@@ -645,8 +659,8 @@ class IoTJobCreator:
 
         # Step 2: Job Type Selection
         self.educational_pause(
-            self.get_message('learning.job_type_title'),
-            self.get_message('learning.job_type_description'),
+            self.get_message("learning.job_type_title"),
+            self.get_message("learning.job_type_description"),
         )
 
         # Get job type
@@ -654,8 +668,8 @@ class IoTJobCreator:
 
         # Step 3: Target and Configuration
         self.educational_pause(
-            self.get_message('learning.target_config_title'),
-            self.get_message('learning.target_config_description', job_type.upper()),
+            self.get_message("learning.target_config_title"),
+            self.get_message("learning.target_config_description", job_type.upper()),
         )
 
         # Get target groups
@@ -665,11 +679,7 @@ class IoTJobCreator:
             sys.exit(1)
 
         # Ask about advanced features
-        use_advanced = (
-            input(f"{Fore.YELLOW}{self.get_message('prompts.configure_advanced')}{Style.RESET_ALL}")
-            .strip()
-            .lower()
-        )
+        use_advanced = input(f"{Fore.YELLOW}{self.get_message('prompts.configure_advanced')}{Style.RESET_ALL}").strip().lower()
 
         if use_advanced in ["y", "yes"]:
             # Configure advanced job settings with learning moments
@@ -685,7 +695,9 @@ class IoTJobCreator:
 
         # Get job description
         default_desc = f"{job_type.upper()} job for {', '.join(selected_groups)}"
-        custom_desc = input(f"{Fore.YELLOW}{self.get_message('prompts.job_description', default_desc)}{Style.RESET_ALL}").strip()
+        custom_desc = input(
+            f"{Fore.YELLOW}{self.get_message('prompts.job_description', default_desc)}{Style.RESET_ALL}"
+        ).strip()
         self.job_config["description"] = custom_desc if custom_desc else default_desc
 
         # Job-specific configuration
@@ -710,8 +722,8 @@ class IoTJobCreator:
 
         # Step 4: Job Creation
         self.educational_pause(
-            self.get_message('learning.job_creation_title'),
-            self.get_message('learning.job_creation_description', job_type.upper(), len(selected_groups)),
+            self.get_message("learning.job_creation_title"),
+            self.get_message("learning.job_creation_description", job_type.upper(), len(selected_groups)),
         )
 
         # Display final configuration
@@ -719,10 +731,14 @@ class IoTJobCreator:
         print(f"{Fore.GREEN}{self.get_message('ui.job_id_label', job_id)}{Style.RESET_ALL}")
         print(f"{Fore.GREEN}{self.get_message('ui.job_type_label', job_type.upper())}{Style.RESET_ALL}")
         print(f"{Fore.GREEN}{self.get_message('ui.thing_groups_label', ', '.join(selected_groups))}{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}{self.get_message('ui.target_selection_label', self.job_config['targetSelection'])}{Style.RESET_ALL}")
+        print(
+            f"{Fore.GREEN}{self.get_message('ui.target_selection_label', self.job_config['targetSelection'])}{Style.RESET_ALL}"
+        )
 
         if package_version_info:
-            print(f"{Fore.GREEN}{self.get_message('ui.package_label', selected_package, package_version_info['version'])}{Style.RESET_ALL}")
+            print(
+                f"{Fore.GREEN}{self.get_message('ui.package_label', selected_package, package_version_info['version'])}{Style.RESET_ALL}"
+            )
 
         print(f"\n{Fore.CYAN}{self.get_message('ui.job_document')}{Style.RESET_ALL}")
         print(json.dumps(job_document, indent=2))
@@ -752,7 +768,7 @@ if __name__ == "__main__":
     # Initialize language
     USER_LANG = get_language()
     messages = load_messages("create_job", USER_LANG)
-    
+
     job_creator = IoTJobCreator()
     try:
         job_creator.run()

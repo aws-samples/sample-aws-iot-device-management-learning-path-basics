@@ -41,9 +41,9 @@ class IoTJobsExplorer:
     def get_message(self, key, *args):
         """Get localized message with optional formatting"""
         global messages
-        
+
         # Handle nested keys like 'warnings.debug_warning'
-        keys = key.split('.')
+        keys = key.split(".")
         msg = messages
         for k in keys:
             if isinstance(msg, dict) and k in msg:
@@ -51,7 +51,7 @@ class IoTJobsExplorer:
             else:
                 msg = key  # Fallback to key if not found
                 break
-        
+
         if args and isinstance(msg, str):
             return msg.format(*args)
         return msg
@@ -80,13 +80,13 @@ class IoTJobsExplorer:
             if debug or self.debug_mode:
                 print(f"\n{self.get_message('debug.debug_operation', operation_name, resource_name)}")
                 print(f"{self.get_message('debug.api_call', func.__name__)}")
-                print(self.get_message('debug.input_params'))
+                print(self.get_message("debug.input_params"))
                 print(json.dumps(kwargs, indent=2, default=str))
 
             response = func(**kwargs)
 
             if debug or self.debug_mode:
-                print(self.get_message('debug.api_response'))
+                print(self.get_message("debug.api_response"))
                 print(json.dumps(response, indent=2, default=str))
 
             time.sleep(0.1)  # Rate limiting  # nosemgrep: arbitrary-sleep
@@ -95,21 +95,21 @@ class IoTJobsExplorer:
             error_code = e.response["Error"]["Code"]
             if error_code in ["ResourceNotFoundException", "ResourceNotFound"]:
                 if debug or self.debug_mode:
-                    print(self.get_message('debug.resource_not_found', resource_name))
+                    print(self.get_message("debug.resource_not_found", resource_name))
                 return None
             else:
-                print(self.get_message('errors.api_error', operation_name, resource_name, e.response['Error']['Message']))
+                print(self.get_message("errors.api_error", operation_name, resource_name, e.response["Error"]["Message"]))
                 if debug or self.debug_mode:
-                    print(self.get_message('debug.full_error'))
+                    print(self.get_message("debug.full_error"))
                     print(json.dumps(e.response, indent=2, default=str))
             time.sleep(0.1)  # nosemgrep: arbitrary-sleep
             return None
         except Exception as e:
-            print(self.get_message('errors.general_error', str(e)))
+            print(self.get_message("errors.general_error", str(e)))
             if debug or self.debug_mode:
                 import traceback
 
-                print(self.get_message('debug.full_traceback'))
+                print(self.get_message("debug.full_traceback"))
                 traceback.print_exc()
             time.sleep(0.1)  # nosemgrep: arbitrary-sleep
             return None
@@ -134,13 +134,13 @@ class IoTJobsExplorer:
             )
 
             if self.debug_mode:
-                print(self.get_message('status.clients_initialized'))
-                print(self.get_message('status.iot_service', self.iot_client.meta.service_model.service_name))
-                print(self.get_message('status.jobs_endpoint', self.jobs_endpoint))
+                print(self.get_message("status.clients_initialized"))
+                print(self.get_message("status.iot_service", self.iot_client.meta.service_model.service_name))
+                print(self.get_message("status.jobs_endpoint", self.jobs_endpoint))
 
             return True
         except Exception as e:
-            print(self.get_message('errors.client_init_error', str(e)))
+            print(self.get_message("errors.client_init_error", str(e)))
             return False
 
     def print_header(self):
@@ -161,11 +161,7 @@ class IoTJobsExplorer:
     def get_debug_mode(self):
         """Ask user for debug mode"""
         print(f"{Fore.RED}{self.get_message('warnings.debug_warning')}{Style.RESET_ALL}")
-        choice = (
-            input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}")
-            .strip()
-            .lower()
-        )
+        choice = input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}").strip().lower()
         self.debug_mode = choice in ["y", "yes"]
 
         if self.debug_mode:
@@ -178,11 +174,14 @@ class IoTJobsExplorer:
         print(f"{Fore.CYAN}{self.get_message('ui.explore_specific_job')}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{self.get_message('ui.explore_job_execution')}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{self.get_message('ui.list_job_executions')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.cancel_job')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.delete_job')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('ui.view_statistics')}{Style.RESET_ALL}")
 
         while True:
             try:
                 choice = int(input(f"{Fore.YELLOW}{self.get_message('prompts.exploration_choice')}{Style.RESET_ALL}"))
-                if 1 <= choice <= 4:
+                if 1 <= choice <= 7:
                     return choice
                 print(f"{Fore.RED}{self.get_message('errors.invalid_choice')}{Style.RESET_ALL}")
             except ValueError:
@@ -219,7 +218,9 @@ class IoTJobsExplorer:
                 jobs_with_status = self.get_jobs_by_status_parallel(status)
                 if jobs_with_status:
                     all_jobs.extend(jobs_with_status)
-                    print(f"{Fore.GREEN}{self.get_message('status.found_jobs', len(jobs_with_status), status)}{Style.RESET_ALL}")
+                    print(
+                        f"{Fore.GREEN}{self.get_message('status.found_jobs', len(jobs_with_status), status)}{Style.RESET_ALL}"
+                    )
                 else:
                     print(f"{Fore.YELLOW}{self.get_message('status.no_jobs_status', status)}{Style.RESET_ALL}")
         else:
@@ -231,7 +232,9 @@ class IoTJobsExplorer:
                     jobs_with_status = future.result()
                     if jobs_with_status:
                         status = jobs_with_status[0][1]
-                        print(f"{Fore.GREEN}{self.get_message('status.found_jobs', len(jobs_with_status), status)}{Style.RESET_ALL}")
+                        print(
+                            f"{Fore.GREEN}{self.get_message('status.found_jobs', len(jobs_with_status), status)}{Style.RESET_ALL}"
+                        )
                         all_jobs.extend(jobs_with_status)
 
         if not all_jobs:
@@ -301,7 +304,12 @@ class IoTJobsExplorer:
             if choice == "1":
                 try:
                     job_index = (
-                        int(input(f"{Fore.YELLOW}{self.get_message('prompts.select_job', len(available_jobs))}{Style.RESET_ALL}")) - 1
+                        int(
+                            input(
+                                f"{Fore.YELLOW}{self.get_message('prompts.select_job', len(available_jobs))}{Style.RESET_ALL}"
+                            )
+                        )
+                        - 1
                     )
                     if 0 <= job_index < len(available_jobs):
                         job_id = available_jobs[job_index]
@@ -334,12 +342,24 @@ class IoTJobsExplorer:
         job = job_response.get("job", {})
 
         print(f"\n{Fore.GREEN}{self.get_message('ui.job_details')}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.job_id_label', job.get('jobId', self.get_message('results.na')))}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.status_label', job.get('status', self.get_message('results.na')))}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.description_label', job.get('description', self.get_message('results.na')))}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.target_selection_label', job.get('targetSelection', self.get_message('results.na')))}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.created_label', job.get('createdAt', self.get_message('results.na')))}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.completed_label', job.get('completedAt', self.get_message('results.na')))}{Style.RESET_ALL}")
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.job_id_label', job.get('jobId', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.status_label', job.get('status', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.description_label', job.get('description', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.target_selection_label', job.get('targetSelection', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.created_label', job.get('createdAt', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.completed_label', job.get('completedAt', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
 
         # Show targets
         targets = job.get("targets", [])
@@ -373,8 +393,12 @@ class IoTJobsExplorer:
         presigned_config = job.get("presignedUrlConfig", {})
         if presigned_config:
             print(f"\n{Fore.GREEN}{self.get_message('ui.presigned_url_config')}{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{self.get_message('ui.role_arn', presigned_config.get('roleArn', self.get_message('results.na')))}{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{self.get_message('ui.expires_in', presigned_config.get('expiresInSec', self.get_message('results.na')))}{Style.RESET_ALL}")
+            print(
+                f"{Fore.CYAN}{self.get_message('ui.role_arn', presigned_config.get('roleArn', self.get_message('results.na')))}{Style.RESET_ALL}"
+            )
+            print(
+                f"{Fore.CYAN}{self.get_message('ui.expires_in', presigned_config.get('expiresInSec', self.get_message('results.na')))}{Style.RESET_ALL}"
+            )
 
         print(f"\n{Fore.CYAN}{self.get_message('learning.job_document_tip')}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{self.get_message('learning.presigned_url_tip')}{Style.RESET_ALL}")
@@ -398,7 +422,12 @@ class IoTJobsExplorer:
             if choice == "1":
                 try:
                     job_index = (
-                        int(input(f"{Fore.YELLOW}{self.get_message('prompts.select_job', len(available_jobs))}{Style.RESET_ALL}")) - 1
+                        int(
+                            input(
+                                f"{Fore.YELLOW}{self.get_message('prompts.select_job', len(available_jobs))}{Style.RESET_ALL}"
+                            )
+                        )
+                        - 1
                     )
                     if 0 <= job_index < len(available_jobs):
                         job_id = available_jobs[job_index]
@@ -443,14 +472,30 @@ class IoTJobsExplorer:
         execution = execution_response.get("execution", {})
 
         print(f"\n{Fore.GREEN}{self.get_message('ui.job_execution_details')}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.job_id_label', execution.get('jobId', self.get_message('results.na')))}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.thing_name_label', execution.get('thingName', self.get_message('results.na')))}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.status_label', execution.get('status', self.get_message('results.na')))}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.execution_number', execution.get('executionNumber', self.get_message('results.na')))}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.queued_at', execution.get('queuedAt', self.get_message('results.na')))}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.started_at', execution.get('startedAt', self.get_message('results.na')))}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.last_updated', execution.get('lastUpdatedAt', self.get_message('results.na')))}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.version_number', execution.get('versionNumber', self.get_message('results.na')))}{Style.RESET_ALL}")
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.job_id_label', execution.get('jobId', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.thing_name_label', execution.get('thingName', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.status_label', execution.get('status', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.execution_number', execution.get('executionNumber', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.queued_at', execution.get('queuedAt', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.started_at', execution.get('startedAt', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.last_updated', execution.get('lastUpdatedAt', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.CYAN}{self.get_message('ui.version_number', execution.get('versionNumber', self.get_message('results.na')))}{Style.RESET_ALL}"
+        )
 
         # Show status details if available
         status_details = execution.get("statusDetails")
@@ -466,13 +511,11 @@ class IoTJobsExplorer:
         job_document = execution.get("jobDocument")
         if not job_document:
             # If job document not in execution, try to get it from job details
-            job_response = self.safe_api_call(
-                self.iot_client.describe_job, "Job Detail", job_id, debug=False, jobId=job_id
-            )
+            job_response = self.safe_api_call(self.iot_client.describe_job, "Job Detail", job_id, debug=False, jobId=job_id)
             if job_response:
                 job = job_response.get("job", {})
                 job_document = job.get("jobDocument")
-        
+
         if job_document:
             print(f"\n{Fore.GREEN}{self.get_message('ui.job_document_execution')}{Style.RESET_ALL}")
             self.format_job_document(job_document)
@@ -520,7 +563,12 @@ class IoTJobsExplorer:
             if choice == "1":
                 try:
                     job_index = (
-                        int(input(f"{Fore.YELLOW}{self.get_message('prompts.select_job', len(available_jobs))}{Style.RESET_ALL}")) - 1
+                        int(
+                            input(
+                                f"{Fore.YELLOW}{self.get_message('prompts.select_job', len(available_jobs))}{Style.RESET_ALL}"
+                            )
+                        )
+                        - 1
                     )
                     if 0 <= job_index < len(available_jobs):
                         job_id = available_jobs[job_index]
@@ -552,7 +600,9 @@ class IoTJobsExplorer:
                 executions_with_status = self.get_job_executions_by_status_parallel(job_id, status)
                 if executions_with_status:
                     all_executions.extend(executions_with_status)
-                    print(f"{Fore.GREEN}{self.get_message('status.found_executions', len(executions_with_status), status)}{Style.RESET_ALL}")
+                    print(
+                        f"{Fore.GREEN}{self.get_message('status.found_executions', len(executions_with_status), status)}{Style.RESET_ALL}"
+                    )
                 else:
                     print(f"{Fore.YELLOW}{self.get_message('status.no_executions_status', status)}{Style.RESET_ALL}")
         else:
@@ -564,7 +614,9 @@ class IoTJobsExplorer:
                     executions_with_status = future.result()
                     if executions_with_status:
                         status = executions_with_status[0][1]
-                        print(f"{Fore.GREEN}{self.get_message('status.found_executions', len(executions_with_status), status)}{Style.RESET_ALL}")
+                        print(
+                            f"{Fore.GREEN}{self.get_message('status.found_executions', len(executions_with_status), status)}{Style.RESET_ALL}"
+                        )
                         all_executions.extend(executions_with_status)
 
         if not all_executions:
@@ -621,6 +673,454 @@ class IoTJobsExplorer:
         print(f"\n{Fore.CYAN}{self.get_message('learning.execution_progress_tip')}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{self.get_message('learning.succeeded_tip')}{Style.RESET_ALL}")
 
+    def cancel_job(self):
+        """Cancel an active job"""
+
+        # Step 1: Get active jobs (IN_PROGRESS, SCHEDULED)
+        print(f"{Fore.BLUE}{self.get_message('status.scanning_active_jobs')}{Style.RESET_ALL}")
+
+        active_statuses = ["IN_PROGRESS", "SCHEDULED"]
+        active_jobs = []
+
+        for status in active_statuses:
+            response = self.safe_api_call(
+                self.iot_client.list_jobs, "Active Jobs List", f"{status} jobs", debug=False, status=status, maxResults=250
+            )
+            if response:
+                jobs = response.get("jobs", [])
+                active_jobs.extend([(job.get("jobId"), status) for job in jobs])
+
+        if not active_jobs:
+            print(f"{Fore.YELLOW}{self.get_message('results.no_active_jobs')}{Style.RESET_ALL}")
+            return
+
+        # Step 2: Display active jobs
+        print(f"\n{Fore.YELLOW}{self.get_message('results.active_jobs_header')}{Style.RESET_ALL}")
+        for i, (job_id, status) in enumerate(active_jobs, 1):
+            print(f"{Fore.CYAN}{i}. {job_id} ({status}){Style.RESET_ALL}")
+
+        # Step 3: Select job to cancel
+        while True:
+            try:
+                choice = int(
+                    input(
+                        f"{Fore.YELLOW}{self.get_message('prompts.select_job_to_cancel', len(active_jobs))}{Style.RESET_ALL}"
+                    )
+                )
+                if 1 <= choice <= len(active_jobs):
+                    selected_job_id, job_status = active_jobs[choice - 1]
+                    break
+                print(f"{Fore.RED}{self.get_message('errors.invalid_choice')}{Style.RESET_ALL}")
+            except ValueError:
+                print(f"{Fore.RED}{self.get_message('errors.invalid_number')}{Style.RESET_ALL}")
+
+        # Step 4: Get job details and execution count
+        job_response = self.safe_api_call(
+            self.iot_client.describe_job, "Job Detail", selected_job_id, debug=self.debug_mode, jobId=selected_job_id
+        )
+
+        if job_response:
+            job = job_response.get("job", {})
+            targets = job.get("targets", [])
+
+            print(f"\n{Fore.CYAN}{self.get_message('results.job_details_header')}{Style.RESET_ALL}")
+            print(f"{Fore.WHITE}{self.get_message('statistics.job_id', selected_job_id)}{Style.RESET_ALL}")
+            print(f"{Fore.WHITE}{self.get_message('statistics.status', job_status)}{Style.RESET_ALL}")
+            print(f"{Fore.WHITE}{self.get_message('statistics.targets', len(targets))}{Style.RESET_ALL}")
+
+        # Step 5: Get execution statistics
+        print(f"\n{Fore.BLUE}{self.get_message('status.checking_execution_status_cancel')}{Style.RESET_ALL}")
+
+        execution_counts = {}
+        for status in ["QUEUED", "IN_PROGRESS", "SUCCEEDED", "FAILED"]:
+            response = self.safe_api_call(
+                self.iot_client.list_job_executions_for_job,
+                "Job Executions Count",
+                f"{selected_job_id} {status}",
+                debug=False,
+                jobId=selected_job_id,
+                status=status,
+                maxResults=1,
+            )
+            if response:
+                # Get total count from pagination
+                execution_counts[status] = len(response.get("executionSummaries", []))
+
+        print(f"\n{Fore.YELLOW}{self.get_message('results.impact_analysis_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.impact_queued', execution_counts.get('QUEUED', 0))}{Style.RESET_ALL}")
+        print(
+            f"{Fore.CYAN}{self.get_message('cancel.impact_in_progress', execution_counts.get('IN_PROGRESS', 0))}{Style.RESET_ALL}"
+        )
+        print(
+            f"{Fore.GREEN}{self.get_message('cancel.impact_succeeded', execution_counts.get('SUCCEEDED', 0))}{Style.RESET_ALL}"
+        )
+        print(f"{Fore.RED}{self.get_message('cancel.impact_failed', execution_counts.get('FAILED', 0))}{Style.RESET_ALL}")
+
+        # Step 6: Educational pause
+        print(f"\n{Fore.YELLOW}{self.get_message('cancel.learning_moment_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.when_cancel_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.when_cancel_1')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.when_cancel_2')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.when_cancel_3')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.when_cancel_4')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.when_cancel_5')}{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}{self.get_message('cancel.why_cancel_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.why_cancel_1')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.why_cancel_2')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.why_cancel_3')}{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}{self.get_message('cancel.scenarios_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.scenario_1')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.scenario_2')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('cancel.scenario_3')}{Style.RESET_ALL}\n")
+
+        # Step 7: Confirm cancellation
+        print(f"{Fore.RED}{self.get_message('cancel.warning')}{Style.RESET_ALL}")
+        confirm = input(f"{Fore.YELLOW}{self.get_message('prompts.confirm_cancel')}{Style.RESET_ALL}").strip()
+
+        if confirm != "CANCEL":
+            print(f"{Fore.YELLOW}{self.get_message('results.cancellation_aborted')}{Style.RESET_ALL}")
+            return
+
+        # Step 8: Optional cancellation comment
+        comment = input(f"{Fore.YELLOW}{self.get_message('prompts.cancel_reason')}{Style.RESET_ALL}").strip()
+
+        # Step 9: Cancel the job
+        print(f"\n{Fore.BLUE}{self.get_message('status.canceling_job')}{Style.RESET_ALL}")
+
+        cancel_params = {"jobId": selected_job_id}
+        if comment:
+            cancel_params["comment"] = comment
+
+        cancel_response = self.safe_api_call(
+            self.iot_client.cancel_job, "Job Cancel", selected_job_id, debug=self.debug_mode, **cancel_params
+        )
+
+        if cancel_response:
+            print(f"{Fore.GREEN}{self.get_message('status.job_canceled_success')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('learning.cancel_tip_1')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('learning.cancel_tip_2')}{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.RED}{self.get_message('errors.cancel_failed')}{Style.RESET_ALL}")
+
+    def delete_job(self):
+        """Delete a completed or canceled job"""
+
+        # Step 1: Get deletable jobs (COMPLETED, CANCELED)
+        print(f"{Fore.BLUE}{self.get_message('status.scanning_deletable_jobs')}{Style.RESET_ALL}")
+
+        deletable_statuses = ["COMPLETED", "CANCELED"]
+        deletable_jobs = []
+
+        for status in deletable_statuses:
+            response = self.safe_api_call(
+                self.iot_client.list_jobs, "Deletable Jobs List", f"{status} jobs", debug=False, status=status, maxResults=250
+            )
+            if response:
+                jobs = response.get("jobs", [])
+                deletable_jobs.extend([(job.get("jobId"), status, job.get("completedAt")) for job in jobs])
+
+        if not deletable_jobs:
+            print(f"{Fore.YELLOW}{self.get_message('results.no_deletable_jobs')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('learning.delete_tip_cancel_first')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('learning.delete_tip_use_cancel')}{Style.RESET_ALL}")
+            return
+
+        # Step 2: Display deletable jobs
+        print(f"\n{Fore.YELLOW}{self.get_message('results.deletable_jobs_header')}{Style.RESET_ALL}")
+        for i, (job_id, status, completed_at) in enumerate(deletable_jobs, 1):
+            completed_str = str(completed_at)[:19] if completed_at else "N/A"
+            status_color = Fore.GREEN if status == "COMPLETED" else Fore.YELLOW
+            print(f"{Fore.CYAN}{i}. {job_id} - {status_color}{status}{Style.RESET_ALL} (Completed: {completed_str})")
+
+        # Step 3: Select job to delete
+        while True:
+            try:
+                choice = int(
+                    input(
+                        f"{Fore.YELLOW}{self.get_message('prompts.select_job_to_delete', len(deletable_jobs))}{Style.RESET_ALL}"
+                    )
+                )
+                if 1 <= choice <= len(deletable_jobs):
+                    selected_job_id, job_status, _ = deletable_jobs[choice - 1]
+                    break
+                print(f"{Fore.RED}{self.get_message('errors.invalid_choice')}{Style.RESET_ALL}")
+            except ValueError:
+                print(f"{Fore.RED}{self.get_message('errors.invalid_number')}{Style.RESET_ALL}")
+
+        # Step 4: Get job execution count
+        print(f"\n{Fore.BLUE}{self.get_message('status.checking_execution_history')}{Style.RESET_ALL}")
+
+        total_executions = 0
+        for status in ["QUEUED", "IN_PROGRESS", "SUCCEEDED", "FAILED", "REJECTED", "REMOVED", "CANCELED"]:
+            response = self.safe_api_call(
+                self.iot_client.list_job_executions_for_job,
+                "Job Executions Count",
+                f"{selected_job_id} {status}",
+                debug=False,
+                jobId=selected_job_id,
+                status=status,
+                maxResults=250,
+            )
+            if response:
+                total_executions += len(response.get("executionSummaries", []))
+
+        # Step 5: Educational pause
+        print(f"\n{Fore.YELLOW}{self.get_message('delete.learning_moment_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.deletion_removes_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.deletion_removes_1')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.deletion_removes_2')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.deletion_removes_3')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.deletion_removes_4')}{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}{self.get_message('delete.when_delete_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.when_delete_1')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.when_delete_2')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.when_delete_3')}{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}{self.get_message('delete.why_force_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.why_force_1')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.why_force_2')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.why_force_3')}{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}{self.get_message('delete.scenarios_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.scenario_1')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.scenario_2')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('delete.scenario_3')}{Style.RESET_ALL}\n")
+
+        # Step 6: Determine if force is needed
+        force_required = total_executions > 0
+
+        print(f"{Fore.CYAN}{self.get_message('results.job_details_header')}{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}{self.get_message('statistics.job_id', selected_job_id)}{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}{self.get_message('statistics.status', job_status)}{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}{self.get_message('statistics.total_executions', total_executions)}{Style.RESET_ALL}")
+
+        if force_required:
+            print(f"{Fore.YELLOW}{self.get_message('delete.force_required')}{Style.RESET_ALL}")
+
+        # Step 7: Confirm deletion
+        print(f"\n{Fore.RED}{self.get_message('delete.warning')}{Style.RESET_ALL}")
+        confirm = input(f"{Fore.YELLOW}{self.get_message('prompts.confirm_delete')}{Style.RESET_ALL}").strip()
+
+        if confirm != "DELETE":
+            print(f"{Fore.YELLOW}{self.get_message('results.deletion_aborted')}{Style.RESET_ALL}")
+            return
+
+        # Step 8: Delete the job
+        print(f"\n{Fore.BLUE}{self.get_message('status.deleting_job')}{Style.RESET_ALL}")
+
+        delete_params = {"jobId": selected_job_id}
+        if force_required:
+            delete_params["force"] = True
+            print(f"{Fore.YELLOW}{self.get_message('status.using_force_delete')}{Style.RESET_ALL}")
+
+        delete_response = self.safe_api_call(
+            self.iot_client.delete_job, "Job Delete", selected_job_id, debug=self.debug_mode, **delete_params
+        )
+
+        if delete_response:
+            print(f"{Fore.GREEN}{self.get_message('status.job_deleted_success')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('learning.delete_tip')}{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.RED}{self.get_message('errors.delete_failed')}{Style.RESET_ALL}")
+            if not force_required:
+                print(f"{Fore.YELLOW}{self.get_message('learning.delete_tip_force')}{Style.RESET_ALL}")
+
+    def view_job_statistics(self):
+        """View comprehensive statistics for a job"""
+
+        # Step 1: Get available jobs
+        available_jobs = self.get_available_job_ids()
+
+        if not available_jobs:
+            print(f"{Fore.YELLOW}{self.get_message('results.no_jobs_found')}{Style.RESET_ALL}")
+            return
+
+        # Step 2: Display and select job
+        print(f"\n{Fore.YELLOW}{self.get_message('ui.available_job_ids')}{Style.RESET_ALL}")
+        for i, job_id in enumerate(available_jobs, 1):
+            print(f"{Fore.CYAN}{i}. {job_id}{Style.RESET_ALL}")
+
+        while True:
+            try:
+                choice = int(
+                    input(
+                        f"{Fore.YELLOW}{self.get_message('prompts.select_job_for_stats', len(available_jobs))}{Style.RESET_ALL}"
+                    )
+                )
+                if 1 <= choice <= len(available_jobs):
+                    selected_job_id = available_jobs[choice - 1]
+                    break
+                print(f"{Fore.RED}{self.get_message('errors.invalid_choice')}{Style.RESET_ALL}")
+            except ValueError:
+                print(f"{Fore.RED}{self.get_message('errors.invalid_number')}{Style.RESET_ALL}")
+
+        # Step 3: Get job details
+        print(f"\n{Fore.BLUE}{self.get_message('status.gathering_statistics', selected_job_id)}{Style.RESET_ALL}")
+
+        job_response = self.safe_api_call(
+            self.iot_client.describe_job, "Job Detail", selected_job_id, debug=self.debug_mode, jobId=selected_job_id
+        )
+
+        if not job_response:
+            print(f"{Fore.RED}{self.get_message('errors.stats_failed')}{Style.RESET_ALL}")
+            return
+
+        job = job_response.get("job", {})
+
+        # Step 4: Get execution statistics by status
+        print(f"{Fore.BLUE}{self.get_message('status.analyzing_executions')}{Style.RESET_ALL}")
+
+        execution_stats = {}
+        statuses = ["QUEUED", "IN_PROGRESS", "SUCCEEDED", "FAILED", "TIMED_OUT", "REJECTED", "REMOVED", "CANCELED"]
+
+        for status in statuses:
+            response = self.safe_api_call(
+                self.iot_client.list_job_executions_for_job,
+                "Job Executions",
+                f"{selected_job_id} {status}",
+                debug=False,
+                jobId=selected_job_id,
+                status=status,
+                maxResults=250,
+            )
+            if response:
+                executions = response.get("executionSummaries", [])
+                execution_stats[status] = len(executions)
+            else:
+                execution_stats[status] = 0
+
+        # Step 5: Calculate totals and percentages
+        total_executions = sum(execution_stats.values())
+        successful = execution_stats.get("SUCCEEDED", 0)
+        failed = execution_stats.get("FAILED", 0) + execution_stats.get("TIMED_OUT", 0) + execution_stats.get("REJECTED", 0)
+        in_progress = execution_stats.get("IN_PROGRESS", 0) + execution_stats.get("QUEUED", 0)
+        canceled = execution_stats.get("CANCELED", 0)
+        removed = execution_stats.get("REMOVED", 0)
+
+        success_rate = (successful / total_executions * 100) if total_executions > 0 else 0
+        failure_rate = (failed / total_executions * 100) if total_executions > 0 else 0
+
+        # Calculate completed executions (excluding in-progress, canceled, removed)
+        completed_executions = successful + failed
+
+        # Step 6: Display comprehensive statistics
+        print(f"\n{Fore.GREEN}{self.get_message('statistics.separator')}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('statistics.header', selected_job_id)}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('statistics.separator')}{Style.RESET_ALL}")
+
+        # Job Overview
+        print(f"\n{Fore.CYAN}{self.get_message('statistics.overview_header')}{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}{self.get_message('statistics.status', job.get('status', 'N/A'))}{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}{self.get_message('statistics.created', job.get('createdAt', 'N/A'))}{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}{self.get_message('statistics.completed', job.get('completedAt', 'N/A'))}{Style.RESET_ALL}")
+        print(
+            f"{Fore.WHITE}{self.get_message('statistics.target_selection', job.get('targetSelection', 'N/A'))}{Style.RESET_ALL}"
+        )
+
+        targets = job.get("targets", [])
+        print(f"{Fore.WHITE}{self.get_message('statistics.targets', len(targets))}{Style.RESET_ALL}")
+
+        # Execution Statistics
+        print(f"\n{Fore.CYAN}{self.get_message('statistics.execution_stats_header')}{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}{self.get_message('statistics.total_executions', total_executions)}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('statistics.succeeded', successful, f'{success_rate:.1f}')}{Style.RESET_ALL}")
+        print(f"{Fore.RED}{self.get_message('statistics.failed', failed, f'{failure_rate:.1f}')}{Style.RESET_ALL}")
+        print(f"{Fore.BLUE}{self.get_message('statistics.in_progress', in_progress)}{Style.RESET_ALL}")
+
+        # Detailed Breakdown
+        print(f"\n{Fore.CYAN}{self.get_message('statistics.detailed_breakdown_header')}{Style.RESET_ALL}")
+        for status, count in execution_stats.items():
+            if count > 0:
+                percentage = (count / total_executions * 100) if total_executions > 0 else 0
+
+                # Color code by status
+                if status == "SUCCEEDED":
+                    color = Fore.GREEN
+                elif status in ["FAILED", "TIMED_OUT", "REJECTED"]:
+                    color = Fore.RED
+                elif status in ["IN_PROGRESS", "QUEUED"]:
+                    color = Fore.BLUE
+                else:
+                    color = Fore.YELLOW
+
+                print(f"{color}  {status}: {count} ({percentage:.1f}%){Style.RESET_ALL}")
+
+        # Health Assessment
+        print(f"\n{Fore.CYAN}{self.get_message('statistics.health_assessment_header')}{Style.RESET_ALL}")
+        if success_rate >= 95:
+            print(f"{Fore.GREEN}{self.get_message('statistics.health_excellent')}{Style.RESET_ALL}")
+        elif success_rate >= 80:
+            print(f"{Fore.YELLOW}{self.get_message('statistics.health_good')}{Style.RESET_ALL}")
+        elif success_rate >= 50:
+            print(f"{Fore.RED}{self.get_message('statistics.health_poor')}{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.RED}{self.get_message('statistics.health_critical')}{Style.RESET_ALL}")
+
+        print(f"\n{Fore.GREEN}{self.get_message('statistics.separator')}{Style.RESET_ALL}")
+
+        # Learning Moment
+        print(f"\n{Fore.YELLOW}{self.get_message('statistics.learning_moment_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.understanding_states_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.state_queued')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.state_in_progress')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.state_succeeded')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.state_failed')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.state_timed_out')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.state_rejected')}{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}{self.get_message('statistics.success_rate_header')}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('statistics.success_95_100')}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}{self.get_message('statistics.success_80_94')}{Style.RESET_ALL}")
+        print(f"{Fore.RED}{self.get_message('statistics.success_50_79')}{Style.RESET_ALL}")
+        print(f"{Fore.RED}{self.get_message('statistics.success_below_50')}{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}{self.get_message('statistics.failure_patterns_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.pattern_timed_out')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.pattern_rejected')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.pattern_failed')}{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}{self.get_message('statistics.best_practices_header')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.practice_1')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.practice_2')}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self.get_message('statistics.practice_3')}{Style.RESET_ALL}")
+
+        # Recommendations based on job state
+        print(f"\n{Fore.YELLOW}{self.get_message('statistics.recommendations_header')}{Style.RESET_ALL}")
+
+        if total_executions == 0:
+            print(f"{Fore.YELLOW}{self.get_message('statistics.rec_no_executions')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_check_devices')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_verify_groups')}{Style.RESET_ALL}")
+        elif canceled > 0 and completed_executions == 0:
+            print(f"{Fore.YELLOW}{self.get_message('statistics.rec_canceled_early')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_review_cancel')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_view_details')}{Style.RESET_ALL}")
+        elif removed > 0 and completed_executions == 0:
+            print(f"{Fore.YELLOW}{self.get_message('statistics.rec_devices_removed')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_verify_exist')}{Style.RESET_ALL}")
+        elif in_progress > 0 and completed_executions == 0:
+            print(f"{Fore.BLUE}{self.get_message('statistics.rec_in_progress')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_wait')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_monitor')}{Style.RESET_ALL}")
+        elif failure_rate > 20:
+            print(f"{Fore.RED}{self.get_message('statistics.rec_high_failure')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_investigate')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_check_logs')}{Style.RESET_ALL}")
+            if in_progress > 0:
+                print(f"{Fore.CYAN}{self.get_message('statistics.rec_consider_cancel')}{Style.RESET_ALL}")
+        elif failure_rate > 10:
+            print(f"{Fore.YELLOW}{self.get_message('statistics.rec_moderate_failure')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_investigate')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_check_logs')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_monitor_closely')}{Style.RESET_ALL}")
+        elif success_rate >= 95:
+            print(f"{Fore.GREEN}{self.get_message('statistics.rec_excellent')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_continue_monitor')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_document')}{Style.RESET_ALL}")
+        elif success_rate >= 80:
+            print(f"{Fore.GREEN}{self.get_message('statistics.rec_good')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_review_failed')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_acceptable')}{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.YELLOW}{self.get_message('statistics.rec_mixed')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_understand_patterns')}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{self.get_message('statistics.rec_investigate')}{Style.RESET_ALL}")
+
     def run(self):
         """Main execution flow with menu loop"""
         self.print_header()
@@ -642,12 +1142,20 @@ class IoTJobsExplorer:
                 self.explore_job_execution()
             elif choice == 4:
                 self.list_job_executions()
+            elif choice == 5:
+                self.cancel_job()
+            elif choice == 6:
+                self.delete_job()
+            elif choice == 7:
+                self.view_job_statistics()
 
             print(f"\n{Fore.GREEN}{self.get_message('status.exploration_completed')}{Style.RESET_ALL}")
             print(f"{Fore.CYAN}{self.get_message('status.exploration_info')}{Style.RESET_ALL}")
 
             # Ask if user wants to continue
-            continue_choice = input(f"\n{Fore.YELLOW}{self.get_message('prompts.continue_exploration')}{Style.RESET_ALL}").strip().lower()
+            continue_choice = (
+                input(f"\n{Fore.YELLOW}{self.get_message('prompts.continue_exploration')}{Style.RESET_ALL}").strip().lower()
+            )
             if continue_choice in ["n", "no"]:
                 print(f"\n{Fore.GREEN}{self.get_message('ui.goodbye')}{Style.RESET_ALL}")
                 break
@@ -659,7 +1167,7 @@ if __name__ == "__main__":
     # Initialize language
     USER_LANG = get_language()
     messages = load_messages("explore_jobs", USER_LANG)
-    
+
     explorer = IoTJobsExplorer()
     try:
         explorer.run()

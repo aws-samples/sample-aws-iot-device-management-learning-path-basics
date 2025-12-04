@@ -31,6 +31,7 @@
 - **パッケージ管理**: 自動化されたシャドウアップデートによる複数のファームウェアバージョンの処理
 - **ジョブ実行**: ファームウェアアップデート中のリアルなデバイス動作のシミュレーション
 - **バージョン管理**: デバイスを以前のファームウェアバージョンにロールバック
+- **リモートコマンド**: AWS IoT Commandsを使用したデバイスへのリアルタイムコマンド送信
 - **リソースクリーンアップ**: 不要なコストを避けるためのAWSリソースの適切な管理
 
 ## 📋 前提条件
@@ -49,11 +50,12 @@
 | **AWS IoT Core** | 約1,000メッセージ、100-10,000デバイス | $0.08 - $0.80 |
 | **AWS IoT Device Shadow** | 約200-2,000シャドウ操作 | $0.10 - $1.00 |
 | **AWS IoT Jobs** | 約10-100ジョブ実行 | $0.01 - $0.10 |
+| **AWS IoT Commands** | 約10-50コマンド実行 | $0.01 - $0.05 |
 | **Amazon S3** | ファームウェアのストレージ + リクエスト | $0.05 - $0.25 |
 | **AWS IoT Fleet Indexing** | デバイスクエリとインデックス作成 | $0.02 - $0.20 |
 | **AWS IoT Device Management Software Package Catalog** | パッケージ操作 | $0.01 - $0.05 |
 | **AWS Identity and Access Management（IAM）** | ロール/ポリシー管理 | $0.00 |
-| **合計推定** | **完全なデモセッション** | **$0.27 - $2.40** |
+| **合計推定** | **完全なデモセッション** | **$0.28 - $2.45** |
 
 **コスト要因：**
 - デバイス数（100-10,000設定可能）
@@ -89,6 +91,7 @@ python scripts/manage_packages.py         # ファームウェアパッケージ
 python scripts/create_job.py              # ファームウェアアップデートのデプロイ
 python scripts/simulate_job_execution.py  # デバイスアップデートのシミュレーション
 python scripts/explore_jobs.py            # ジョブ進捗の監視
+python scripts/manage_commands.py         # デバイスへのリアルタイムコマンド送信
 python scripts/cleanup_script.py          # リソースのクリーンアップ
 ```
 
@@ -101,7 +104,8 @@ python scripts/cleanup_script.py          # リソースのクリーンアップ
 | **manage_packages.py** | 包括的なパッケージ管理 | パッケージ/バージョンの作成、Amazon S3統合、個別復元ステータス付きデバイス追跡 | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptsmanage_packagespy) |
 | **create_job.py** | OTAアップデートジョブの作成 | マルチグループターゲティング、事前署名URL | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptscreate_jobpy) |
 | **simulate_job_execution.py** | デバイスアップデートのシミュレーション | 実際のAmazon S3ダウンロード、可視化されたプラン準備、デバイス別進捗追跡 | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptssimulate_job_executionpy) |
-| **explore_jobs.py** | ジョブ進捗の監視 | インタラクティブなジョブ探索とトラブルシューティング | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
+| **explore_jobs.py** | ジョブの監視と管理 | インタラクティブなジョブ探索、キャンセル、削除、分析 | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
+| **manage_commands.py** | デバイスへのリアルタイムコマンド送信 | テンプレート管理、コマンド実行、ステータス監視、履歴追跡 | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptsmanage_commandspy) |
 | **cleanup_script.py** | AWSリソースの削除 | 選択的クリーンアップ、コスト管理 | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptscleanup_scriptpy) |
 
 > 📖 **詳細ドキュメント**: 包括的なスクリプト情報については[docs/DETAILED_SCRIPTS.md](docs/DETAILED_SCRIPTS.md)を参照してください。
@@ -184,7 +188,8 @@ python scripts/manage_packages.py         # 3. ファームウェアパッケー
 python scripts/create_job.py              # 4. ファームウェアアップデートのデプロイ
 python scripts/simulate_job_execution.py  # 5. デバイスアップデートのシミュレーション
 python scripts/explore_jobs.py            # 6. ジョブ進捗の監視
-python scripts/cleanup_script.py          # 7. リソースのクリーンアップ
+python scripts/manage_commands.py         # 7. デバイスへのリアルタイムコマンド送信
+python scripts/cleanup_script.py          # 8. リソースのクリーンアップ
 ```
 
 **個別操作**：
@@ -223,6 +228,7 @@ python scripts/cleanup_script.py
 - すべてのAWS IoTデバイスとグループ
 - Amazon S3バケットとファームウェアファイル
 - AWS IoTソフトウェアパッケージ
+- AWS IoTコマンドテンプレート
 - IAMロールとポリシー
 - Fleet Indexing設定
 

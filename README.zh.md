@@ -31,6 +31,7 @@
 - **包管理**：处理多个固件版本并自动更新影子
 - **作业执行**：在固件更新期间模拟真实的设备行为
 - **版本控制**：将设备回滚到以前的固件版本
+- **远程命令**：使用 AWS IoT Commands 向设备发送实时命令
 - **资源清理**：正确管理 AWS 资源以避免不必要的成本
 
 ## 📋 先决条件
@@ -49,11 +50,12 @@
 | **AWS IoT Core** | ~1,000 条消息，100-10,000 台设备 | $0.08 - $0.80 |
 | **AWS IoT Device Shadow** | ~200-2,000 次影子操作 | $0.10 - $1.00 |
 | **AWS IoT Jobs** | ~10-100 次作业执行 | $0.01 - $0.10 |
+| **AWS IoT Commands** | ~10-50 次命令执行 | $0.01 - $0.05 |
 | **Amazon S3** | 固件存储 + 请求 | $0.05 - $0.25 |
 | **AWS IoT Fleet Indexing** | 设备查询和索引 | $0.02 - $0.20 |
 | **AWS IoT Device Management Software Package Catalog** | 包操作 | $0.01 - $0.05 |
 | **AWS Identity and Access Management (IAM)** | 角色/策略管理 | $0.00 |
-| **总预估** | **完整演示会话** | **$0.27 - $2.40** |
+| **总预估** | **完整演示会话** | **$0.28 - $2.45** |
 
 **成本因素：**
 - 设备数量（可配置 100-10,000）
@@ -89,6 +91,7 @@ python scripts/manage_packages.py         # 管理固件包
 python scripts/create_job.py              # 部署固件更新
 python scripts/simulate_job_execution.py  # 模拟设备更新
 python scripts/explore_jobs.py            # 监控作业进度
+python scripts/manage_commands.py         # 向设备发送实时命令
 python scripts/cleanup_script.py          # 清理资源
 ```
 
@@ -101,7 +104,8 @@ python scripts/cleanup_script.py          # 清理资源
 | **manage_packages.py** | 综合包管理 | 创建包/版本、Amazon S3 集成、具有个别回滚状态的设备跟踪 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptsmanage_packagespy) |
 | **create_job.py** | 创建 OTA 更新作业 | 多组目标、预签名 URL | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptscreate_jobpy) |
 | **simulate_job_execution.py** | 模拟设备更新 | 真实 Amazon S3 下载、可见计划准备、每设备进度跟踪 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptssimulate_job_executionpy) |
-| **explore_jobs.py** | 监控作业进度 | 交互式作业探索和故障排除 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
+| **explore_jobs.py** | 监控和管理作业 | 交互式作业探索、取消、删除和分析 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
+| **manage_commands.py** | 向设备发送实时命令 | 模板管理、命令执行、状态监控、历史跟踪 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptsmanage_commandspy) |
 | **cleanup_script.py** | 删除 AWS 资源 | 选择性清理、成本管理 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptscleanup_scriptpy) |
 
 > 📖 **详细文档**：有关全面的脚本信息，请参阅 [docs/DETAILED_SCRIPTS.md](docs/DETAILED_SCRIPTS.md)。
@@ -184,7 +188,8 @@ python scripts/manage_packages.py         # 3. 管理固件包
 python scripts/create_job.py              # 4. 部署固件更新
 python scripts/simulate_job_execution.py  # 5. 模拟设备更新
 python scripts/explore_jobs.py            # 6. 监控作业进度
-python scripts/cleanup_script.py          # 7. 清理资源
+python scripts/manage_commands.py         # 7. 向设备发送实时命令
+python scripts/cleanup_script.py          # 8. 清理资源
 ```
 
 **单独操作**：
@@ -223,6 +228,7 @@ python scripts/cleanup_script.py
 - 所有 AWS IoT 设备和组
 - Amazon S3 存储桶和固件文件
 - AWS IoT 软件包
+- AWS IoT 命令模板
 - IAM 角色和策略
 - Fleet Indexing 配置
 

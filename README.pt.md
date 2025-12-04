@@ -31,6 +31,7 @@ Uma demonstração abrangente das capacidades do AWS IoT Device Management inclu
 - **Gerenciamento de Pacotes**: Lidar com múltiplas versões de firmware com atualizações automáticas de shadow
 - **Execução de Jobs**: Simular comportamento realista de dispositivos durante atualizações de firmware
 - **Controle de Versão**: Reverter dispositivos para versões anteriores de firmware
+- **Comandos Remotos**: Enviar comandos em tempo real para dispositivos usando AWS IoT Commands
 - **Limpeza de Recursos**: Gerenciar adequadamente recursos AWS para evitar custos desnecessários
 
 ## 📋 Pré-requisitos
@@ -49,11 +50,12 @@ Uma demonstração abrangente das capacidades do AWS IoT Device Management inclu
 | **AWS IoT Core** | ~1.000 mensagens, 100-10.000 dispositivos | $0.08 - $0.80 |
 | **AWS IoT Device Shadow** | ~200-2.000 operações de shadow | $0.10 - $1.00 |
 | **AWS IoT Jobs** | ~10-100 execuções de job | $0.01 - $0.10 |
+| **AWS IoT Commands** | ~10-50 execuções de comando | $0.01 - $0.05 |
 | **Amazon S3** | Armazenamento + requisições para firmware | $0.05 - $0.25 |
 | **AWS IoT Fleet Indexing** | Consultas e indexação de dispositivos | $0.02 - $0.20 |
 | **AWS IoT Device Management Software Package Catalog** | Operações de pacote | $0.01 - $0.05 |
 | **AWS Identity and Access Management (IAM)** | Gerenciamento de roles/políticas | $0.00 |
-| **Total Estimado** | **Sessão de demonstração completa** | **$0.27 - $2.40** |
+| **Total Estimado** | **Sessão de demonstração completa** | **$0.28 - $2.45** |
 
 **Fatores de Custo:**
 - Quantidade de dispositivos (100-10.000 configurável)
@@ -89,6 +91,7 @@ python scripts/manage_packages.py         # Gerenciar pacotes de firmware
 python scripts/create_job.py              # Implantar atualizações de firmware
 python scripts/simulate_job_execution.py  # Simular atualizações de dispositivos
 python scripts/explore_jobs.py            # Monitorar progresso dos jobs
+python scripts/manage_commands.py         # Enviar comandos em tempo real para dispositivos
 python scripts/cleanup_script.py          # Limpar recursos
 ```
 
@@ -101,7 +104,8 @@ python scripts/cleanup_script.py          # Limpar recursos
 | **manage_packages.py** | Gerenciamento abrangente de pacotes | Criar pacotes/versões, integração Amazon S3, rastreamento de dispositivos com status de reversão individual | [📖 Detalhes](docs/DETAILED_SCRIPTS.md#scriptsmanage_packagespy) |
 | **create_job.py** | Criar jobs de atualização OTA | Direcionamento multi-grupo, URLs pré-assinadas | [📖 Detalhes](docs/DETAILED_SCRIPTS.md#scriptscreate_jobpy) |
 | **simulate_job_execution.py** | Simular atualizações de dispositivos | Downloads reais do Amazon S3, preparação de plano visível, rastreamento de progresso por dispositivo | [📖 Detalhes](docs/DETAILED_SCRIPTS.md#scriptssimulate_job_executionpy) |
-| **explore_jobs.py** | Monitorar progresso dos jobs | Exploração interativa de jobs e solução de problemas | [📖 Detalhes](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
+| **explore_jobs.py** | Monitorar e gerenciar jobs | Exploração interativa de jobs, cancelamento, exclusão e análise | [📖 Detalhes](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
+| **manage_commands.py** | Enviar comandos em tempo real para dispositivos | Gerenciamento de templates, execução de comandos, monitoramento de status, rastreamento de histórico | [📖 Detalhes](docs/DETAILED_SCRIPTS.md#scriptsmanage_commandspy) |
 | **cleanup_script.py** | Remover recursos AWS | Limpeza seletiva, gerenciamento de custos | [📖 Detalhes](docs/DETAILED_SCRIPTS.md#scriptscleanup_scriptpy) |
 
 > 📖 **Documentação Detalhada**: Veja [docs/DETAILED_SCRIPTS.md](docs/DETAILED_SCRIPTS.md) para informações abrangentes sobre os scripts.
@@ -184,7 +188,8 @@ python scripts/manage_packages.py         # 3. Gerenciar pacotes de firmware
 python scripts/create_job.py              # 4. Implantar atualizações de firmware
 python scripts/simulate_job_execution.py  # 5. Simular atualizações de dispositivos
 python scripts/explore_jobs.py            # 6. Monitorar progresso dos jobs
-python scripts/cleanup_script.py          # 7. Limpar recursos
+python scripts/manage_commands.py         # 7. Enviar comandos em tempo real para dispositivos
+python scripts/cleanup_script.py          # 8. Limpar recursos
 ```
 
 **Operações Individuais**:
@@ -223,6 +228,7 @@ python scripts/cleanup_script.py
 - Todos os dispositivos e grupos AWS IoT
 - Buckets Amazon S3 e arquivos de firmware
 - Pacotes de software AWS IoT
+- Templates de comandos AWS IoT
 - Roles e políticas IAM
 - Configuração Fleet Indexing
 
