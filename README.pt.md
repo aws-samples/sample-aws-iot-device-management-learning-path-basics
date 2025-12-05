@@ -37,7 +37,7 @@ Uma demonstração abrangente das capacidades do AWS IoT Device Management inclu
 ## 📋 Pré-requisitos
 
 - **Conta AWS** com permissões para AWS IoT, Amazon S3 e AWS Identity and Access Management (IAM)
-- **Credenciais AWS** configuradas (via `aws configure`, variáveis de ambiente ou roles IAM)
+- **Credenciais AWS** configuradas (via `aws configure`, variáveis de ambiente ou roles AWS Identity and Access Management (IAM))
 - **Python 3.10+** com pip e bibliotecas Python boto3, colorama e requests (verifique o arquivo requirements.txt)
 - **Git** para clonar o repositório
 
@@ -138,7 +138,7 @@ Todos os scripts do workshop marcam automaticamente os recursos criados com `wor
 - Pacotes de Software IoT
 - Jobs IoT
 - Buckets Amazon S3
-- Funções IAM
+- Funções AWS Identity and Access Management (IAM)
 
 **Recursos Não Marcados** (identificados por padrões de nomenclatura):
 - Things IoT (usam convenções de nomenclatura)
@@ -242,8 +242,8 @@ python scripts/manage_dynamic_groups.py   # Operações de grupos dinâmicos
 ## 🛠️ Solução de Problemas
 
 **Problemas Comuns**:
-- **Credenciais**: Configure credenciais AWS via `aws configure`, variáveis de ambiente ou roles IAM
-- **Permissões**: Certifique-se de que o usuário IAM tem permissões para AWS IoT, Amazon S3 e IAM
+- **Credenciais**: Configure credenciais AWS via `aws configure`, variáveis de ambiente ou roles AWS Identity and Access Management (IAM)
+- **Permissões**: Certifique-se de que o usuário AWS Identity and Access Management (IAM) tem permissões para AWS IoT, Amazon S3 e AWS Identity and Access Management (IAM)
 - **Limites de Taxa**: Scripts lidam automaticamente com throttling inteligente
 - **Rede**: Certifique-se da conectividade com APIs AWS
 
@@ -291,7 +291,7 @@ python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
 - Buckets Amazon S3 e arquivos de firmware (marcados)
 - Pacotes de software AWS IoT (marcados)
 - Templates de comandos AWS IoT (marcados)
-- Roles e políticas IAM (marcados)
+- Roles e políticas AWS Identity and Access Management (IAM) (marcados)
 - Configuração Fleet Indexing
 - Certificados e shadows associados
 

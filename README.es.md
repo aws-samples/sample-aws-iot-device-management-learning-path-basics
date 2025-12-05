@@ -37,7 +37,7 @@ Una demostración integral de las capacidades de AWS IoT Device Management que i
 ## 📋 Prerrequisitos
 
 - **Cuenta de AWS** con permisos para AWS IoT, Amazon S3 y AWS Identity and Access Management (IAM)
-- **Credenciales de AWS** configuradas (vía `aws configure`, variables de entorno o roles IAM)
+- **Credenciales de AWS** configuradas (vía `aws configure`, variables de entorno o roles AWS Identity and Access Management (IAM))
 - **Python 3.10+** con pip y las librerías de Python boto3, colorama y requests (revisar archivo requirements.txt)
 - **Git** para clonar el repositorio
 
@@ -138,7 +138,7 @@ Todos los scripts del taller etiquetan automáticamente los recursos creados con
 - Paquetes de Software de IoT
 - Trabajos de IoT
 - Buckets de Amazon S3
-- Roles de IAM
+- Roles de AWS Identity and Access Management (IAM)
 
 **Recursos No Etiquetados** (identificados por patrones de nomenclatura):
 - Cosas de IoT (usan convenciones de nomenclatura)
@@ -242,8 +242,8 @@ python scripts/manage_dynamic_groups.py   # Operaciones de grupos dinámicos
 ## 🛠️ Resolución de Problemas
 
 **Problemas Comunes**:
-- **Credenciales**: Configurar credenciales de AWS vía `aws configure`, variables de entorno o roles IAM
-- **Permisos**: Asegurar que el usuario IAM tenga permisos para AWS IoT, Amazon S3 e IAM
+- **Credenciales**: Configurar credenciales de AWS vía `aws configure`, variables de entorno o roles AWS Identity and Access Management (IAM)
+- **Permisos**: Asegurar que el usuario AWS Identity and Access Management (IAM) tenga permisos para AWS IoT, Amazon S3 e AWS Identity and Access Management (IAM)
 - **Límites de Velocidad**: Los scripts manejan automáticamente con limitación inteligente
 - **Red**: Asegurar conectividad a las APIs de AWS
 
@@ -291,7 +291,7 @@ python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
 - Buckets de Amazon S3 y archivos de firmware (etiquetados)
 - Paquetes de software de AWS IoT (etiquetados)
 - Plantillas de comandos de AWS IoT (etiquetadas)
-- Roles y políticas de IAM (etiquetados)
+- Roles y políticas de AWS Identity and Access Management (IAM) (etiquetados)
 - Configuración de Fleet Indexing
 - Certificados y shadows asociados
 

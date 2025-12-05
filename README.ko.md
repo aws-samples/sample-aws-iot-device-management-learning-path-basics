@@ -37,7 +37,7 @@
 ## 📋 전제 조건
 
 - AWS IoT, Amazon S3, AWS Identity and Access Management (IAM) 권한이 있는 **AWS 계정**
-- 구성된 **AWS 자격 증명** (`aws configure`, 환경 변수 또는 IAM 역할을 통해)
+- 구성된 **AWS 자격 증명** (`aws configure`, 환경 변수 또는 AWS Identity and Access Management (IAM) 역할을 통해)
 - pip와 boto3, colorama, requests Python 라이브러리가 포함된 **Python 3.10+** (requirements.txt 파일 확인)
 - 저장소 복제를 위한 **Git**
 
@@ -138,7 +138,7 @@ export AWS_IOT_LANG=ko                    # 기본 언어 설정 (en, es, fr 등
 - IoT 소프트웨어 패키지
 - IoT 작업
 - Amazon S3 버킷
-- IAM 역할
+- AWS Identity and Access Management (IAM) 역할
 
 **태그가 지정되지 않은 리소스** (명명 패턴으로 식별):
 - IoT Thing (명명 규칙 사용)
@@ -242,8 +242,8 @@ python scripts/manage_dynamic_groups.py   # 동적 그룹 작업
 ## 🛠️ 문제 해결
 
 **일반적인 문제**:
-- **자격 증명**: `aws configure`, 환경 변수 또는 IAM 역할을 통해 AWS 자격 증명 구성
-- **권한**: IAM 사용자가 AWS IoT, Amazon S3, IAM 권한을 가지고 있는지 확인
+- **자격 증명**: `aws configure`, 환경 변수 또는 AWS Identity and Access Management (IAM) 역할을 통해 AWS 자격 증명 구성
+- **권한**: AWS Identity and Access Management (IAM) 사용자가 AWS IoT, Amazon S3, AWS Identity and Access Management (IAM) 권한을 가지고 있는지 확인
 - **속도 제한**: 스크립트가 지능적 스로틀링으로 자동 처리
 - **네트워크**: AWS API에 대한 연결 확인
 
@@ -291,7 +291,7 @@ python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
 - Amazon S3 버킷 및 펌웨어 파일 (태그 지정됨)
 - AWS IoT 소프트웨어 패키지 (태그 지정됨)
 - AWS IoT 명령 템플릿 (태그 지정됨)
-- IAM 역할 및 정책 (태그 지정됨)
+- AWS Identity and Access Management (IAM) 역할 및 정책 (태그 지정됨)
 - Fleet Indexing 구성
 - 연결된 인증서 및 섀도우
 
