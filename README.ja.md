@@ -85,14 +85,14 @@ pip install -r requirements.txt
 aws configure
 
 # 3. 完全なワークフロー（推奨順序）
-python scripts/provision_script.py        # インフラストラクチャの作成
+python scripts/provision_script.py        # タグ付きインフラストラクチャの作成
 python scripts/manage_dynamic_groups.py   # デバイスグループの作成
 python scripts/manage_packages.py         # ファームウェアパッケージの管理
 python scripts/create_job.py              # ファームウェアアップデートのデプロイ
 python scripts/simulate_job_execution.py  # デバイスアップデートのシミュレーション
 python scripts/explore_jobs.py            # ジョブ進捗の監視
 python scripts/manage_commands.py         # デバイスへのリアルタイムコマンド送信
-python scripts/cleanup_script.py          # リソースのクリーンアップ
+python scripts/cleanup_script.py          # リソース識別による安全なクリーンアップ
 ```
 
 ## 📚 利用可能なスクリプト
@@ -125,6 +125,45 @@ export AWS_IOT_LANG=ja                    # デフォルト言語の設定（en�
 - **並列処理**: デバッグモード以外での同時実行操作
 - **レート制限**: 自動AWS APIスロットリング準拠
 - **進捗追跡**: リアルタイム操作ステータス
+- **リソースタグ付け**: 安全なクリーンアップのための自動ワークショップタグ
+- **設定可能な命名**: カスタマイズ可能なデバイス命名パターン
+
+### リソースタグ付け
+
+すべてのワークショップスクリプトは、クリーンアップ時の安全な識別のために、作成されたリソースに自動的に`workshop=learning-aws-iot-dm-basics`タグを付けます。これにより、ワークショップで作成されたリソースのみが削除されることが保証されます。
+
+**タグ付きリソース**：
+- IoT Thingタイプ
+- IoT Thingグループ（静的および動的）
+- IoTソフトウェアパッケージ
+- IoTジョブ
+- Amazon S3バケット
+- IAMロール
+
+**タグなしリソース**（命名パターンで識別）：
+- IoT Thing（命名規則を使用）
+- 証明書（関連付けで識別）
+- Thingシャドウ（関連付けで識別）
+
+### デバイス命名設定
+
+`--things-prefix`パラメータでデバイス命名パターンをカスタマイズ：
+
+```bash
+# デフォルト命名：Vehicle-VIN-001、Vehicle-VIN-002など
+python scripts/provision_script.py
+
+# カスタムプレフィックス：Fleet-Device-001、Fleet-Device-002など
+python scripts/provision_script.py --things-prefix "Fleet-Device-"
+
+# クリーンアップ用カスタムプレフィックス（プロビジョニングプレフィックスと一致する必要があります）
+python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
+```
+
+**プレフィックス要件**：
+- 英数字、ハイフン、アンダースコア、コロンのみ
+- 最大20文字
+- 連番は自動的にゼロパディング（001-999）
 
 ## 🌍 国際化サポート
 
@@ -224,13 +263,43 @@ python scripts/cleanup_script.py
 # 入力：DELETE
 ```
 
+### 安全なクリーンアップ機能
+
+クリーンアップスクリプトは、ワークショップリソースのみが削除されることを保証するために複数の識別方法を使用します：
+
+1. **タグベース識別**（プライマリ）：`workshop=learning-aws-iot-dm-basics`タグを確認
+2. **命名パターンマッチング**（セカンダリ）：既知のワークショップ命名規則と一致
+3. **関連付けベース**（ターシャリ）：ワークショップリソースに添付されたリソースを識別
+
+**クリーンアップオプション**：
+```bash
+# 標準クリーンアップ（インタラクティブ）
+python scripts/cleanup_script.py
+
+# ドライランモード（削除せずにプレビュー）
+python scripts/cleanup_script.py --dry-run
+
+# カスタムデバイスプレフィックス（プロビジョニングプレフィックスと一致する必要があります）
+python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
+
+# カスタムプレフィックス付きドライラン
+python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
+```
+
 **クリーンアップで削除されるもの**：
-- すべてのAWS IoTデバイスとグループ
-- Amazon S3バケットとファームウェアファイル
-- AWS IoTソフトウェアパッケージ
-- AWS IoTコマンドテンプレート
-- IAMロールとポリシー
+- すべてのAWS IoTデバイスとグループ（ワークショップタグまたは一致する命名パターン付き）
+- Amazon S3バケットとファームウェアファイル（タグ付き）
+- AWS IoTソフトウェアパッケージ（タグ付き）
+- AWS IoTコマンドテンプレート（タグ付き）
+- IAMロールとポリシー（タグ付き）
 - Fleet Indexing設定
+- 関連する証明書とシャドウ
+
+**安全機能**：
+- ワークショップ以外のリソースは自動的にスキップ
+- 詳細なサマリーで削除およびスキップされたリソースを表示
+- デバッグモードで各リソースの識別方法を表示
+- ドライランモードで実際の削除前にプレビュー可能
 
 ## 🔧 開発者ガイド：新しい言語の追加
 

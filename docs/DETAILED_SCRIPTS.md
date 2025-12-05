@@ -25,24 +25,125 @@ This document provides comprehensive information about each script in the AWS Io
 4. Countries (count or specific codes)
 5. Device count (default: 100)
 
+**Command-Line Parameters**:
+- `--things-prefix PREFIX` - Custom prefix for thing names (default: "Vehicle-VIN-")
+  - Must be 1-20 characters
+  - Alphanumeric, hyphens, underscores, and colons only
+  - Example: `--things-prefix "Fleet-Device-"` creates Fleet-Device-001, Fleet-Device-002, etc.
+
+**Resource Tagging Behavior**:
+All created resources are automatically tagged with:
+- `workshop=learning-aws-iot-dm-basics` - Identifies workshop resources
+- `creation-date=YYYY-MM-DD` - Timestamp for tracking
+
+**Tagged Resources**:
+- Thing types
+- Thing groups (static groups)
+- Software packages
+- Software package versions
+- Jobs
+- S3 buckets
+- IAM roles
+
+**Tag Failure Handling**:
+- Tagging failures don't prevent resource creation
+- Script continues with warnings for failed tags
+- Summary report shows resources without tags
+- Cleanup script uses naming patterns as fallback
+
 **Educational Pauses**: 8 learning moments explaining IoT concepts
 
 **Rate Limits**: Intelligent AWS API throttling (80 TPS for things, 8 TPS for thing types)
 
 **Performance**: Parallel execution when not in debug mode, sequential in debug mode for clean output
 
+**Resource Tagging**:
+- **Automatic Workshop Tags**: All taggable resources receive `workshop=learning-aws-iot-dm-basics` tag
+- **Supported Resources**: Thing types, thing groups, packages, jobs, S3 buckets, IAM roles
+- **Non-Taggable Resources**: Things, certificates, and shadows rely on naming conventions
+- **Tag Failure Handling**: Graceful degradation - continues resource creation if tagging fails
+- **Cleanup Integration**: Tags enable safe identification during cleanup operations
+
+**Thing Naming Convention**:
+- **--things-prefix Parameter**: Configurable prefix for thing names (default: "Vehicle-VIN-")
+- **Naming Pattern**: `{prefix}{sequential_number}` (e.g., Vehicle-VIN-001, Vehicle-VIN-002)
+- **Sequential Numbering**: Zero-padded 3-digit numbers (001-999)
+- **Prefix Validation**: Alphanumeric, hyphens, underscores, colons only; max 20 characters
+- **Legacy Support**: Also recognizes old `vehicle-{country}-{type}-{index}` pattern
+- **Cleanup Integration**: Naming patterns enable identification of non-taggable resources
+
+**Usage Examples**:
+```bash
+# Use default prefix (Vehicle-VIN-)
+python scripts/provision_script.py
+
+# Use custom prefix
+python scripts/provision_script.py --things-prefix "Fleet-Device-"
+
+# Custom prefix creates: Fleet-Device-001, Fleet-Device-002, etc.
+```
+
 ---
 
 ### scripts/cleanup_script.py
-**Purpose**: Safe removal of AWS IoT resources to avoid ongoing costs using native boto3 APIs.
+**Purpose**: Safe removal of AWS IoT resources to avoid ongoing costs using native boto3 APIs with intelligent resource identification.
 
 **Cleanup Options**:
 1. **ALL resources** - Complete infrastructure cleanup
 2. **Things only** - Remove devices but keep infrastructure
 3. **Thing groups only** - Remove groupings but keep devices
 
+**Command-Line Parameters**:
+- `--things-prefix PREFIX` - Custom prefix for thing identification (default: "Vehicle-VIN-")
+  - Must match the prefix used during provisioning
+  - Used for identifying things with custom naming patterns
+  - Example: `--things-prefix "Fleet-Device-"` identifies Fleet-Device-001, Fleet-Device-002, etc.
+- `--dry-run` - Preview what would be deleted without making changes
+  - Shows all resources that would be deleted
+  - Displays identification method for each resource
+  - No actual deletions performed
+  - Useful for verifying cleanup scope before execution
+
+**Resource Identification Methods**:
+
+The cleanup script uses a three-tier identification system to safely identify workshop resources:
+
+**1. Tag-Based Identification (Highest Priority)**:
+- Checks for `workshop=learning-aws-iot-dm-basics` tag
+- Most reliable method for resources created with tagging
+- Works for: thing types, thing groups, packages, package versions, jobs, S3 buckets, IAM roles
+
+**2. Naming Pattern Identification (Fallback)**:
+- Matches resource names against workshop patterns
+- Used when tags are not present or not supported
+- Patterns include:
+  - Things: `Vehicle-VIN-###` or custom prefix pattern (e.g., `Fleet-Device-###`)
+  - Thing types: `SedanVehicle`, `SUVVehicle`, `TruckVehicle`
+  - Thing groups: `Fleet-*` (static groups)
+  - Dynamic groups: `DynamicGroup-*`
+  - Packages: `SedanVehicle-Package`, `SUVVehicle-Package`, `TruckVehicle-Package`
+  - Jobs: `OTA-Job-*`, `Command-Job-*`
+  - S3 buckets: `iot-dm-workshop-*`
+  - IAM roles: `IoTJobsRole`, `IoTPackageConfigRole`
+
+**3. Association-Based Identification (For Non-Taggable Resources)**:
+- Used for resources that cannot be tagged directly
+- Certificates: Identified by attachment to workshop things
+- Shadows: Identified by belonging to workshop things
+- Ensures complete cleanup of dependent resources
+
+**Identification Process**:
+1. For each resource, check tags first
+2. If no workshop tag found, check naming pattern
+3. If no pattern match, check associations (for certificates/shadows)
+4. If no identification method succeeds, resource is skipped
+5. Debug mode shows which method identified each resource
+
 **Features**:
 - **Native boto3 Implementation**: No CLI dependencies, better error handling
+- **Intelligent Resource Identification**: Three-tier system (tags → naming → associations)
+- **Dry-Run Mode**: Preview deletions without making changes
+- **Custom Prefix Support**: Identify things with custom naming patterns
 - **Parallel processing** with intelligent rate limiting
 - **Enhanced S3 Cleanup**: Proper versioned object deletion using paginators
 - Distinguishes static vs dynamic groups automatically
@@ -52,10 +153,307 @@ This document provides comprehensive information about each script in the AWS Io
 - Disables Fleet Indexing configuration
 - **Shadow Cleanup**: Removes both classic and $package shadows
 - **Principal Detachment**: Properly detaches certificates and policies
+- **Comprehensive Reporting**: Shows deleted and skipped resources with counts
 
-**Safety**: Requires typing "DELETE" to confirm
+**Safety Features**:
+- Requires typing "DELETE" to confirm (unless dry-run mode)
+- Skips non-workshop resources automatically
+- Shows summary of what will be deleted
+- Dry-run mode for verification before actual deletion
+- Error handling continues cleanup even if individual resources fail
+
+**Dry-Run Mode Example**:
+```bash
+python scripts/cleanup_script.py --dry-run
+```
+Output shows:
+- Resources that would be deleted (with identification method)
+- Resources that would be skipped (non-workshop resources)
+- Total counts by resource type
+- No actual deletions performed
+
+**Custom Prefix Example**:
+```bash
+python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
+```
+Identifies and deletes:
+- Things matching Fleet-Device-### pattern
+- Associated certificates and shadows
+- Other workshop resources (identified by tags or patterns)
 
 **Performance**: Parallel execution respecting AWS API limits (80 TPS things, 4 TPS dynamic groups)
+
+**Tag-Based Cleanup Example**:
+```
+Scanning thing types...
+Found 3 thing types
+  ✓ SedanVehicle (identified by tag: workshop=learning-aws-iot-dm-basics)
+  ✓ SUVVehicle (identified by tag: workshop=learning-aws-iot-dm-basics)
+  ✓ TruckVehicle (identified by tag: workshop=learning-aws-iot-dm-basics)
+
+Scanning thing groups...
+Found 5 thing groups
+  ✓ fleet-US (identified by tag: workshop=learning-aws-iot-dm-basics)
+  ✓ fleet-CA (identified by tag: workshop=learning-aws-iot-dm-basics)
+  ✗ production-fleet (skipped - no workshop tag)
+```
+
+**Naming-Based Cleanup Example**:
+```
+Scanning things...
+Found 102 things
+  ✓ Vehicle-VIN-001 (identified by naming pattern: Vehicle-VIN-###)
+  ✓ Vehicle-VIN-002 (identified by naming pattern: Vehicle-VIN-###)
+  ✓ vehicle-US-sedan-1 (identified by legacy pattern)
+  ✗ production-device-001 (skipped - no pattern match)
+```
+
+**Association-Based Cleanup Example**:
+```
+Processing thing: Vehicle-VIN-001
+  ✓ Classic shadow (identified by association with workshop thing)
+  ✓ $package shadow (identified by association with workshop thing)
+  ✓ Certificate abc123 (identified by association with workshop thing)
+  
+Processing thing: production-device-001
+  ✗ Certificate xyz789 (skipped - attached to non-workshop thing)
+```
+
+**Cleanup Summary Output**:
+```
+Cleanup Summary:
+================
+Deleted Resources:
+  - IoT Things: 100
+  - Thing Groups: 5
+  - Thing Types: 3
+  - Packages: 3
+  - Jobs: 2
+  - S3 Buckets: 1
+  - IAM Roles: 2
+  Total: 116
+
+Skipped Resources:
+  - IoT Things: 2 (non-workshop resources)
+  - Thing Groups: 1 (non-workshop resource)
+  Total: 3
+
+Execution Time: 45.3 seconds
+```
+
+**Troubleshooting Cleanup Issues**:
+
+**Issue: Resources Not Being Deleted**
+
+Symptoms:
+- Cleanup script skips resources you expect to be deleted
+- "Skipped resources" count is higher than expected
+- Specific resources remain after cleanup
+
+Solutions:
+1. **Verify Thing Prefix Match**:
+   ```bash
+   # If you used custom prefix during provisioning:
+   python scripts/provision_script.py --things-prefix "MyPrefix-"
+   
+   # You MUST use same prefix during cleanup:
+   python scripts/cleanup_script.py --things-prefix "MyPrefix-"
+   ```
+
+2. **Check Resource Tags**:
+   - Run cleanup in debug mode to see identification methods
+   - Verify taggable resources have `workshop=learning-aws-iot-dm-basics` tag
+   - Check AWS Console → IoT Core → Resource tags
+
+3. **Verify Naming Patterns**:
+   - Things should match: `{prefix}###` or `vehicle-{country}-{type}-{index}`
+   - Groups should match: `fleet-{country}` or contain "workshop"
+   - Use dry-run mode to see what would be identified
+
+4. **Use Dry-Run First**:
+   ```bash
+   # Preview what will be deleted
+   python scripts/cleanup_script.py --dry-run
+   
+   # Check output for skipped resources
+   # Verify identification methods in debug mode
+   ```
+
+**Issue: Tag Application Failures During Provisioning**
+
+Symptoms:
+- Provision script shows "Failed to apply tags" warnings
+- Resources created but without workshop tags
+- Cleanup script skips resources that should be deleted
+
+Solutions:
+1. **Check IAM Permissions**:
+   - Verify IAM user/role has tagging permissions
+   - Required actions: `iot:TagResource`, `s3:PutBucketTagging`, `iam:TagRole`
+
+2. **Rely on Naming Conventions**:
+   - Resources without tags can still be identified by naming patterns
+   - Ensure consistent naming during provisioning
+   - Use same --things-prefix for provision and cleanup
+
+3. **Manual Tag Addition** (if needed):
+   ```bash
+   # Add tags manually via AWS CLI
+   aws iot tag-resource --resource-arn <arn> --tags workshop=learning-aws-iot-dm-basics
+   ```
+
+**Issue: Cleanup Deletes Wrong Resources**
+
+Symptoms:
+- Non-workshop resources being identified for deletion
+- Dry-run shows unexpected resources
+
+Solutions:
+1. **Always Use Dry-Run First**:
+   ```bash
+   python scripts/cleanup_script.py --dry-run
+   ```
+
+2. **Review Naming Patterns**:
+   - Ensure production resources don't match workshop patterns
+   - Avoid using "Vehicle-VIN-" prefix for production things
+   - Don't use "fleet-" prefix for production groups
+
+3. **Check Tag Conflicts**:
+   - Verify no production resources have workshop tags
+   - Review tag policies in your AWS account
+
+**Issue: Cleanup Fails with Permission Errors**
+
+Symptoms:
+- "AccessDeniedException" or "UnauthorizedException" errors
+- Partial cleanup completion
+- Some resource types deleted, others skipped
+
+Solutions:
+1. **Verify IAM Permissions**:
+   - Required permissions listed in README.md
+   - Check IAM policy for all required actions
+   - Verify permissions for: IoT, S3, IAM, Fleet Indexing
+
+2. **Check Resource Policies**:
+   - S3 bucket policies may block deletion
+   - IAM role trust policies may prevent deletion
+   - Review resource-level policies
+
+3. **Use Debug Mode**:
+   ```bash
+   # Run with debug to see exact API errors
+   python scripts/cleanup_script.py
+   # Answer 'y' for debug mode
+   ```
+
+**Issue: Cleanup Takes Too Long**
+
+Symptoms:
+- Cleanup runs for extended periods
+- Progress appears slow
+- Timeout errors
+
+Solutions:
+1. **Expected Duration**:
+   - 100 things: ~2-3 minutes
+   - 1000 things: ~15-20 minutes
+   - Thing type deletion: +5 minutes (required deprecation wait)
+
+2. **Rate Limiting**:
+   - Script respects AWS API limits automatically
+   - Parallel processing optimizes performance
+   - Debug mode runs sequentially (slower but clearer output)
+
+3. **Monitor Progress**:
+   - Watch real-time progress indicators
+   - Check AWS Console for deletion status
+   - Use debug mode to see each operation
+
+**Issue: Dry-Run Shows Different Results Than Actual Cleanup**
+
+Symptoms:
+- Dry-run identifies resources that actual cleanup skips
+- Inconsistent behavior between modes
+
+Solutions:
+1. **Resource State Changes**:
+   - Resources may be modified between dry-run and actual cleanup
+   - Tags may be added/removed by other processes
+   - Re-run dry-run immediately before actual cleanup
+
+2. **Concurrent Modifications**:
+   - Other users/processes may be modifying resources
+   - Coordinate cleanup timing with team
+   - Use resource locking if available
+
+3. **Caching Issues**:
+   - AWS API responses may be cached briefly
+   - Wait a few seconds between dry-run and actual cleanup
+   - Refresh AWS Console to verify current state
+
+**Issue: Partial Cleanup**
+
+Symptoms:
+- Some resources deleted, others remain
+- Error messages during cleanup
+- Incomplete cleanup results
+
+Solutions:
+1. **Dependency Issues**:
+   - Some resources may fail to delete due to dependencies
+   - Script continues with remaining resources
+   - Check error messages for specific failures
+   - Re-run script to clean up remaining resources
+
+2. **Resource State**:
+   - Thing types must be deprecated before deletion (5-minute wait)
+   - Jobs must be canceled before deletion
+   - S3 buckets must be empty before deletion
+
+3. **Re-run Cleanup**:
+   ```bash
+   # Run cleanup again to catch remaining resources
+   python scripts/cleanup_script.py
+   ```
+
+**Best Practices for Safe Cleanup**:
+
+1. **Always Start with Dry-Run**:
+   ```bash
+   python scripts/cleanup_script.py --dry-run
+   ```
+
+2. **Verify Thing Prefix Match**:
+   - Use same --things-prefix as provisioning
+   - Document custom prefixes for team reference
+
+3. **Use Debug Mode for Troubleshooting**:
+   - See identification methods for each resource
+   - Understand why resources are skipped
+   - Verify tag and naming pattern matches
+
+4. **Coordinate with Team**:
+   - Communicate cleanup timing
+   - Verify no active workshops using resources
+   - Document cleanup results
+
+5. **Monitor AWS Console**:
+   - Verify resources deleted as expected
+   - Check for any remaining workshop resources
+   - Review CloudWatch logs if available
+
+6. **Keep Consistent Naming**:
+   - Use standard prefixes across workshops
+   - Document naming conventions
+   - Avoid production naming conflicts
+
+**Tag-Based Cleanup Not Working**:
+- Verify resources were created with tagging enabled
+- Check if tagging failed during provisioning (see provision script output)
+- Naming pattern identification will be used as fallback
+- Consider using `--dry-run` to verify identification methods
 
 ---
 

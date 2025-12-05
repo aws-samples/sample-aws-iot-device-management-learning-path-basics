@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import json
 import os
 import random
@@ -13,8 +14,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from threading import Semaphore
 
-# Add i18n to path
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "i18n"))
+# Add repository root and i18n to path
+repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if repo_root not in sys.path:
+    sys.path.insert(0, repo_root)
+sys.path.append(os.path.join(repo_root, "i18n"))
 
 import boto3
 from botocore.exceptions import ClientError
@@ -22,6 +26,10 @@ from colorama import Fore, Style, init
 
 from language_selector import get_language
 from loader import load_messages
+
+# Import tagging and naming modules from iot_helpers package
+from iot_helpers.utils.naming_conventions import generate_thing_name, validate_thing_prefix
+from iot_helpers.utils.resource_tagger import apply_workshop_tags
 
 # Initialize colorama
 init()
@@ -253,19 +261,35 @@ CONTINENTS = {
 
 
 class IoTProvisioner:
-    def __init__(self):
+    def __init__(self, things_prefix="Vehicle-VIN-"):
         self.region = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
         self.debug_mode = False
+        self.things_prefix = things_prefix
         self.iot_client = None
         self.s3_client = None
         self.iam_client = None
         self.sts_client = None
         self.account_id = None
+        self.tag_failures = []  # Track resources that failed tagging
 
         # Rate limiting semaphores for AWS API limits
         self.thing_type_semaphore = Semaphore(8)
         self.thing_creation_semaphore = Semaphore(80)
         self.package_semaphore = Semaphore(8)
+
+    @staticmethod
+    def parse_arguments():
+        """Parse command-line arguments"""
+        parser = argparse.ArgumentParser(
+            description="Provision AWS IoT Device Management workshop resources"
+        )
+        parser.add_argument(
+            "--things-prefix",
+            type=str,
+            default="Vehicle-VIN-",
+            help="Prefix for IoT thing names (default: Vehicle-VIN-). Must be alphanumeric with hyphens, underscores, or colons, max 20 characters."
+        )
+        return parser.parse_args()
 
     def get_message(self, key, *args):
         """Get localized message with optional formatting"""
@@ -556,6 +580,19 @@ class IoTProvisioner:
                         print(json.dumps(response, indent=2, default=str))
 
                     print(f"{Fore.GREEN}{self.get_message('thing_type_created', thing_type)}{Style.RESET_ALL}")
+                    
+                    # Apply workshop tags to thing type
+                    thing_type_arn = response.get("thingTypeArn")
+                    if thing_type_arn:
+                        tag_success = apply_workshop_tags(
+                            self.iot_client,
+                            thing_type_arn,
+                            "thing-type"
+                        )
+                        if not tag_success:
+                            print(f"{Fore.YELLOW}Warning: Failed to apply tags to thing type {thing_type}{Style.RESET_ALL}")
+                            self.tag_failures.append(("thing-type", thing_type))
+                    
                     return True
                 except ClientError as e:
                     if e.response["Error"]["Code"] == "ResourceAlreadyExistsException":
@@ -718,6 +755,17 @@ class IoTProvisioner:
             if versioning_response:
                 print(f"{Fore.GREEN}{self.get_message('status.bucket_versioning_enabled')}{Style.RESET_ALL}")
 
+            # Apply workshop tags to S3 bucket
+            bucket_arn = f"arn:aws:s3:::{bucket_name}"
+            tag_success = apply_workshop_tags(
+                self.s3_client,
+                bucket_arn,
+                "s3-bucket"
+            )
+            if not tag_success:
+                print(f"{Fore.YELLOW}Warning: Failed to apply tags to S3 bucket {bucket_name}{Style.RESET_ALL}")
+                self.tag_failures.append(("s3-bucket", bucket_name))
+
             return bucket_name
 
         except Exception as e:
@@ -812,7 +860,19 @@ class IoTProvisioner:
                 response = self.safe_api_call(
                     self.iot_client.create_package, "IoT Package", thing_type, debug=self.debug_mode, packageName=thing_type
                 )
-                if not response:
+                if response:
+                    # Apply workshop tags to package
+                    package_arn = response.get("packageArn")
+                    if package_arn:
+                        tag_success = apply_workshop_tags(
+                            self.iot_client,
+                            package_arn,
+                            "package"
+                        )
+                        if not tag_success:
+                            print(f"{Fore.YELLOW}{self.get_message('warnings.tag_failure_package', thing_type)}{Style.RESET_ALL}")
+                            self.tag_failures.append(("package", thing_type))
+                elif not response:
                     # Check if it failed due to already existing
                     try:
                         self.iot_client.get_package(packageName=thing_type)
@@ -941,6 +1001,19 @@ class IoTProvisioner:
                 )
                 if not response:
                     return False
+                
+                # Apply workshop tags to IAM role
+                role_arn = response.get("Role", {}).get("Arn")
+                if role_arn:
+                    tag_success = apply_workshop_tags(
+                        self.iam_client,
+                        role_arn,
+                        "iam-role"
+                        
+                    )
+                    if not tag_success:
+                        print(f"{Fore.YELLOW}Warning: Failed to apply tags to IAM role {role_name}{Style.RESET_ALL}")
+                        self.tag_failures.append(("iam-role", role_name))
             else:
                 print(f"{Fore.RED}❌ Error checking role: {e.response['Error']['Message']}{Style.RESET_ALL}")
                 return False
@@ -1024,6 +1097,19 @@ class IoTProvisioner:
                 )
                 if not response:
                     return False
+                
+                # Apply workshop tags to IAM role
+                role_arn = response.get("Role", {}).get("Arn")
+                if role_arn:
+                    tag_success = apply_workshop_tags(
+                        self.iam_client,
+                        role_arn,
+                        "iam-role"
+                        
+                    )
+                    if not tag_success:
+                        print(f"{Fore.YELLOW}Warning: Failed to apply tags to IAM role {role_name}{Style.RESET_ALL}")
+                        self.tag_failures.append(("iam-role", role_name))
 
         # Check and attach policy
         policy_name = "PackageConfigPolicy"
@@ -1213,6 +1299,19 @@ class IoTProvisioner:
                     )
                     if response:
                         group_success += 1
+                        
+                        # Apply workshop tags to thing group
+                        thing_group_arn = response.get("thingGroupArn")
+                        if thing_group_arn:
+                            tag_success = apply_workshop_tags(
+                                self.iot_client,
+                                thing_group_arn,
+                                "thing-group"
+                                
+                            )
+                            if not tag_success:
+                                print(f"{Fore.YELLOW}Warning: Failed to apply tags to thing group {group_name}{Style.RESET_ALL}")
+                                self.tag_failures.append(("thing-group", group_name))
 
         print(f"{Fore.CYAN}📊 Static thing groups completed: {group_success}/{len(group_names)} successful{Style.RESET_ALL}")
 
@@ -1221,7 +1320,7 @@ class IoTProvisioner:
         for i in range(1, device_count + 1):
             country = selected_countries[(i - 1) % len(selected_countries)]
             thing_type = thing_types[(i - 1) % len(thing_types)]
-            thing_name = f"Vehicle-VIN-{i:03d}"
+            thing_name = generate_thing_name(self.things_prefix, i)
             group_name = f"{country}_Fleet"
             default_version = package_versions[0]  # Use first user-defined version as default
             thing_data.append((thing_name, thing_type, group_name, country, default_version, i, device_count))
@@ -1253,12 +1352,48 @@ class IoTProvisioner:
 
         print(f"{Fore.CYAN}📊 Things creation completed: {success_count}/{device_count} successful{Style.RESET_ALL}")
 
-    def educational_pause(self, title, description):
-        """Pause execution with educational content"""
-        print(f"\n{Fore.YELLOW}{self.get_message('ui.learning_moment_prefix')}: {title}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{description}{Style.RESET_ALL}")
-        input(f"\n{Fore.GREEN}{self.get_message('prompts.press_enter')}{Style.RESET_ALL}")
-        print()
+    def display_tag_failure_summary(self):
+        """Display summary of resources that failed tagging"""
+        if self.tag_failures:
+            print(f"\n{Fore.YELLOW}{self.get_message('tagging.summary_title')}{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}{self.get_message('tagging.summary_separator')}{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}{self.get_message('tagging.summary_intro')}{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}{self.get_message('tagging.summary_fallback')}{Style.RESET_ALL}\n")
+            
+            # Group failures by resource type
+            failures_by_type = {}
+            for resource_type, resource_name in self.tag_failures:
+                if resource_type not in failures_by_type:
+                    failures_by_type[resource_type] = []
+                failures_by_type[resource_type].append(resource_name)
+            
+            # Display grouped failures
+            for resource_type, resource_names in failures_by_type.items():
+                print(f"{Fore.CYAN}{self.get_message('tagging.resource_count', resource_type, len(resource_names))}{Style.RESET_ALL}")
+                for name in resource_names:
+                    print(f"  - {name}")
+            
+            print(f"\n{Fore.YELLOW}{self.get_message('tagging.total_without_tags', len(self.tag_failures))}{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}{self.get_message('tagging.summary_separator')}{Style.RESET_ALL}\n")
+
+    def educational_pause(self, moment_key, *format_args):
+        """Pause execution with educational content from i18n"""
+        moment = self.get_learning_moment(moment_key)
+        if moment:
+            title = moment.get('title', '')
+            content = moment.get('content', '')
+            next_step = moment.get('next', '')
+            
+            # Format the next step if format args provided
+            if format_args and next_step:
+                next_step = next_step.format(*format_args)
+            
+            print(f"\n{Fore.YELLOW}{title}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{content}{Style.RESET_ALL}")
+            if next_step:
+                print(f"{Fore.CYAN}{next_step}{Style.RESET_ALL}")
+            input(f"\n{Fore.GREEN}{self.get_message('prompts.press_enter')}{Style.RESET_ALL}")
+            print()
 
     def run(self):
         """Main execution flow"""
@@ -1293,48 +1428,20 @@ class IoTProvisioner:
         start_time = time.time()
 
         # Step 1: Thing Types
-        self.educational_pause(
-            "Thing Types - Device Categories",
-            "AWS IoT Thing Types are templates that define categories of IoT devices using the CreateThingType API.\n"
-            "They act as blueprints specifying common attributes and behaviors for similar devices. The API\n"
-            "creates searchable attributes that enable Fleet Indexing queries and bulk operations on device categories.\n"
-            "Thing types help organize your device fleet and enable scalable IoT device management.\n\n"
-            f"🔄 NEXT: We will create {len(thing_types)} thing types using the IoT CreateThingType API: {', '.join(thing_types)}",
-        )
+        self.educational_pause("thing_types", len(thing_types), ', '.join(thing_types))
         self.create_thing_types(thing_types)
 
         # Step 2: Fleet Indexing
-        self.educational_pause(
-            "Fleet Indexing - Device Search & Query",
-            "AWS IoT Fleet Indexing uses the UpdateIndexingConfiguration API to enable powerful search capabilities.\n"
-            "It indexes device registry data, connectivity status, and device shadows (including the special\n"
-            "$package shadow for firmware versions). The API configures indexing modes and shadow filters\n"
-            "to enable dynamic thing groups and fleet-wide queries for large-scale deployments.\n\n"
-            "🔄 NEXT: We will enable Fleet Indexing with $package shadow support using UpdateIndexingConfiguration API",
-        )
+        self.educational_pause("fleet_indexing")
         self.enable_fleet_indexing()
 
         # Step 3: S3 Storage
-        self.educational_pause(
-            "S3 Storage - Firmware Distribution",
-            "Amazon S3 APIs (CreateBucket, PutBucketVersioning) provide secure, scalable firmware storage.\n"
-            "The CreateBucket API establishes the storage location while PutBucketVersioning enables\n"
-            "immutable firmware tracking. S3 integrates with AWS IoT Jobs through presigned URLs\n"
-            "generated via GetObject API for secure, credential-free firmware downloads.\n\n"
-            f"🔄 NEXT: We will create an S3 bucket in {self.region} with versioning using S3 APIs",
-        )
+        self.educational_pause("s3_storage", self.region)
         bucket_name = self.create_s3_bucket()
 
         if bucket_name:
             # Step 4: Firmware Upload
-            self.educational_pause(
-                "Firmware Packages - Version Management",
-                "S3 PutObject API uploads firmware packages as ZIP files with unique version IDs.\n"
-                "Each upload generates immutable artifacts through S3 versioning. The HeadObject API\n"
-                "checks for existing files while PutObject creates new versions for precise\n"
-                "firmware lifecycle control and over-the-air update management.\n\n"
-                f"🔄 NEXT: We will upload {len(thing_types) * len(package_versions)} firmware packages ({len(thing_types)} types × {len(package_versions)} versions)",
-            )
+            self.educational_pause("firmware_packages", len(thing_types) * len(package_versions), len(thing_types), len(package_versions))
             # Upload firmware packages for each thing type and version
             version_ids = {}
             total_packages = len(thing_types) * len(package_versions)
@@ -1354,52 +1461,27 @@ class IoTProvisioner:
                         version_ids[key] = version_id
 
             # Step 5: Software Package Catalog
-            self.educational_pause(
-                "Software Package Catalog - Centralized Management",
-                "AWS IoT Software Package Catalog APIs (CreatePackage, CreatePackageVersion) provide centralized firmware management.\n"
-                "CreatePackage establishes the package while CreatePackageVersion links S3 artifacts to IoT packages.\n"
-                "The UpdatePackageVersion API publishes versions, enabling automated device shadow updates\n"
-                "when jobs complete successfully. This integration creates complete firmware lifecycle management.\n\n"
-                f"🔄 NEXT: We will create {len(thing_types)} IoT packages and publish all versions to the catalog",
-            )
+            self.educational_pause("package_catalog", len(thing_types))
             self.create_iot_packages(bucket_name, version_ids, thing_types, package_versions)
 
         # Step 6: IAM Roles for Jobs
-        self.educational_pause(
-            "IAM Roles - Secure Access Control",
-            "AWS Identity and Access Management APIs (CreateRole, PutRolePolicy) provide secure service credentials.\n"
-            "The CreateRole API establishes trust relationships while PutRolePolicy grants specific\n"
-            "permissions. IAM roles enable AWS IoT to generate presigned URLs for S3 firmware downloads\n"
-            "without exposing AWS credentials to devices, ensuring secure and scalable access control.\n\n"
-            "🔄 NEXT: We will create IoTJobsRole and IoTPackageConfigRole using IAM APIs",
-        )
+        self.educational_pause("iam_roles")
         self.create_iot_jobs_role()
         self.create_package_config_role()
 
         # Step 7: Package Configuration
-        self.educational_pause(
-            "Package Configuration - Automated Shadow Updates",
-            "AWS IoT Software Package Catalog UpdatePackageConfiguration API enables automatic device shadow updates.\n"
-            "When devices report successful firmware installation via AWS IoT Jobs, AWS IoT Core automatically\n"
-            "updates the device's $package shadow with the new firmware version. This creates a reliable\n"
-            "audit trail and ensures device inventory reflects actual firmware state across your fleet.\n\n"
-            "🔄 NEXT: We will enable global package configuration using UpdatePackageConfiguration API",
-        )
+        self.educational_pause("package_configuration")
         self.update_package_configurations()
 
         # Step 8: Device Creation
-        self.educational_pause(
-            "IoT Things & Thing Groups - Device Fleet Creation",
-            "AWS IoT CreateThing and CreateThingGroup APIs establish your device fleet in the cloud.\n"
-            "CreateThing registers individual devices with attributes while CreateThingGroup provides\n"
-            "organizational structure. AddThingToThingGroup API creates relationships enabling\n"
-            "bulk operations and policy inheritance across your IoT device fleet.\n\n"
-            f"🔄 NEXT: We will create {len(selected_countries)} thing groups and {device_count} IoT devices using IoT APIs",
-        )
+        self.educational_pause("device_creation", len(selected_countries), device_count)
         self.create_things_and_groups(thing_types, package_versions, continent_choice, selected_countries, device_count)
 
         end_time = time.time()
         duration = end_time - start_time
+
+        # Display tag failure summary if any
+        self.display_tag_failure_summary()
 
         print(f"\n{Fore.GREEN}{self.get_message('status.provisioning_complete')}{Style.RESET_ALL}")
         print(
@@ -1426,7 +1508,19 @@ if __name__ == "__main__":
     # Load messages for this script and language
     messages = load_messages("provision_script", USER_LANG)
 
-    provisioner = IoTProvisioner()
+    # Parse command-line arguments
+    args = IoTProvisioner.parse_arguments()
+
+    # Validate things prefix
+    if not validate_thing_prefix(args.things_prefix):
+        print(f"{Fore.RED}{messages.get('errors.invalid_thing_prefix', 'Error: Invalid thing prefix').format(args.things_prefix)}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}{messages.get('errors.thing_prefix_requirements', 'Thing prefix must:')}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}{messages.get('errors.thing_prefix_chars', '  - Contain only alphanumeric characters, hyphens (-), underscores (_), or colons (:)')}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}{messages.get('errors.thing_prefix_length', '  - Be no longer than 20 characters')}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}{messages.get('errors.thing_prefix_not_empty', '  - Not be empty')}{Style.RESET_ALL}")
+        sys.exit(1)
+
+    provisioner = IoTProvisioner(things_prefix=args.things_prefix)
     try:
         provisioner.run()
     except KeyboardInterrupt:

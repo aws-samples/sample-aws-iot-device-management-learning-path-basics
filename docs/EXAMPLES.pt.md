@@ -577,6 +577,171 @@ python scripts/cleanup_script.py
 # Confirm: DELETE
 ```
 
+### Provisionamento com Prefixo Personalizado de Thing
+```bash
+# Provisionar com prefixo personalizado de thing
+python scripts/provision_script.py
+# Thing prefix: Fleet-VIN-
+# Thing types: SedanVehicle
+# Versions: 1.0.0
+# Countries: US
+# Devices: 50
+
+# Saída esperada:
+# ✓ Created thing: Fleet-VIN-001
+# ✓ Created thing: Fleet-VIN-002
+# ✓ Created thing: Fleet-VIN-003
+# ...
+# ✓ Created thing: Fleet-VIN-050
+```
+
+### Visualização de Limpeza em Modo Dry-Run
+```bash
+# Visualizar o que seria excluído sem realmente excluir
+python scripts/cleanup_script.py
+# Enable dry-run mode: yes
+# Option 1: ALL resources
+
+# Saída esperada:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# MODO DRY RUN - Nenhum recurso será excluído
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 
+# Resumo de Limpeza (Dry Run):
+# ================
+# Recursos que seriam excluídos:
+#   - IoT Things: 50
+#   - Thing Shadows: 50
+#   - Certificates: 50
+#   - Thing Groups: 5
+#   - Packages: 3
+#   - Package Versions: 6
+#   - S3 Buckets: 1
+#   - IAM Roles: 2
+#   - Thing Types: 3
+#   Total: 170
+# 
+# Recursos que seriam ignorados:
+#   - IoT Things: 2 (recursos não do workshop)
+#   Total: 2
+# 
+# Tempo de Execução: 12.5 segundos
+```
+
+### Limpeza com Prefixo Personalizado de Thing
+```bash
+# Limpar recursos criados com prefixo personalizado
+python scripts/cleanup_script.py
+# Enable dry-run mode: no
+# Thing prefix: Fleet-VIN-
+# Option 1: ALL resources
+# Confirm: DELETE
+
+# Saída esperada:
+# Escaneando recursos do workshop...
+# ✓ Identificados 50 things correspondentes ao prefixo: Fleet-VIN-
+# ✓ Identificados 5 thing groups com tags do workshop
+# ✓ Identificados 3 packages com tags do workshop
+# 
+# Excluindo recursos...
+# [1/50] Thing excluído: Fleet-VIN-001 (correspondência de tag)
+# [2/50] Thing excluído: Fleet-VIN-002 (correspondência de tag)
+# ...
+# [50/50] Thing excluído: Fleet-VIN-050 (correspondência de tag)
+# 
+# Resumo de Limpeza:
+# ================
+# Recursos Excluídos:
+#   - IoT Things: 50
+#   - Thing Shadows: 50
+#   - Certificates: 50
+#   - Thing Groups: 5
+#   - Packages: 3
+#   Total: 158
+# 
+# Recursos Ignorados:
+#   - IoT Things: 0
+#   Total: 0
+```
+
+### Modo Debug com Métodos de Identificação
+```bash
+# Executar limpeza com modo debug para ver métodos de identificação
+python scripts/cleanup_script.py
+# Enable debug mode: yes
+# Enable dry-run mode: yes
+# Option 1: ALL resources
+
+# Saída esperada com detalhes de identificação:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# MODO DEBUG ATIVADO
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 
+# Escaneando IoT Things...
+# [DEBUG] Thing: Vehicle-VIN-001
+#   → Verificando tags... ✓ Tag do workshop encontrada
+#   → Identificação: CORRESPONDÊNCIA DE TAG
+# 
+# [DEBUG] Thing: Vehicle-VIN-002
+#   → Verificando tags... ✗ Sem tag do workshop
+#   → Verificando padrão de nomenclatura... ✓ Corresponde ao padrão Vehicle-VIN-*
+#   → Identificação: CORRESPONDÊNCIA DE NOMENCLATURA
+# 
+# [DEBUG] Thing: production-sensor-001
+#   → Verificando tags... ✗ Sem tag do workshop
+#   → Verificando padrão de nomenclatura... ✗ Sem correspondência de padrão
+#   → Identificação: IGNORADO (recurso não do workshop)
+# 
+# Escaneando Certificates...
+# [DEBUG] Certificate: abc123def456
+#   → Verificando tags... N/A (certificados não são marcáveis)
+#   → Verificando associação... ✓ Anexado a Vehicle-VIN-001
+#   → Identificação: CORRESPONDÊNCIA DE ASSOCIAÇÃO
+# 
+# [DEBUG] Certificate: xyz789ghi012
+#   → Verificando tags... N/A (certificados não são marcáveis)
+#   → Verificando associação... ✗ Não anexado a thing do workshop
+#   → Identificação: IGNORADO (recurso não do workshop)
+# 
+# Escaneando Thing Shadows...
+# [DEBUG] Shadow: Vehicle-VIN-001 (classic)
+#   → Verificando tags... N/A (shadows não são marcáveis)
+#   → Verificando associação... ✓ Pertence a Vehicle-VIN-001
+#   → Identificação: CORRESPONDÊNCIA DE ASSOCIAÇÃO
+# 
+# Escaneando Thing Groups...
+# [DEBUG] Thing Group: USFleet
+#   → Verificando tags... ✓ Tag do workshop encontrada
+#   → Identificação: CORRESPONDÊNCIA DE TAG
+# 
+# [DEBUG] Thing Group: ProductionFleet
+#   → Verificando tags... ✗ Sem tag do workshop
+#   → Verificando padrão de nomenclatura... ✗ Sem correspondência de padrão
+#   → Identificação: IGNORADO (recurso não do workshop)
+# 
+# Resumo de Limpeza (Dry Run):
+# ================
+# Recursos que seriam excluídos:
+#   - IoT Things: 48 (45 por tag, 3 por nomenclatura)
+#   - Certificates: 48 (por associação)
+#   - Thing Shadows: 48 (por associação)
+#   - Thing Groups: 5 (por tag)
+#   - Packages: 3 (por tag)
+#   Total: 152
+# 
+# Recursos que seriam ignorados:
+#   - IoT Things: 2 (sem correspondência)
+#   - Certificates: 1 (sem correspondência)
+#   - Thing Groups: 1 (sem correspondência)
+#   Total: 4
+# 
+# Resumo do Método de Identificação:
+#   - Correspondências de tag: 56
+#   - Correspondências de nomenclatura: 3
+#   - Correspondências de associação: 96
+#   - Sem correspondências (ignorados): 4
+```
+
 ## Padrões de Gerenciamento de Frota
 
 ### Implantação Geográfica

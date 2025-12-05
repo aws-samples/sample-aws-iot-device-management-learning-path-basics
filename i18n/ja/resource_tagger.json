@@ -1,0 +1,24 @@
+{
+  "tagging": {
+    "success": "✅ {} にタグが正常に適用されました",
+    "failed": "⚠️  {} へのタグ適用に失敗しました: {}",
+    "warning_continue": "⚠️  {} のタグ付けに失敗しましたが、リソースの作成を続行します",
+    "invalid_schema": "⚠️  {} の無効なタグスキーマ",
+    "unsupported_type": "⚠️  タグ付けがサポートされていないリソースタイプ: {}"
+  },
+  "debug": {
+    "applying_tags": "🔧 {} にワークショップタグを適用中 (タイプ: {})",
+    "tags_applied": "✅ 適用されたタグ: {}",
+    "tag_count": "📊 {} に {} 個のタグを適用しました",
+    "using_api": "🔧 タグ付けに {} API を使用",
+    "tag_validation": "🔍 タグスキーマを検証中...",
+    "tag_validation_passed": "✅ タグスキーマの検証に成功しました",
+    "tag_validation_failed": "❌ タグスキーマの検証に失敗しました"
+  },
+  "summary": {
+    "resources_without_tags": "📊 タグなしで作成されたリソース: {}",
+    "tag_failures": "⚠️  タグ適用の失敗",
+    "total_failures": "タグなしリソースの合計: {}",
+    "relying_on_naming": "ℹ️  これらのリソースは、クリーンアップ時に命名規則で識別されます"
+  }
+}

@@ -7,7 +7,9 @@
   "account_id_label": "🆔 Account ID:",
   
   "warnings": {
-    "debug_warning": "⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses)"
+    "debug_warning": "⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses)",
+    "tag_application_failed": "⚠️  Warning: Failed to apply workshop tags to command",
+    "relying_on_naming": "ℹ️  Command will rely on naming conventions for cleanup identification"
   },
   
   "prompts": {
@@ -79,7 +81,8 @@
     "executing_to_multiple_targets": "🚀 Executing command to {} targets...",
     "target_execution_success": "✅ Target {}/{}: {}",
     "target_execution_failed": "❌ Target {}/{}: {} - {}",
-    "multiple_executions_summary": "📊 Execution Summary: {} succeeded, {} failed out of {} total"
+    "multiple_executions_summary": "📊 Execution Summary: {} succeeded, {} failed out of {} total",
+    "tags_applied_success": "✅ Workshop tags applied successfully"
   },
   
   "validation": {

@@ -1,0 +1,28 @@
+{
+  "debug": {
+    "processing_resources": "========== Processando {0} recursos de {1} ==========",
+    "processing_item": "--- Processando {0}/{1}: {2} ---",
+    "resource_name": "Recurso: {0}",
+    "is_workshop_resource": "É Recurso do Workshop: {0}",
+    "identification_method": "Método de Identificação: {0}",
+    "skipping_non_workshop": "Ignorando recurso que não é do workshop: {0}",
+    "proceeding_to_delete": "Prosseguindo para excluir recurso do workshop: {0}",
+    "deleting_with_dependencies": "Excluindo com manipulador de dependências...",
+    "dependency_handler_result": "Resultado do manipulador de dependências: sucesso={0}, itens_excluídos={1}",
+    "deleting_single_resource": "Excluindo recurso único (sem dependências)...",
+    "single_resource_result": "Resultado da exclusão de recurso único: sucesso={0}",
+    "successfully_deleted": "✓ Excluído com sucesso: {0}",
+    "failed_to_delete": "✗ Falha ao excluir: {0}",
+    "completed_processing": "========== Processamento de {0} concluído ==========",
+    "processing_stats": "Total: {0}, Excluídos: {1}, Ignorados: {2}, Falhados: {3}",
+    "rate_limiting": "Limitação de taxa: aguardando {0:.3f}s para {1}"
+  },
+  "warning": {
+    "unknown_resource_type": "Tipo de recurso desconhecido: {0}"
+  },
+  "error": {
+    "processing_error": "Erro ao processar {0}: {1}",
+    "aws_api_error": "Erro da API AWS ao excluir {0}: {1}",
+    "unexpected_error": "Erro inesperado ao excluir recurso: {0}"
+  }
+}

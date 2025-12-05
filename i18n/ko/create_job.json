@@ -7,7 +7,8 @@
   "account_id_label": "   계정 ID: {}",
   "region_label": "   리전: {}",
   "warnings": {
-    "debug_warning": "⚠️  경고: 디버그 모드는 민감한 정보(ARN, 계정 ID, API 응답)를 노출합니다"
+    "debug_warning": "⚠️  경고: 디버그 모드는 민감한 정보(ARN, 계정 ID, API 응답)를 노출합니다",
+    "tag_failed": "⚠️  경고: 작업에 워크샵 태그를 적용하지 못했습니다 (작업은 정리 식별을 위해 명명 규칙에 의존합니다)"
   },
   "prompts": {
     "debug_mode": "🔧 디버그 모드를 활성화하시겠습니까 (모든 API 호출 및 응답 표시)? [y/N]: ",
@@ -51,6 +52,7 @@
     "getting_versions": "🔍 패키지의 버전을 가져오는 중: {}",
     "creating_job": "🚀 IoT 작업을 생성하는 중...",
     "job_created": "✅ IoT 작업이 성공적으로 생성되었습니다!",
+    "tags_applied": "🏷️  워크샵 태그가 작업에 적용되었습니다",
     "using_defaults": "✅ 기본 설정 사용: CONTINUOUS 대상 선택",
     "found_resources": "📊 사물 그룹 {}개와 패키지 {}개를 찾았습니다",
     "creation_completed": "🎉 작업 생성이 성공적으로 완료되었습니다!",

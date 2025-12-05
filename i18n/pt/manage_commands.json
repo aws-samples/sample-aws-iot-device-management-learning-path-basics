@@ -7,7 +7,9 @@
   "account_id_label": "🆔 ID da Conta:",
   
   "warnings": {
-    "debug_warning": "⚠️  AVISO: O modo de depuração expõe informações sensíveis (ARNs, IDs de conta, respostas de API)"
+    "debug_warning": "⚠️  AVISO: O modo de depuração expõe informações sensíveis (ARNs, IDs de conta, respostas de API)",
+    "tag_application_failed": "⚠️  Aviso: Falha ao aplicar tags do workshop ao comando",
+    "relying_on_naming": "ℹ️  O comando dependerá de convenções de nomenclatura para identificação de limpeza"
   },
   
   "prompts": {
@@ -79,7 +81,8 @@
     "executing_to_multiple_targets": "🚀 Executando comando para {} destinos...",
     "target_execution_success": "✅ Destino {}/{}: {}",
     "target_execution_failed": "❌ Destino {}/{}: {} - {}",
-    "multiple_executions_summary": "📊 Resumo da Execução: {} bem-sucedidos, {} falharam de {} no total"
+    "multiple_executions_summary": "📊 Resumo da Execução: {} bem-sucedidos, {} falharam de {} no total",
+    "tags_applied_success": "✅ Tags do workshop aplicadas com sucesso"
   },
   
   "validation": {

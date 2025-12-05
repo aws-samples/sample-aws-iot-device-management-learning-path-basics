@@ -1,0 +1,24 @@
+{
+  "tagging": {
+    "success": "✅ Etiquetas aplicadas exitosamente a {}",
+    "failed": "⚠️  Error al aplicar etiquetas a {}: {}",
+    "warning_continue": "⚠️  Falló el etiquetado para {}, continuando con la creación del recurso",
+    "invalid_schema": "⚠️  Esquema de etiquetas inválido para {}",
+    "unsupported_type": "⚠️  Tipo de recurso no compatible para etiquetado: {}"
+  },
+  "debug": {
+    "applying_tags": "🔧 Aplicando etiquetas del taller a {} (tipo: {})",
+    "tags_applied": "✅ Etiquetas aplicadas: {}",
+    "tag_count": "📊 Se aplicaron {} etiquetas a {}",
+    "using_api": "🔧 Usando API {} para etiquetado",
+    "tag_validation": "🔍 Validando esquema de etiquetas...",
+    "tag_validation_passed": "✅ Validación de esquema de etiquetas exitosa",
+    "tag_validation_failed": "❌ Validación de esquema de etiquetas fallida"
+  },
+  "summary": {
+    "resources_without_tags": "📊 Recursos creados sin etiquetas: {}",
+    "tag_failures": "⚠️  Fallos en la Aplicación de Etiquetas",
+    "total_failures": "Total de recursos sin etiquetas: {}",
+    "relying_on_naming": "ℹ️  Estos recursos serán identificados por convenciones de nomenclatura durante la limpieza"
+  }
+}

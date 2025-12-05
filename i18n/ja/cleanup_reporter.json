@@ -1,0 +1,30 @@
+{
+  "summary": {
+    "header": "クリーンアップサマリー",
+    "header_dry_run": "クリーンアップサマリー（ドライラン - リソースは削除されていません）",
+    "deleted_section": "削除されたリソース:",
+    "skipped_section": "スキップされたリソース:",
+    "failed_section": "削除失敗:",
+    "overall_section": "全体サマリー:",
+    "non_workshop_reason": "ワークショップ以外のリソース",
+    "total": "合計",
+    "total_resources_processed": "処理されたリソースの合計",
+    "would_delete": "削除予定",
+    "successfully_deleted": "正常に削除",
+    "skipped_non_workshop": "スキップ（ワークショップ以外）",
+    "failed": "失敗",
+    "execution_time": "実行時間"
+  },
+  "skipped": {
+    "header_debug": "スキップされた{}リソース（合計{}）:",
+    "count_only": "{}リソースをスキップ: {}（ワークショップ以外）"
+  },
+  "identification": {
+    "workshop": "ワークショップリソース",
+    "non_workshop": "ワークショップ以外",
+    "method_tag": "タグ一致",
+    "method_naming": "命名パターン",
+    "method_association": "関連付け",
+    "method_none": "一致なし"
+  }
+}

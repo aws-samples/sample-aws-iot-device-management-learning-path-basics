@@ -1,0 +1,30 @@
+{
+  "summary": {
+    "header": "Cleanup Summary",
+    "header_dry_run": "Cleanup Summary (DRY RUN - No Resources Deleted)",
+    "deleted_section": "Deleted Resources:",
+    "skipped_section": "Skipped Resources:",
+    "failed_section": "Failed Deletions:",
+    "overall_section": "Overall Summary:",
+    "non_workshop_reason": "non-workshop resources",
+    "total": "Total",
+    "total_resources_processed": "Total Resources Processed",
+    "would_delete": "Would Delete",
+    "successfully_deleted": "Successfully Deleted",
+    "skipped_non_workshop": "Skipped (Non-Workshop)",
+    "failed": "Failed",
+    "execution_time": "Execution Time"
+  },
+  "skipped": {
+    "header_debug": "Skipped {} Resources ({} total):",
+    "count_only": "Skipped {} resources: {} (non-workshop)"
+  },
+  "identification": {
+    "workshop": "Workshop Resource",
+    "non_workshop": "Non-Workshop",
+    "method_tag": "Tag Match",
+    "method_naming": "Naming Pattern",
+    "method_association": "Association",
+    "method_none": "No Match"
+  }
+}

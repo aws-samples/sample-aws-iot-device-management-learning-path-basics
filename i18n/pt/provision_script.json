@@ -4,7 +4,27 @@
   "aws_config": "📍 Configuração AWS:",
 
   "warnings": {
-    "debug_warning": "⚠️  AVISO: O modo debug expõe informações sensíveis (ARNs, IDs de conta, respostas da API)"
+    "debug_warning": "⚠️  AVISO: O modo debug expõe informações sensíveis (ARNs, IDs de conta, respostas da API)",
+    "tag_failure_thing_type": "⚠️  Aviso: Falha ao aplicar tags ao tipo de coisa {}",
+    "tag_failure_thing_group": "⚠️  Aviso: Falha ao aplicar tags ao grupo de coisas {}",
+    "tag_failure_package": "⚠️  Aviso: Falha ao aplicar tags ao pacote {}",
+    "tag_failure_s3_bucket": "⚠️  Aviso: Falha ao aplicar tags ao bucket S3 {}",
+    "tag_failure_iam_role": "⚠️  Aviso: Falha ao aplicar tags ao papel IAM {}"
+  },
+  "prefix_validation": {
+    "invalid_prefix_error": "Erro: Prefixo de coisa inválido '{}'",
+    "prefix_requirements_header": "O prefixo de coisa deve:",
+    "prefix_requirement_chars": "  - Conter apenas caracteres alfanuméricos, hífens (-), sublinhados (_), ou dois pontos (:)",
+    "prefix_requirement_length": "  - Ter no máximo 20 caracteres",
+    "prefix_requirement_not_empty": "  - Não estar vazio"
+  },
+  "tagging": {
+    "summary_title": "⚠️  Resumo de Aplicação de Tags",
+    "summary_separator": "==================================================",
+    "summary_intro": "Os seguintes recursos foram criados mas falharam ao receber tags do workshop:",
+    "summary_fallback": "Estes recursos dependerão das convenções de nomenclatura para identificação de limpeza.",
+    "resource_count": "{}: {} recurso(s)",
+    "total_without_tags": "Total de recursos sem tags: {}"
   },
   "prompts": {
     "debug_mode": "🔧 Habilitar modo debug (mostrar todas as chamadas e respostas da API)? [y/N]: ",

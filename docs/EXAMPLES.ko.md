@@ -577,6 +577,171 @@ python scripts/cleanup_script.py
 # Confirm: DELETE
 ```
 
+### 사용자 정의 Thing 접두사로 프로비저닝
+```bash
+# 사용자 정의 thing 접두사로 프로비저닝
+python scripts/provision_script.py
+# Thing prefix: Fleet-VIN-
+# Thing types: SedanVehicle
+# Versions: 1.0.0
+# Countries: US
+# Devices: 50
+
+# 예상 출력:
+# ✓ Created thing: Fleet-VIN-001
+# ✓ Created thing: Fleet-VIN-002
+# ✓ Created thing: Fleet-VIN-003
+# ...
+# ✓ Created thing: Fleet-VIN-050
+```
+
+### Dry-Run 모드로 정리 미리보기
+```bash
+# 실제로 삭제하지 않고 삭제될 항목 미리보기
+python scripts/cleanup_script.py
+# Enable dry-run mode: yes
+# Option 1: ALL resources
+
+# 예상 출력:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# DRY RUN 모드 - 리소스가 삭제되지 않습니다
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 
+# 정리 요약 (Dry Run):
+# ================
+# 삭제될 리소스:
+#   - IoT Things: 50
+#   - Thing Shadows: 50
+#   - Certificates: 50
+#   - Thing Groups: 5
+#   - Packages: 3
+#   - Package Versions: 6
+#   - S3 Buckets: 1
+#   - IAM Roles: 2
+#   - Thing Types: 3
+#   총계: 170
+# 
+# 건너뛸 리소스:
+#   - IoT Things: 2 (워크샵이 아닌 리소스)
+#   총계: 2
+# 
+# 실행 시간: 12.5초
+```
+
+### 사용자 정의 Thing 접두사로 정리
+```bash
+# 사용자 정의 접두사로 생성된 리소스 정리
+python scripts/cleanup_script.py
+# Enable dry-run mode: no
+# Thing prefix: Fleet-VIN-
+# Option 1: ALL resources
+# Confirm: DELETE
+
+# 예상 출력:
+# 워크샵 리소스 스캔 중...
+# ✓ 접두사와 일치하는 50개의 thing 식별됨: Fleet-VIN-
+# ✓ 워크샵 태그가 있는 5개의 thing groups 식별됨
+# ✓ 워크샵 태그가 있는 3개의 packages 식별됨
+# 
+# 리소스 삭제 중...
+# [1/50] 삭제된 thing: Fleet-VIN-001 (태그 일치)
+# [2/50] 삭제된 thing: Fleet-VIN-002 (태그 일치)
+# ...
+# [50/50] 삭제된 thing: Fleet-VIN-050 (태그 일치)
+# 
+# 정리 요약:
+# ================
+# 삭제된 리소스:
+#   - IoT Things: 50
+#   - Thing Shadows: 50
+#   - Certificates: 50
+#   - Thing Groups: 5
+#   - Packages: 3
+#   총계: 158
+# 
+# 건너뛴 리소스:
+#   - IoT Things: 0
+#   총계: 0
+```
+
+### 식별 방법을 표시하는 디버그 모드
+```bash
+# 디버그 모드로 정리를 실행하여 식별 방법 확인
+python scripts/cleanup_script.py
+# Enable debug mode: yes
+# Enable dry-run mode: yes
+# Option 1: ALL resources
+
+# 식별 세부 정보가 포함된 예상 출력:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 디버그 모드 활성화됨
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 
+# IoT Things 스캔 중...
+# [DEBUG] Thing: Vehicle-VIN-001
+#   → 태그 확인 중... ✓ 워크샵 태그 발견
+#   → 식별: 태그 일치
+# 
+# [DEBUG] Thing: Vehicle-VIN-002
+#   → 태그 확인 중... ✗ 워크샵 태그 없음
+#   → 명명 패턴 확인 중... ✓ Vehicle-VIN-* 패턴과 일치
+#   → 식별: 명명 일치
+# 
+# [DEBUG] Thing: production-sensor-001
+#   → 태그 확인 중... ✗ 워크샵 태그 없음
+#   → 명명 패턴 확인 중... ✗ 패턴 일치 없음
+#   → 식별: 건너뜀 (워크샵이 아닌 리소스)
+# 
+# Certificates 스캔 중...
+# [DEBUG] Certificate: abc123def456
+#   → 태그 확인 중... N/A (인증서는 태그 지정 불가)
+#   → 연결 확인 중... ✓ Vehicle-VIN-001에 연결됨
+#   → 식별: 연결 일치
+# 
+# [DEBUG] Certificate: xyz789ghi012
+#   → 태그 확인 중... N/A (인증서는 태그 지정 불가)
+#   → 연결 확인 중... ✗ 워크샵 thing에 연결되지 않음
+#   → 식별: 건너뜀 (워크샵이 아닌 리소스)
+# 
+# Thing Shadows 스캔 중...
+# [DEBUG] Shadow: Vehicle-VIN-001 (classic)
+#   → 태그 확인 중... N/A (shadow는 태그 지정 불가)
+#   → 연결 확인 중... ✓ Vehicle-VIN-001에 속함
+#   → 식별: 연결 일치
+# 
+# Thing Groups 스캔 중...
+# [DEBUG] Thing Group: USFleet
+#   → 태그 확인 중... ✓ 워크샵 태그 발견
+#   → 식별: 태그 일치
+# 
+# [DEBUG] Thing Group: ProductionFleet
+#   → 태그 확인 중... ✗ 워크샵 태그 없음
+#   → 명명 패턴 확인 중... ✗ 패턴 일치 없음
+#   → 식별: 건너뜀 (워크샵이 아닌 리소스)
+# 
+# 정리 요약 (Dry Run):
+# ================
+# 삭제될 리소스:
+#   - IoT Things: 48 (태그 45개, 명명 3개)
+#   - Certificates: 48 (연결)
+#   - Thing Shadows: 48 (연결)
+#   - Thing Groups: 5 (태그)
+#   - Packages: 3 (태그)
+#   총계: 152
+# 
+# 건너뛸 리소스:
+#   - IoT Things: 2 (일치 없음)
+#   - Certificates: 1 (일치 없음)
+#   - Thing Groups: 1 (일치 없음)
+#   총계: 4
+# 
+# 식별 방법 요약:
+#   - 태그 일치: 56
+#   - 명명 일치: 3
+#   - 연결 일치: 96
+#   - 일치 없음 (건너뜀): 4
+```
+
 ## 플릿 관리 패턴
 
 ### 지리적 배포

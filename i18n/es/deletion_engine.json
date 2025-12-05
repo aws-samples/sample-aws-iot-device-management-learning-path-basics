@@ -1,0 +1,28 @@
+{
+  "debug": {
+    "processing_resources": "========== Procesando {0} recursos de {1} ==========",
+    "processing_item": "--- Procesando {0}/{1}: {2} ---",
+    "resource_name": "Recurso: {0}",
+    "is_workshop_resource": "Es Recurso del Taller: {0}",
+    "identification_method": "Método de Identificación: {0}",
+    "skipping_non_workshop": "Omitiendo recurso que no es del taller: {0}",
+    "proceeding_to_delete": "Procediendo a eliminar recurso del taller: {0}",
+    "deleting_with_dependencies": "Eliminando con manejador de dependencias...",
+    "dependency_handler_result": "Resultado del manejador de dependencias: éxito={0}, elementos_eliminados={1}",
+    "deleting_single_resource": "Eliminando recurso único (sin dependencias)...",
+    "single_resource_result": "Resultado de eliminación de recurso único: éxito={0}",
+    "successfully_deleted": "✓ Eliminado exitosamente: {0}",
+    "failed_to_delete": "✗ Error al eliminar: {0}",
+    "completed_processing": "========== Procesamiento de {0} completado ==========",
+    "processing_stats": "Total: {0}, Eliminados: {1}, Omitidos: {2}, Fallidos: {3}",
+    "rate_limiting": "Limitación de velocidad: esperando {0:.3f}s para {1}"
+  },
+  "warning": {
+    "unknown_resource_type": "Tipo de recurso desconocido: {0}"
+  },
+  "error": {
+    "processing_error": "Error al procesar {0}: {1}",
+    "aws_api_error": "Error de API de AWS al eliminar {0}: {1}",
+    "unexpected_error": "Error inesperado al eliminar recurso: {0}"
+  }
+}

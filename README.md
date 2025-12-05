@@ -87,14 +87,14 @@ pip install -r requirements.txt
 aws configure
 
 # 3. Complete workflow (recommended sequence)
-python scripts/provision_script.py        # Create infrastructure
+python scripts/provision_script.py        # Create infrastructure with tagging
 python scripts/manage_dynamic_groups.py   # Create device groups
 python scripts/manage_packages.py         # Manage firmware packages
 python scripts/create_job.py              # Deploy firmware updates
 python scripts/simulate_job_execution.py  # Simulate device updates
 python scripts/explore_jobs.py            # Monitor job progress
 python scripts/manage_commands.py         # Send real-time commands to devices
-python scripts/cleanup_script.py          # Clean up resources
+python scripts/cleanup_script.py          # Safe cleanup with resource identification
 ```
 
 ## 📚 Available Scripts
@@ -127,6 +127,45 @@ export AWS_IOT_LANG=en                    # Set default language (en, es, fr, et
 - **Parallel Processing**: Concurrent operations when not in debug mode
 - **Rate Limiting**: Automatic AWS API throttling compliance
 - **Progress Tracking**: Real-time operation status
+- **Resource Tagging**: Automatic workshop tags for safe cleanup
+- **Configurable Naming**: Customizable device naming patterns
+
+### Resource Tagging
+
+All workshop scripts automatically tag created resources with `workshop=learning-aws-iot-dm-basics` for safe identification during cleanup. This ensures only workshop-created resources are deleted.
+
+**Tagged Resources**:
+- IoT Thing Types
+- IoT Thing Groups (static and dynamic)
+- IoT Software Packages
+- IoT Jobs
+- Amazon S3 Buckets
+- IAM Roles
+
+**Non-Tagged Resources** (identified by naming patterns):
+- IoT Things (use naming conventions)
+- Certificates (identified by association)
+- Thing Shadows (identified by association)
+
+### Device Naming Configuration
+
+Customize device naming patterns with the `--things-prefix` parameter:
+
+```bash
+# Default naming: Vehicle-VIN-001, Vehicle-VIN-002, etc.
+python scripts/provision_script.py
+
+# Custom prefix: Fleet-Device-001, Fleet-Device-002, etc.
+python scripts/provision_script.py --things-prefix "Fleet-Device-"
+
+# Custom prefix for cleanup (must match provision prefix)
+python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
+```
+
+**Prefix Requirements**:
+- Only alphanumeric characters, hyphens, underscores, and colons
+- Maximum 20 characters
+- Sequential numbers are automatically zero-padded (001-999)
 
 ## 🌍 Internationalization Support
 
@@ -226,13 +265,78 @@ python scripts/cleanup_script.py
 # Type: DELETE
 ```
 
+### Safe Cleanup Features
+
+The cleanup script uses multiple identification methods to ensure only workshop resources are deleted:
+
+1. **Tag-Based Identification** (Primary): Checks for `workshop=learning-aws-iot-dm-basics` tag
+2. **Naming Pattern Matching** (Secondary): Matches known workshop naming conventions
+3. **Association-Based** (Tertiary): Identifies resources attached to workshop resources
+
+**Cleanup Options**:
+```bash
+# Standard cleanup (interactive)
+python scripts/cleanup_script.py
+
+# Dry-run mode (preview without deleting)
+python scripts/cleanup_script.py --dry-run
+
+# Custom device prefix (must match provision prefix)
+python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
+
+# Dry-run with custom prefix
+python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
+```
+
 **What cleanup removes:**
-- All AWS IoT devices and groups
-- Amazon S3 buckets and firmware files
-- AWS IoT software packages
-- AWS IoT command templates
-- IAM roles and policies
+- All AWS IoT devices and groups (with workshop tags or matching naming patterns)
+- Amazon S3 buckets and firmware files (tagged)
+- AWS IoT software packages (tagged)
+- AWS IoT command templates (tagged)
+- IAM roles and policies (tagged)
 - Fleet Indexing configuration
+- Associated certificates and shadows
+
+**Safety Features**:
+- Non-workshop resources are automatically skipped
+- Detailed summary shows deleted and skipped resources
+- Debug mode shows identification method for each resource
+- Dry-run mode allows preview before actual deletion
+
+## 📁 Project Structure
+
+```
+sample-aws-iot-device-management-learning-path-basics/
+├── scripts/                          # User-facing executable scripts
+│   ├── provision_script.py          # Provision IoT resources
+│   ├── cleanup_script.py            # Clean up workshop resources
+│   ├── manage_packages.py           # Package management
+│   ├── manage_dynamic_groups.py     # Dynamic group operations
+│   ├── create_job.py                # Create OTA jobs
+│   ├── simulate_job_execution.py    # Simulate device updates
+│   ├── explore_jobs.py              # Monitor job progress
+│   └── manage_commands.py           # Send real-time commands
+├── iot_helpers/                     # Internal helper package
+│   ├── cleanup/                     # Cleanup operation modules
+│   │   ├── reporter.py             # Cleanup reporting
+│   │   ├── deletion_engine.py      # Resource deletion
+│   │   └── resource_identifier.py  # Resource identification
+│   └── utils/                       # Utility modules
+│       ├── naming_conventions.py   # Naming patterns
+│       ├── resource_tagger.py      # Resource tagging
+│       └── dependency_handler.py   # Dependency management
+├── i18n/                            # Internationalization
+│   ├── common.json                 # Shared messages
+│   ├── loader.py                   # Message loading
+│   ├── language_selector.py        # Language selection
+│   └── {language_code}/            # Language-specific messages
+├── docs/                            # Documentation
+│   ├── DETAILED_SCRIPTS.md         # Script documentation
+│   ├── EXAMPLES.md                 # Usage examples
+│   └── TROUBLESHOOTING.md          # Troubleshooting guide
+├── tests/                           # Test files
+└── requirements.txt                 # Python dependencies
+```
 
 ## 🔧 Developer Guide: Adding New Languages
 

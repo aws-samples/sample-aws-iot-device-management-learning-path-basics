@@ -7,7 +7,8 @@
   "account_id_label": "   Account ID: {}",
   "region_label": "   Region: {}",
   "warnings": {
-    "debug_warning": "⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses)"
+    "debug_warning": "⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses)",
+    "tag_failed": "⚠️  Warning: Failed to apply workshop tags to job (job will rely on naming for cleanup identification)"
   },
   "prompts": {
     "debug_mode": "🔧 Enable debug mode (show all API calls and responses)? [y/N]: ",
@@ -51,6 +52,7 @@
     "getting_versions": "🔍 Getting versions for package: {}",
     "creating_job": "🚀 Creating IoT job...",
     "job_created": "✅ IoT job created successfully!",
+    "tags_applied": "🏷️  Workshop tags applied to job",
     "using_defaults": "✅ Using default settings: CONTINUOUS target selection",
     "found_resources": "📊 Found {} thing groups and {} packages",
     "creation_completed": "🎉 Job creation completed successfully!",

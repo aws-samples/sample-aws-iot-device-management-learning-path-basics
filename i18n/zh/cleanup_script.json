@@ -5,19 +5,16 @@
   "learning_description": "此脚本演示了正确的 AWS IoT 资源清理和生命周期管理。\n它展示了如何按正确顺序安全删除 AWS IoT 资源，处理服务之间的依赖关系，\n并避免孤立资源。理解清理对于成本管理和维护干净的 AWS 环境至关重要。\n此脚本处理 Vehicle-VIN-* 设备和基于 AWS IoT Fleet Indexing 的设备组，\n遵循统一的命名约定。",
   "region_label": "📍 区域：",
   "account_id_label": "🆔 账户 ID：",
-  
   "warnings": {
     "debug_warning": "⚠️  警告：调试模式会暴露敏感信息（ARN、账户 ID、API 响应）",
     "deletion_warning": "⚠️  警告：这将永久删除：",
     "starting_cleanup": "🚨 开始清理过程..."
   },
-  
   "prompts": {
     "debug_mode": "🔧 启用调试模式（显示所有 API 调用和响应）？[y/N]：",
     "cleanup_choice": "输入选择 [1-3]：",
     "confirm_deletion": "输入 'DELETE' 确认："
   },
-  
   "status": {
     "debug_enabled": "✅ 调试模式已启用",
     "clients_initialized": "🔍 调试：客户端配置：",
@@ -68,9 +65,43 @@
     "package_role_deleted": "✅ AWS IoT 软件包目录配置角色删除成功",
     "package_config_disabled": "✅ AWS IoT 软件包目录全局配置已禁用",
     "fleet_indexing_disabled": "✅ AWS IoT Fleet Indexing 禁用成功",
-    "completion_summary": "📊 {} 删除完成：{}/{} 成功"
+    "completion_summary": "📊 {} 删除完成：{}/{} 成功",
+    "scanning_commands": "🔍 正在扫描 IoT 命令...",
+    "found_total_things": "在账户中找到 {} 个物品总数",
+    "found_total_groups": "在账户中找到 {} 个物品组总数",
+    "found_total_packages": "在账户中找到 {} 个软件包总数",
+    "found_total_commands": "在账户中找到 {} 个命令总数",
+    "found_total_jobs": "在账户中找到 {} 个作业总数",
+    "found_workshop_types": "在 {} 个总数中找到 {} 个研讨会物品类型",
+    "dry_run_things": "[演练模式] 将删除符合研讨会标准的物品",
+    "dry_run_groups": "[演练模式] 将删除符合研讨会标准的物品组",
+    "dry_run_types": "[演练模式] 将弃用并删除 {} 个研讨会物品类型",
+    "dry_run_packages": "[演练模式] 将删除符合研讨会标准的软件包",
+    "dry_run_buckets": "[演练模式] 将删除符合研讨会标准的 S3 存储桶",
+    "dry_run_roles": "[演练模式] 将删除符合研讨会标准的 IAM 角色",
+    "dry_run_commands": "[演练模式] 将删除符合研讨会标准的命令",
+    "dry_run_jobs": "[演练模式] 将删除符合研讨会标准的作业",
+    "filtering_things": "正在过滤和删除研讨会物品...",
+    "filtering_groups": "正在过滤和删除研讨会物品组...",
+    "filtering_packages": "正在过滤和删除研讨会软件包...",
+    "filtering_commands": "正在过滤和删除研讨会命令...",
+    "filtering_jobs": "正在过滤和删除研讨会作业...",
+    "identifying_types": "正在识别研讨会物品类型...",
+    "no_workshop_types": "未找到要删除的研讨会物品类型",
+    "deprecated_types": "已弃用 {} 个研讨会物品类型",
+    "processed_things": "已处理 {} 个研讨会物品：{} 个已删除，{} 个失败",
+    "processed_groups": "已处理 {} 个研讨会物品组：{} 个已删除，{} 个失败",
+    "processed_packages": "已处理 {} 个研讨会软件包：{} 个已删除，{} 个失败",
+    "processed_commands": "已处理 {} 个研讨会命令：{} 个已删除，{} 个失败",
+    "processed_jobs": "已处理 {} 个研讨会作业：{} 个已删除，{} 个失败",
+    "skipped_things": "已跳过 {} 个非研讨会物品",
+    "skipped_groups": "已跳过 {} 个非研讨会物品组",
+    "skipped_types": "已跳过 {} 个非研讨会物品类型",
+    "skipped_packages": "已跳过 {} 个非研讨会软件包",
+    "skipped_buckets": "已跳过 {} 个非研讨会 S3 存储桶",
+    "skipped_commands": "已跳过 {} 个非研讨会命令",
+    "skipped_jobs": "已跳过 {} 个非研讨会作业"
   },
-  
   "errors": {
     "invalid_choice": "❌ 无效选择。请输入 1-3",
     "invalid_number": "❌ 请输入有效数字",
@@ -97,7 +128,6 @@
     "client_init_error": "❌ 初始化 AWS 客户端错误：{}",
     "cleanup_failed": "❌ 清理失败，错误：{}"
   },
-  
   "debug": {
     "debug_operation": "🔍 调试：{}：{}",
     "api_call": "📤 API 调用：{}",
@@ -107,7 +137,6 @@
     "full_error": "🔍 调试：完整错误响应：",
     "full_traceback": "🔍 调试：完整回溯："
   },
-  
   "ui": {
     "cleanup_menu": "🎯 选择清理选项：",
     "all_resources": "1. 所有资源（AWS IoT 设备、AWS IoT 设备组、AWS IoT 设备类型、AWS IoT 软件包目录包、Amazon S3 存储桶、AWS Identity and Access Management (IAM) 角色）",
@@ -115,7 +144,6 @@
     "groups_only": "3. 仅 AWS IoT 设备组",
     "cancelled": "👋 用户取消清理。再见！"
   },
-  
   "results": {
     "no_things": "ℹ️  未找到要删除的 AWS IoT 设备",
     "no_groups": "ℹ️  未找到要删除的 AWS IoT 设备组",
@@ -129,6 +157,7 @@
     "found_packages": "📊 找到 {} 个要删除的 AWS IoT 软件包目录包",
     "found_buckets": "📊 找到 {} 个要删除的存储桶",
     "found_jobs": "📊 找到 {} 个要删除的 AWS IoT 作业",
-    "bucket_tip": "💡 提示：如果您的存储桶在不同区域，请设置 AWS_DEFAULT_REGION 环境变量"
+    "bucket_tip": "💡 提示：如果您的存储桶在不同区域，请设置 AWS_DEFAULT_REGION 环境变量",
+    "no_commands": "ℹ️  未找到 IoT 命令"
   }
 }

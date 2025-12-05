@@ -577,6 +577,171 @@ python scripts/cleanup_script.py
 # Confirm: DELETE
 ```
 
+### カスタムThingプレフィックスでのプロビジョニング
+```bash
+# カスタムthingプレフィックスでプロビジョニング
+python scripts/provision_script.py
+# Thing prefix: Fleet-VIN-
+# Thing types: SedanVehicle
+# Versions: 1.0.0
+# Countries: US
+# Devices: 50
+
+# 期待される出力:
+# ✓ Created thing: Fleet-VIN-001
+# ✓ Created thing: Fleet-VIN-002
+# ✓ Created thing: Fleet-VIN-003
+# ...
+# ✓ Created thing: Fleet-VIN-050
+```
+
+### Dry-Runモードでのクリーンアッププレビュー
+```bash
+# 実際に削除せずに削除対象をプレビュー
+python scripts/cleanup_script.py
+# Enable dry-run mode: yes
+# Option 1: ALL resources
+
+# 期待される出力:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# DRY RUNモード - リソースは削除されません
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 
+# クリーンアップサマリー (Dry Run):
+# ================
+# 削除されるリソース:
+#   - IoT Things: 50
+#   - Thing Shadows: 50
+#   - Certificates: 50
+#   - Thing Groups: 5
+#   - Packages: 3
+#   - Package Versions: 6
+#   - S3 Buckets: 1
+#   - IAM Roles: 2
+#   - Thing Types: 3
+#   合計: 170
+# 
+# スキップされるリソース:
+#   - IoT Things: 2 (ワークショップ以外のリソース)
+#   合計: 2
+# 
+# 実行時間: 12.5秒
+```
+
+### カスタムThingプレフィックスでのクリーンアップ
+```bash
+# カスタムプレフィックスで作成されたリソースをクリーンアップ
+python scripts/cleanup_script.py
+# Enable dry-run mode: no
+# Thing prefix: Fleet-VIN-
+# Option 1: ALL resources
+# Confirm: DELETE
+
+# 期待される出力:
+# ワークショップリソースをスキャン中...
+# ✓ プレフィックスに一致する50個のthingを識別: Fleet-VIN-
+# ✓ ワークショップタグを持つ5個のthing groupsを識別
+# ✓ ワークショップタグを持つ3個のpackagesを識別
+# 
+# リソースを削除中...
+# [1/50] 削除されたthing: Fleet-VIN-001 (タグ一致)
+# [2/50] 削除されたthing: Fleet-VIN-002 (タグ一致)
+# ...
+# [50/50] 削除されたthing: Fleet-VIN-050 (タグ一致)
+# 
+# クリーンアップサマリー:
+# ================
+# 削除されたリソース:
+#   - IoT Things: 50
+#   - Thing Shadows: 50
+#   - Certificates: 50
+#   - Thing Groups: 5
+#   - Packages: 3
+#   合計: 158
+# 
+# スキップされたリソース:
+#   - IoT Things: 0
+#   合計: 0
+```
+
+### 識別方法を表示するデバッグモード
+```bash
+# デバッグモードでクリーンアップを実行して識別方法を確認
+python scripts/cleanup_script.py
+# Enable debug mode: yes
+# Enable dry-run mode: yes
+# Option 1: ALL resources
+
+# 識別詳細を含む期待される出力:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# デバッグモード有効
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 
+# IoT Thingsをスキャン中...
+# [DEBUG] Thing: Vehicle-VIN-001
+#   → タグを確認中... ✓ ワークショップタグが見つかりました
+#   → 識別: タグ一致
+# 
+# [DEBUG] Thing: Vehicle-VIN-002
+#   → タグを確認中... ✗ ワークショップタグなし
+#   → 命名パターンを確認中... ✓ Vehicle-VIN-*パターンに一致
+#   → 識別: 命名一致
+# 
+# [DEBUG] Thing: production-sensor-001
+#   → タグを確認中... ✗ ワークショップタグなし
+#   → 命名パターンを確認中... ✗ パターン一致なし
+#   → 識別: スキップ (ワークショップ以外のリソース)
+# 
+# Certificatesをスキャン中...
+# [DEBUG] Certificate: abc123def456
+#   → タグを確認中... N/A (証明書はタグ付け不可)
+#   → 関連付けを確認中... ✓ Vehicle-VIN-001に添付
+#   → 識別: 関連付け一致
+# 
+# [DEBUG] Certificate: xyz789ghi012
+#   → タグを確認中... N/A (証明書はタグ付け不可)
+#   → 関連付けを確認中... ✗ ワークショップthingに添付されていません
+#   → 識別: スキップ (ワークショップ以外のリソース)
+# 
+# Thing Shadowsをスキャン中...
+# [DEBUG] Shadow: Vehicle-VIN-001 (classic)
+#   → タグを確認中... N/A (shadowはタグ付け不可)
+#   → 関連付けを確認中... ✓ Vehicle-VIN-001に属しています
+#   → 識別: 関連付け一致
+# 
+# Thing Groupsをスキャン中...
+# [DEBUG] Thing Group: USFleet
+#   → タグを確認中... ✓ ワークショップタグが見つかりました
+#   → 識別: タグ一致
+# 
+# [DEBUG] Thing Group: ProductionFleet
+#   → タグを確認中... ✗ ワークショップタグなし
+#   → 命名パターンを確認中... ✗ パターン一致なし
+#   → 識別: スキップ (ワークショップ以外のリソース)
+# 
+# クリーンアップサマリー (Dry Run):
+# ================
+# 削除されるリソース:
+#   - IoT Things: 48 (タグ45個、命名3個)
+#   - Certificates: 48 (関連付け)
+#   - Thing Shadows: 48 (関連付け)
+#   - Thing Groups: 5 (タグ)
+#   - Packages: 3 (タグ)
+#   合計: 152
+# 
+# スキップされるリソース:
+#   - IoT Things: 2 (一致なし)
+#   - Certificates: 1 (一致なし)
+#   - Thing Groups: 1 (一致なし)
+#   合計: 4
+# 
+# 識別方法サマリー:
+#   - タグ一致: 56
+#   - 命名一致: 3
+#   - 関連付け一致: 96
+#   - 一致なし (スキップ): 4
+```
+
 ## フリート管理パターン
 
 ### 地理的デプロイメント

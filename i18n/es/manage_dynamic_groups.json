@@ -7,7 +7,9 @@
   "account_id_label": "🆔 ID de Cuenta:",
   
   "warnings": {
-    "debug_warning": "⚠️  ADVERTENCIA: El modo de depuración expone información sensible (ARNs, IDs de cuenta, respuestas de API)"
+    "debug_warning": "⚠️  ADVERTENCIA: El modo de depuración expone información sensible (ARNs, IDs de cuenta, respuestas de API)",
+    "tag_failed": "⚠️  Advertencia: Error al aplicar etiquetas de taller a {}",
+    "naming_fallback": "💡 El recurso será identificado por convención de nomenclatura durante la limpieza"
   },
   
   "prompts": {
@@ -47,7 +49,8 @@
     "group_created": "✅ Grupo Dinámico de Objetos creado exitosamente",
     "group_deleted": "✅ Grupo Dinámico de Objetos '{}' eliminado exitosamente",
     "creation_completed": "🎉 ¡Creación de grupo dinámico completada exitosamente!",
-    "auto_update_note": "💡 El grupo se actualizará automáticamente cuando cambien los atributos del dispositivo"
+    "auto_update_note": "💡 El grupo se actualizará automáticamente cuando cambien los atributos del dispositivo",
+    "tags_applied": "✅ Etiquetas de taller aplicadas exitosamente"
   },
   
   "errors": {

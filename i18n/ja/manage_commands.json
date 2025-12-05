@@ -7,7 +7,9 @@
   "account_id_label": "🆔 アカウントID:",
   
   "warnings": {
-    "debug_warning": "⚠️  警告: デバッグモードは機密情報（ARN、アカウントID、APIレスポンス）を表示します"
+    "debug_warning": "⚠️  警告: デバッグモードは機密情報（ARN、アカウントID、APIレスポンス）を表示します",
+    "tag_application_failed": "⚠️  警告: コマンドへのワークショップタグの適用に失敗しました",
+    "relying_on_naming": "ℹ️  コマンドはクリーンアップ識別のために命名規則に依存します"
   },
   
   "prompts": {
@@ -79,7 +81,8 @@
     "executing_to_multiple_targets": "🚀 {} 個のターゲットにコマンドを実行中...",
     "target_execution_success": "✅ ターゲット {}/{}: {}",
     "target_execution_failed": "❌ ターゲット {}/{}: {} - {}",
-    "multiple_executions_summary": "📊 実行サマリー: {} 個中 {} 個成功、{} 個失敗"
+    "multiple_executions_summary": "📊 実行サマリー: {} 個中 {} 個成功、{} 個失敗",
+    "tags_applied_success": "✅ ワークショップタグが正常に適用されました"
   },
   
   "validation": {

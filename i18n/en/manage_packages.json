@@ -9,7 +9,8 @@
   "warnings": {
     "debug_warning": "⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses)",
     "revert_warning": "⚠️  WARNING: This will update {} AWS IoT Device Shadows to version '{}'",
-    "important_changes": "⚠️  Important changes:"
+    "important_changes": "⚠️  Important changes:",
+    "tag_failed": "⚠️  Warning: Failed to apply workshop tags (resource will rely on naming conventions for cleanup)"
   },
   
   "prompts": {
@@ -50,7 +51,8 @@
     "role_exists": "✅ Package config role already exists",
     "policy_attached": "✅ Package config policy attached",
     "revert_completed": "✅ Version revert completed: {}/{} successful",
-    "all_devices_current": "✅ All devices of type '{}' are already on version '{}'"
+    "all_devices_current": "✅ All devices of type '{}' are already on version '{}'",
+    "tags_applied": "✅ Workshop tags applied successfully"
   },
   
   "errors": {

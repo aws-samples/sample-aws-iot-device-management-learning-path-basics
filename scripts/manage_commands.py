@@ -14,11 +14,17 @@ import boto3
 from botocore.exceptions import ClientError
 from colorama import Fore, Style, init
 
-# Add i18n to path
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "i18n"))
+# Add repository root and i18n to path
+repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if repo_root not in sys.path:
+    sys.path.insert(0, repo_root)
+sys.path.append(os.path.join(repo_root, "i18n"))
 
 from language_selector import get_language
 from loader import load_messages
+
+# Import resource tagging module from iot_helpers package
+from iot_helpers.utils.resource_tagger import apply_workshop_tags
 
 # Initialize colorama
 init()
@@ -824,6 +830,21 @@ class IoTCommandsManager:
             print(f"{Fore.CYAN}{self.get_message('results.command_name', command_name)}{Style.RESET_ALL}")
             print(f"{Fore.CYAN}{self.get_message('status.command_arn', command_arn)}{Style.RESET_ALL}")
             print(f"{Fore.CYAN}{self.get_message('results.description', description)}{Style.RESET_ALL}")
+
+            # Apply workshop tags to the command
+            tag_success = apply_workshop_tags(
+                client=self.iot_client,
+                resource_arn=command_arn,
+                resource_type='command'
+            )
+
+            if tag_success:
+                if self.debug_mode:
+                    print(f"{Fore.GREEN}{self.get_message('status.tags_applied_success')}{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.YELLOW}{self.get_message('warnings.tag_application_failed')}{Style.RESET_ALL}")
+                if self.debug_mode:
+                    print(f"{Fore.YELLOW}{self.get_message('warnings.relying_on_naming')}{Style.RESET_ALL}")
 
             return command_arn
 

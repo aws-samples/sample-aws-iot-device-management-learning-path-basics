@@ -4,7 +4,27 @@
   "aws_config": "📍 AWS設定:",
 
   "warnings": {
-    "debug_warning": "⚠️  警告: デバッグモードは機密情報（ARN、アカウントID、APIレスポンス）を公開します"
+    "debug_warning": "⚠️  警告: デバッグモードは機密情報（ARN、アカウントID、APIレスポンス）を公開します",
+    "tag_failure_thing_type": "⚠️  警告: モノタイプ {} へのタグ適用に失敗しました",
+    "tag_failure_thing_group": "⚠️  警告: モノグループ {} へのタグ適用に失敗しました",
+    "tag_failure_package": "⚠️  警告: パッケージ {} へのタグ適用に失敗しました",
+    "tag_failure_s3_bucket": "⚠️  警告: S3バケット {} へのタグ適用に失敗しました",
+    "tag_failure_iam_role": "⚠️  警告: IAMロール {} へのタグ適用に失敗しました"
+  },
+  "prefix_validation": {
+    "invalid_prefix_error": "エラー: 無効なモノプレフィックス '{}'",
+    "prefix_requirements_header": "モノプレフィックスは以下の条件を満たす必要があります:",
+    "prefix_requirement_chars": "  - 英数字、ハイフン (-)、アンダースコア (_)、またはコロン (:) のみを含む",
+    "prefix_requirement_length": "  - 20文字以下である",
+    "prefix_requirement_not_empty": "  - 空でない"
+  },
+  "tagging": {
+    "summary_title": "⚠️  タグ適用サマリー",
+    "summary_separator": "==================================================",
+    "summary_intro": "以下のリソースは作成されましたが、ワークショップタグの受信に失敗しました:",
+    "summary_fallback": "これらのリソースは、クリーンアップ識別のために命名規則に依存します。",
+    "resource_count": "{}: {} リソース",
+    "total_without_tags": "タグなしリソースの合計: {}"
   },
   "prompts": {
     "debug_mode": "🔧 デバッグモード（すべてのAPI呼び出しとレスポンスを表示）を有効にしますか？ [y/N]: ",

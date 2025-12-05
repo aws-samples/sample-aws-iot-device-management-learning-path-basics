@@ -7,7 +7,8 @@
   "account_id_label": "   ID da Conta: {}",
   "region_label": "   Região: {}",
   "warnings": {
-    "debug_warning": "⚠️  AVISO: O modo debug expõe informações sensíveis (ARNs, IDs de conta, respostas da API)"
+    "debug_warning": "⚠️  AVISO: O modo debug expõe informações sensíveis (ARNs, IDs de conta, respostas da API)",
+    "tag_failed": "⚠️  Aviso: Falha ao aplicar tags de workshop ao trabalho (o trabalho dependerá da nomenclatura para identificação de limpeza)"
   },
   "prompts": {
     "debug_mode": "🔧 Habilitar modo debug (mostrar todas as chamadas e respostas da API)? [y/N]: ",
@@ -51,6 +52,7 @@
     "getting_versions": "🔍 Obtendo versões para o pacote: {}",
     "creating_job": "🚀 Criando trabalho IoT...",
     "job_created": "✅ Trabalho IoT criado com sucesso!",
+    "tags_applied": "🏷️  Tags de workshop aplicadas ao trabalho",
     "using_defaults": "✅ Usando configurações padrão: seleção de alvo CONTINUOUS",
     "found_resources": "📊 Encontrados {} grupos de coisas e {} pacotes",
     "creation_completed": "🎉 Criação do trabalho concluída com sucesso!",

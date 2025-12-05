@@ -7,7 +7,9 @@
   "account_id_label": "🆔 Account ID:",
   
   "warnings": {
-    "debug_warning": "⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses)"
+    "debug_warning": "⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses)",
+    "tag_failed": "⚠️  Warning: Failed to apply workshop tags to {}",
+    "naming_fallback": "💡 Resource will be identified by naming convention during cleanup"
   },
   
   "prompts": {
@@ -47,7 +49,8 @@
     "group_created": "✅ Dynamic Thing Group created successfully",
     "group_deleted": "✅ Dynamic Thing Group '{}' deleted successfully",
     "creation_completed": "🎉 Dynamic group creation completed successfully!",
-    "auto_update_note": "💡 The group will automatically update as device attributes change"
+    "auto_update_note": "💡 The group will automatically update as device attributes change",
+    "tags_applied": "✅ Workshop tags applied successfully"
   },
   
   "errors": {
