@@ -37,7 +37,7 @@
 ## 📋 先决条件
 
 - 具有 AWS IoT、Amazon S3 和 AWS Identity and Access Management (IAM) 权限的 **AWS 账户**
-- 已配置的 **AWS 凭证**（通过 `aws configure`、环境变量或 IAM 角色）
+- 已配置的 **AWS 凭证**（通过 `aws configure`、环境变量或 AWS Identity and Access Management (IAM) 角色）
 - **Python 3.10+** 以及 pip 和 boto3、colorama 和 requests Python 库（检查 requirements.txt 文件）
 - 用于克隆存储库的 **Git**
 
@@ -138,7 +138,7 @@ export AWS_IOT_LANG=zh                    # 设置默认语言（en、es、fr �
 - IoT 软件包
 - IoT 作业
 - Amazon S3 存储桶
-- IAM 角色
+- AWS Identity and Access Management (IAM) 角色
 
 **未标记的资源**（通过命名模式识别）：
 - IoT Thing（使用命名约定）
@@ -242,8 +242,8 @@ python scripts/manage_dynamic_groups.py   # 动态组操作
 ## 🛠️ 故障排除
 
 **常见问题**：
-- **凭证**：通过 `aws configure`、环境变量或 IAM 角色配置 AWS 凭证
-- **权限**：确保 IAM 用户具有 AWS IoT、Amazon S3 和 IAM 权限
+- **凭证**：通过 `aws configure`、环境变量或 AWS Identity and Access Management (IAM) 角色配置 AWS 凭证
+- **权限**：确保 AWS Identity and Access Management (IAM) 用户具有 AWS IoT、Amazon S3 和 AWS Identity and Access Management (IAM) 权限
 - **速率限制**：脚本通过智能节流自动处理
 - **网络**：确保与 AWS API 的连接
 
@@ -291,7 +291,7 @@ python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
 - Amazon S3 存储桶和固件文件（已标记）
 - AWS IoT 软件包（已标记）
 - AWS IoT 命令模板（已标记）
-- IAM 角色和策略（已标记）
+- AWS Identity and Access Management (IAM) 角色和策略（已标记）
 - Fleet Indexing 配置
 - 关联的证书和影子
 

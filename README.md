@@ -138,9 +138,9 @@ All workshop scripts automatically tag created resources with `workshop=learning
 - IoT Thing Types
 - IoT Thing Groups (static and dynamic)
 - IoT Software Packages
-- IoT Jobs
+- AWS IoT Jobs
 - Amazon S3 Buckets
-- IAM Roles
+- AWS Identity and Access Management (IAM) Roles
 
 **Non-Tagged Resources** (identified by naming patterns):
 - IoT Things (use naming conventions)

@@ -36,8 +36,8 @@
 
 ## 📋 前提条件
 
-- **AWSアカウント** - AWS IoT、Amazon S3、AWS Identity and Access Management（IAM）の権限を持つもの
-- **AWS認証情報** - 設定済み（`aws configure`、環境変数、またはIAMロール経由）
+- **AWSアカウント** - AWS IoT、Amazon S3、AWS Identity and Access Management（AWS Identity and Access Management (IAM)）の権限を持つもの
+- **AWS認証情報** - 設定済み（`aws configure`、環境変数、またはAWS Identity and Access Management (IAM)ロール経由）
 - **Python 3.10+** - pip、boto3、colorama、requestsライブラリ（requirements.txtファイルを確認）
 - **Git** - リポジトリのクローン用
 
@@ -54,7 +54,7 @@
 | **Amazon S3** | ファームウェアのストレージ + リクエスト | $0.05 - $0.25 |
 | **AWS IoT Fleet Indexing** | デバイスクエリとインデックス作成 | $0.02 - $0.20 |
 | **AWS IoT Device Management Software Package Catalog** | パッケージ操作 | $0.01 - $0.05 |
-| **AWS Identity and Access Management（IAM）** | ロール/ポリシー管理 | $0.00 |
+| **AWS Identity and Access Management（AWS Identity and Access Management (IAM)）** | ロール/ポリシー管理 | $0.00 |
 | **合計推定** | **完全なデモセッション** | **$0.28 - $2.45** |
 
 **コスト要因：**
@@ -138,7 +138,7 @@ export AWS_IOT_LANG=ja                    # デフォルト言語の設定（en�
 - IoTソフトウェアパッケージ
 - IoTジョブ
 - Amazon S3バケット
-- IAMロール
+- AWS Identity and Access Management (IAM)ロール
 
 **タグなしリソース**（命名パターンで識別）：
 - IoT Thing（命名規則を使用）
@@ -242,8 +242,8 @@ python scripts/manage_dynamic_groups.py   # 動的グループ操作
 ## 🛠️ トラブルシューティング
 
 **よくある問題**：
-- **認証情報**: `aws configure`、環境変数、またはIAMロール経由でAWS認証情報を設定
-- **権限**: IAMユーザーがAWS IoT、Amazon S3、IAM権限を持っていることを確認
+- **認証情報**: `aws configure`、環境変数、またはAWS Identity and Access Management (IAM)ロール経由でAWS認証情報を設定
+- **権限**: AWS Identity and Access Management (IAM)ユーザーがAWS IoT、Amazon S3、AWS Identity and Access Management (IAM)権限を持っていることを確認
 - **レート制限**: スクリプトがインテリジェントスロットリングで自動処理
 - **ネットワーク**: AWS APIへの接続を確認
 
@@ -291,7 +291,7 @@ python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
 - Amazon S3バケットとファームウェアファイル（タグ付き）
 - AWS IoTソフトウェアパッケージ（タグ付き）
 - AWS IoTコマンドテンプレート（タグ付き）
-- IAMロールとポリシー（タグ付き）
+- AWS Identity and Access Management (IAM)ロールとポリシー（タグ付き）
 - Fleet Indexing設定
 - 関連する証明書とシャドウ
 
