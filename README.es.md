@@ -85,14 +85,14 @@ pip install -r requirements.txt
 aws configure
 
 # 3. Flujo de trabajo completo (secuencia recomendada)
-python scripts/provision_script.py        # Crear infraestructura
+python scripts/provision_script.py        # Crear infraestructura con etiquetado
 python scripts/manage_dynamic_groups.py   # Crear grupos de dispositivos
 python scripts/manage_packages.py         # Gestionar paquetes de firmware
 python scripts/create_job.py              # Desplegar actualizaciones de firmware
 python scripts/simulate_job_execution.py  # Simular actualizaciones de dispositivos
 python scripts/explore_jobs.py            # Monitorear progreso de trabajos
 python scripts/manage_commands.py         # Enviar comandos en tiempo real a dispositivos
-python scripts/cleanup_script.py          # Limpiar recursos
+python scripts/cleanup_script.py          # Limpieza segura con identificación de recursos
 ```
 
 ## 📚 Scripts Disponibles
@@ -125,6 +125,45 @@ export AWS_IOT_LANG=es                    # Establecer idioma predeterminado (en
 - **Procesamiento Paralelo**: Operaciones concurrentes cuando no está en modo debug
 - **Limitación de Velocidad**: Cumplimiento automático de limitación de API de AWS
 - **Seguimiento de Progreso**: Estado de operación en tiempo real
+- **Etiquetado de Recursos**: Etiquetas automáticas de taller para limpieza segura
+- **Nomenclatura Configurable**: Patrones de nomenclatura de dispositivos personalizables
+
+### Etiquetado de Recursos
+
+Todos los scripts del taller etiquetan automáticamente los recursos creados con `workshop=learning-aws-iot-dm-basics` para identificación segura durante la limpieza. Esto asegura que solo se eliminen los recursos creados por el taller.
+
+**Recursos Etiquetados**:
+- Tipos de Cosas de IoT
+- Grupos de Cosas de IoT (estáticos y dinámicos)
+- Paquetes de Software de IoT
+- Trabajos de IoT
+- Buckets de Amazon S3
+- Roles de IAM
+
+**Recursos No Etiquetados** (identificados por patrones de nomenclatura):
+- Cosas de IoT (usan convenciones de nomenclatura)
+- Certificados (identificados por asociación)
+- Shadows de Cosas (identificados por asociación)
+
+### Configuración de Nomenclatura de Dispositivos
+
+Personalice los patrones de nomenclatura de dispositivos con el parámetro `--things-prefix`:
+
+```bash
+# Nomenclatura predeterminada: Vehicle-VIN-001, Vehicle-VIN-002, etc.
+python scripts/provision_script.py
+
+# Prefijo personalizado: Fleet-Device-001, Fleet-Device-002, etc.
+python scripts/provision_script.py --things-prefix "Fleet-Device-"
+
+# Prefijo personalizado para limpieza (debe coincidir con el prefijo de aprovisionamiento)
+python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
+```
+
+**Requisitos del Prefijo**:
+- Solo caracteres alfanuméricos, guiones, guiones bajos y dos puntos
+- Máximo 20 caracteres
+- Los números secuenciales se rellenan automáticamente con ceros (001-999)
 
 ## 🌍 Soporte de Internacionalización
 
@@ -224,13 +263,43 @@ python scripts/cleanup_script.py
 # Escribir: DELETE
 ```
 
+### Características de Limpieza Segura
+
+El script de limpieza utiliza múltiples métodos de identificación para asegurar que solo se eliminen los recursos del taller:
+
+1. **Identificación Basada en Etiquetas** (Primaria): Verifica la etiqueta `workshop=learning-aws-iot-dm-basics`
+2. **Coincidencia de Patrones de Nomenclatura** (Secundaria): Coincide con convenciones de nomenclatura conocidas del taller
+3. **Basada en Asociación** (Terciaria): Identifica recursos adjuntos a recursos del taller
+
+**Opciones de Limpieza**:
+```bash
+# Limpieza estándar (interactiva)
+python scripts/cleanup_script.py
+
+# Modo de prueba (vista previa sin eliminar)
+python scripts/cleanup_script.py --dry-run
+
+# Prefijo de dispositivo personalizado (debe coincidir con el prefijo de aprovisionamiento)
+python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
+
+# Prueba con prefijo personalizado
+python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
+```
+
 **Lo que elimina la limpieza:**
-- Todos los dispositivos y grupos de AWS IoT
-- Buckets de Amazon S3 y archivos de firmware
-- Paquetes de software de AWS IoT
-- Plantillas de comandos de AWS IoT
-- Roles y políticas de IAM
+- Todos los dispositivos y grupos de AWS IoT (con etiquetas de taller o patrones de nomenclatura coincidentes)
+- Buckets de Amazon S3 y archivos de firmware (etiquetados)
+- Paquetes de software de AWS IoT (etiquetados)
+- Plantillas de comandos de AWS IoT (etiquetadas)
+- Roles y políticas de IAM (etiquetados)
 - Configuración de Fleet Indexing
+- Certificados y shadows asociados
+
+**Características de Seguridad**:
+- Los recursos que no son del taller se omiten automáticamente
+- El resumen detallado muestra recursos eliminados y omitidos
+- El modo debug muestra el método de identificación para cada recurso
+- El modo de prueba permite vista previa antes de la eliminación real
 
 ## 🔧 Guía del Desarrollador: Agregar Nuevos Idiomas
 

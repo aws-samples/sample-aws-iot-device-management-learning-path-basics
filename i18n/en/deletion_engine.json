@@ -1,0 +1,28 @@
+{
+  "debug": {
+    "processing_resources": "========== Processing {0} {1} resources ==========",
+    "processing_item": "--- Processing {0}/{1}: {2} ---",
+    "resource_name": "Resource: {0}",
+    "is_workshop_resource": "Is Workshop Resource: {0}",
+    "identification_method": "Identification Method: {0}",
+    "skipping_non_workshop": "Skipping non-workshop resource: {0}",
+    "proceeding_to_delete": "Proceeding to delete workshop resource: {0}",
+    "deleting_with_dependencies": "Deleting with dependency handler...",
+    "dependency_handler_result": "Dependency handler result: success={0}, deleted_items={1}",
+    "deleting_single_resource": "Deleting single resource (no dependencies)...",
+    "single_resource_result": "Single resource deletion result: success={0}",
+    "successfully_deleted": "✓ Successfully deleted: {0}",
+    "failed_to_delete": "✗ Failed to delete: {0}",
+    "completed_processing": "========== Completed {0} processing ==========",
+    "processing_stats": "Total: {0}, Deleted: {1}, Skipped: {2}, Failed: {3}",
+    "rate_limiting": "Rate limiting: waiting {0:.3f}s for {1}"
+  },
+  "warning": {
+    "unknown_resource_type": "Unknown resource type: {0}"
+  },
+  "error": {
+    "processing_error": "Error processing {0}: {1}",
+    "aws_api_error": "AWS API error deleting {0}: {1}",
+    "unexpected_error": "Unexpected error deleting resource: {0}"
+  }
+}

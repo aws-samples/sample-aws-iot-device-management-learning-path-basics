@@ -577,6 +577,171 @@ python scripts/cleanup_script.py
 # Confirm: DELETE
 ```
 
+### Custom Thing Prefix Provisioning
+```bash
+# Provision with custom thing prefix
+python scripts/provision_script.py
+# Thing prefix: Fleet-VIN-
+# Thing types: SedanVehicle
+# Versions: 1.0.0
+# Countries: US
+# Devices: 50
+
+# Expected output:
+# ✓ Created thing: Fleet-VIN-001
+# ✓ Created thing: Fleet-VIN-002
+# ✓ Created thing: Fleet-VIN-003
+# ...
+# ✓ Created thing: Fleet-VIN-050
+```
+
+### Dry-Run Cleanup Preview
+```bash
+# Preview what would be deleted without actually deleting
+python scripts/cleanup_script.py
+# Enable dry-run mode: yes
+# Option 1: ALL resources
+
+# Expected output:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# DRY RUN MODE - No resources will be deleted
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 
+# Cleanup Summary (Dry Run):
+# ================
+# Resources that would be deleted:
+#   - IoT Things: 50
+#   - Thing Shadows: 50
+#   - Certificates: 50
+#   - Thing Groups: 5
+#   - Packages: 3
+#   - Package Versions: 6
+#   - S3 Buckets: 1
+#   - IAM Roles: 2
+#   - Thing Types: 3
+#   Total: 170
+# 
+# Resources that would be skipped:
+#   - IoT Things: 2 (non-workshop resources)
+#   Total: 2
+# 
+# Execution Time: 12.5 seconds
+```
+
+### Cleanup with Custom Thing Prefix
+```bash
+# Clean up resources created with custom prefix
+python scripts/cleanup_script.py
+# Enable dry-run mode: no
+# Thing prefix: Fleet-VIN-
+# Option 1: ALL resources
+# Confirm: DELETE
+
+# Expected output:
+# Scanning for workshop resources...
+# ✓ Identified 50 things matching prefix: Fleet-VIN-
+# ✓ Identified 5 thing groups with workshop tags
+# ✓ Identified 3 packages with workshop tags
+# 
+# Deleting resources...
+# [1/50] Deleted thing: Fleet-VIN-001 (tag match)
+# [2/50] Deleted thing: Fleet-VIN-002 (tag match)
+# ...
+# [50/50] Deleted thing: Fleet-VIN-050 (tag match)
+# 
+# Cleanup Summary:
+# ================
+# Deleted Resources:
+#   - IoT Things: 50
+#   - Thing Shadows: 50
+#   - Certificates: 50
+#   - Thing Groups: 5
+#   - Packages: 3
+#   Total: 158
+# 
+# Skipped Resources:
+#   - IoT Things: 0
+#   Total: 0
+```
+
+### Debug Mode with Identification Methods
+```bash
+# Run cleanup with debug mode to see identification methods
+python scripts/cleanup_script.py
+# Enable debug mode: yes
+# Enable dry-run mode: yes
+# Option 1: ALL resources
+
+# Expected output with identification details:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# DEBUG MODE ENABLED
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 
+# Scanning IoT Things...
+# [DEBUG] Thing: Vehicle-VIN-001
+#   → Checking tags... ✓ Found workshop tag
+#   → Identification: TAG MATCH
+# 
+# [DEBUG] Thing: Vehicle-VIN-002
+#   → Checking tags... ✗ No workshop tag
+#   → Checking naming pattern... ✓ Matches Vehicle-VIN-* pattern
+#   → Identification: NAMING MATCH
+# 
+# [DEBUG] Thing: production-sensor-001
+#   → Checking tags... ✗ No workshop tag
+#   → Checking naming pattern... ✗ No pattern match
+#   → Identification: SKIPPED (non-workshop resource)
+# 
+# Scanning Certificates...
+# [DEBUG] Certificate: abc123def456
+#   → Checking tags... N/A (certificates not taggable)
+#   → Checking association... ✓ Attached to Vehicle-VIN-001
+#   → Identification: ASSOCIATION MATCH
+# 
+# [DEBUG] Certificate: xyz789ghi012
+#   → Checking tags... N/A (certificates not taggable)
+#   → Checking association... ✗ Not attached to workshop thing
+#   → Identification: SKIPPED (non-workshop resource)
+# 
+# Scanning Thing Shadows...
+# [DEBUG] Shadow: Vehicle-VIN-001 (classic)
+#   → Checking tags... N/A (shadows not taggable)
+#   → Checking association... ✓ Belongs to Vehicle-VIN-001
+#   → Identification: ASSOCIATION MATCH
+# 
+# Scanning Thing Groups...
+# [DEBUG] Thing Group: USFleet
+#   → Checking tags... ✓ Found workshop tag
+#   → Identification: TAG MATCH
+# 
+# [DEBUG] Thing Group: ProductionFleet
+#   → Checking tags... ✗ No workshop tag
+#   → Checking naming pattern... ✗ No pattern match
+#   → Identification: SKIPPED (non-workshop resource)
+# 
+# Cleanup Summary (Dry Run):
+# ================
+# Resources that would be deleted:
+#   - IoT Things: 48 (45 by tag, 3 by naming)
+#   - Certificates: 48 (by association)
+#   - Thing Shadows: 48 (by association)
+#   - Thing Groups: 5 (by tag)
+#   - Packages: 3 (by tag)
+#   Total: 152
+# 
+# Resources that would be skipped:
+#   - IoT Things: 2 (no match)
+#   - Certificates: 1 (no match)
+#   - Thing Groups: 1 (no match)
+#   Total: 4
+# 
+# Identification Method Summary:
+#   - Tag matches: 56
+#   - Naming matches: 3
+#   - Association matches: 96
+#   - No matches (skipped): 4
+```
+
 ## Fleet Management Patterns
 
 ### Geographic Deployment

@@ -9,7 +9,8 @@
   "warnings": {
     "debug_warning": "⚠️  警告: デバッグモードは機密情報（ARN、アカウントID、APIレスポンス）を公開します",
     "revert_warning": "⚠️  警告: これにより{}個のAWS IoTデバイスシャドウがバージョン'{}'に更新されます",
-    "important_changes": "⚠️  重要な変更:"
+    "important_changes": "⚠️  重要な変更:",
+    "tag_failed": "⚠️  警告: ワークショップタグの適用に失敗しました（リソースはクリーンアップのために命名規則に依存します）"
   },
   
   "prompts": {
@@ -50,7 +51,8 @@
     "role_exists": "✅ パッケージ設定ロールが既に存在します",
     "policy_attached": "✅ パッケージ設定ポリシーがアタッチされました",
     "revert_completed": "✅ バージョン復元が完了: {}/{}成功",
-    "all_devices_current": "✅ タイプ'{}'のすべてのデバイスは既にバージョン'{}'です"
+    "all_devices_current": "✅ タイプ'{}'のすべてのデバイスは既にバージョン'{}'です",
+    "tags_applied": "✅ ワークショップタグが正常に適用されました"
   },
   
   "errors": {

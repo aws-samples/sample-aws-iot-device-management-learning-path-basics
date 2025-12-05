@@ -1,0 +1,24 @@
+{
+  "tagging": {
+    "success": "✅ Tags applied successfully to {}",
+    "failed": "⚠️  Failed to apply tags to {}: {}",
+    "warning_continue": "⚠️  Tagging failed for {}, continuing with resource creation",
+    "invalid_schema": "⚠️  Invalid tag schema for {}",
+    "unsupported_type": "⚠️  Unsupported resource type for tagging: {}"
+  },
+  "debug": {
+    "applying_tags": "🔧 Applying workshop tags to {} (type: {})",
+    "tags_applied": "✅ Tags applied: {}",
+    "tag_count": "📊 Applied {} tags to {}",
+    "using_api": "🔧 Using {} API for tagging",
+    "tag_validation": "🔍 Validating tag schema...",
+    "tag_validation_passed": "✅ Tag schema validation passed",
+    "tag_validation_failed": "❌ Tag schema validation failed"
+  },
+  "summary": {
+    "resources_without_tags": "📊 Resources created without tags: {}",
+    "tag_failures": "⚠️  Tag Application Failures",
+    "total_failures": "Total resources without tags: {}",
+    "relying_on_naming": "ℹ️  These resources will be identified by naming conventions during cleanup"
+  }
+}

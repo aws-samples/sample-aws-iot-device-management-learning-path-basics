@@ -577,6 +577,171 @@ python scripts/cleanup_script.py
 # Confirm: DELETE
 ```
 
+### Aprovisionamiento con Prefijo Personalizado de Thing
+```bash
+# Aprovisionar con prefijo personalizado de thing
+python scripts/provision_script.py
+# Thing prefix: Fleet-VIN-
+# Thing types: SedanVehicle
+# Versions: 1.0.0
+# Countries: US
+# Devices: 50
+
+# Salida esperada:
+# ✓ Created thing: Fleet-VIN-001
+# ✓ Created thing: Fleet-VIN-002
+# ✓ Created thing: Fleet-VIN-003
+# ...
+# ✓ Created thing: Fleet-VIN-050
+```
+
+### Vista Previa de Limpieza en Modo Dry-Run
+```bash
+# Previsualizar qué se eliminaría sin eliminar realmente
+python scripts/cleanup_script.py
+# Enable dry-run mode: yes
+# Option 1: ALL resources
+
+# Salida esperada:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# MODO DRY RUN - No se eliminarán recursos
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 
+# Resumen de Limpieza (Dry Run):
+# ================
+# Recursos que se eliminarían:
+#   - IoT Things: 50
+#   - Thing Shadows: 50
+#   - Certificates: 50
+#   - Thing Groups: 5
+#   - Packages: 3
+#   - Package Versions: 6
+#   - S3 Buckets: 1
+#   - IAM Roles: 2
+#   - Thing Types: 3
+#   Total: 170
+# 
+# Recursos que se omitirían:
+#   - IoT Things: 2 (recursos no del taller)
+#   Total: 2
+# 
+# Tiempo de Ejecución: 12.5 segundos
+```
+
+### Limpieza con Prefijo Personalizado de Thing
+```bash
+# Limpiar recursos creados con prefijo personalizado
+python scripts/cleanup_script.py
+# Enable dry-run mode: no
+# Thing prefix: Fleet-VIN-
+# Option 1: ALL resources
+# Confirm: DELETE
+
+# Salida esperada:
+# Escaneando recursos del taller...
+# ✓ Identificados 50 things que coinciden con el prefijo: Fleet-VIN-
+# ✓ Identificados 5 thing groups con etiquetas del taller
+# ✓ Identificados 3 packages con etiquetas del taller
+# 
+# Eliminando recursos...
+# [1/50] Eliminado thing: Fleet-VIN-001 (coincidencia de etiqueta)
+# [2/50] Eliminado thing: Fleet-VIN-002 (coincidencia de etiqueta)
+# ...
+# [50/50] Eliminado thing: Fleet-VIN-050 (coincidencia de etiqueta)
+# 
+# Resumen de Limpieza:
+# ================
+# Recursos Eliminados:
+#   - IoT Things: 50
+#   - Thing Shadows: 50
+#   - Certificates: 50
+#   - Thing Groups: 5
+#   - Packages: 3
+#   Total: 158
+# 
+# Recursos Omitidos:
+#   - IoT Things: 0
+#   Total: 0
+```
+
+### Modo Debug con Métodos de Identificación
+```bash
+# Ejecutar limpieza con modo debug para ver métodos de identificación
+python scripts/cleanup_script.py
+# Enable debug mode: yes
+# Enable dry-run mode: yes
+# Option 1: ALL resources
+
+# Salida esperada con detalles de identificación:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# MODO DEBUG HABILITADO
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 
+# Escaneando IoT Things...
+# [DEBUG] Thing: Vehicle-VIN-001
+#   → Verificando etiquetas... ✓ Etiqueta del taller encontrada
+#   → Identificación: COINCIDENCIA DE ETIQUETA
+# 
+# [DEBUG] Thing: Vehicle-VIN-002
+#   → Verificando etiquetas... ✗ Sin etiqueta del taller
+#   → Verificando patrón de nombre... ✓ Coincide con patrón Vehicle-VIN-*
+#   → Identificación: COINCIDENCIA DE NOMBRE
+# 
+# [DEBUG] Thing: production-sensor-001
+#   → Verificando etiquetas... ✗ Sin etiqueta del taller
+#   → Verificando patrón de nombre... ✗ Sin coincidencia de patrón
+#   → Identificación: OMITIDO (recurso no del taller)
+# 
+# Escaneando Certificates...
+# [DEBUG] Certificate: abc123def456
+#   → Verificando etiquetas... N/A (certificados no etiquetables)
+#   → Verificando asociación... ✓ Adjunto a Vehicle-VIN-001
+#   → Identificación: COINCIDENCIA DE ASOCIACIÓN
+# 
+# [DEBUG] Certificate: xyz789ghi012
+#   → Verificando etiquetas... N/A (certificados no etiquetables)
+#   → Verificando asociación... ✗ No adjunto a thing del taller
+#   → Identificación: OMITIDO (recurso no del taller)
+# 
+# Escaneando Thing Shadows...
+# [DEBUG] Shadow: Vehicle-VIN-001 (classic)
+#   → Verificando etiquetas... N/A (shadows no etiquetables)
+#   → Verificando asociación... ✓ Pertenece a Vehicle-VIN-001
+#   → Identificación: COINCIDENCIA DE ASOCIACIÓN
+# 
+# Escaneando Thing Groups...
+# [DEBUG] Thing Group: USFleet
+#   → Verificando etiquetas... ✓ Etiqueta del taller encontrada
+#   → Identificación: COINCIDENCIA DE ETIQUETA
+# 
+# [DEBUG] Thing Group: ProductionFleet
+#   → Verificando etiquetas... ✗ Sin etiqueta del taller
+#   → Verificando patrón de nombre... ✗ Sin coincidencia de patrón
+#   → Identificación: OMITIDO (recurso no del taller)
+# 
+# Resumen de Limpieza (Dry Run):
+# ================
+# Recursos que se eliminarían:
+#   - IoT Things: 48 (45 por etiqueta, 3 por nombre)
+#   - Certificates: 48 (por asociación)
+#   - Thing Shadows: 48 (por asociación)
+#   - Thing Groups: 5 (por etiqueta)
+#   - Packages: 3 (por etiqueta)
+#   Total: 152
+# 
+# Recursos que se omitirían:
+#   - IoT Things: 2 (sin coincidencia)
+#   - Certificates: 1 (sin coincidencia)
+#   - Thing Groups: 1 (sin coincidencia)
+#   Total: 4
+# 
+# Resumen de Método de Identificación:
+#   - Coincidencias de etiqueta: 56
+#   - Coincidencias de nombre: 3
+#   - Coincidencias de asociación: 96
+#   - Sin coincidencias (omitidos): 4
+```
+
 ## Patrones de Gestión de Flota
 
 ### Despliegue Geográfico

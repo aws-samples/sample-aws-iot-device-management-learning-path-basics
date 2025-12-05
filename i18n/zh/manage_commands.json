@@ -7,7 +7,9 @@
   "account_id_label": "🆔 账户 ID：",
   
   "warnings": {
-    "debug_warning": "⚠️  警告：调试模式会暴露敏感信息（ARN、账户 ID、API 响应）"
+    "debug_warning": "⚠️  警告：调试模式会暴露敏感信息（ARN、账户 ID、API 响应）",
+    "tag_application_failed": "⚠️  警告：无法将研讨会标签应用于命令",
+    "relying_on_naming": "ℹ️  命令将依赖命名约定进行清理识别"
   },
   
   "prompts": {
@@ -79,7 +81,8 @@
     "executing_to_multiple_targets": "🚀 正在向 {} 个目标执行命令...",
     "target_execution_success": "✅ 目标 {}/{}：{}",
     "target_execution_failed": "❌ 目标 {}/{}：{} - {}",
-    "multiple_executions_summary": "📊 执行摘要：{} 个成功，{} 个失败，共 {} 个"
+    "multiple_executions_summary": "📊 执行摘要：{} 个成功，{} 个失败，共 {} 个",
+    "tags_applied_success": "✅ 研讨会标签已成功应用"
   },
   
   "validation": {

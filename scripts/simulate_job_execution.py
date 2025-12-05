@@ -15,8 +15,11 @@ import requests
 from botocore.exceptions import ClientError
 from colorama import Fore, Style, init
 
-# Add i18n to path
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "i18n"))
+# Add repository root and i18n to path
+repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if repo_root not in sys.path:
+    sys.path.insert(0, repo_root)
+sys.path.append(os.path.join(repo_root, "i18n"))
 
 from language_selector import get_language
 from loader import load_messages

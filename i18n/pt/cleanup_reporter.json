@@ -1,0 +1,30 @@
+{
+  "summary": {
+    "header": "Resumo da Limpeza",
+    "header_dry_run": "Resumo da Limpeza (SIMULAÇÃO - Nenhum Recurso Excluído)",
+    "deleted_section": "Recursos Excluídos:",
+    "skipped_section": "Recursos Ignorados:",
+    "failed_section": "Exclusões Falhadas:",
+    "overall_section": "Resumo Geral:",
+    "non_workshop_reason": "recursos não do workshop",
+    "total": "Total",
+    "total_resources_processed": "Total de Recursos Processados",
+    "would_delete": "Seria Excluído",
+    "successfully_deleted": "Excluído com Sucesso",
+    "skipped_non_workshop": "Ignorado (Não do Workshop)",
+    "failed": "Falhou",
+    "execution_time": "Tempo de Execução"
+  },
+  "skipped": {
+    "header_debug": "Recursos {} Ignorados ({} total):",
+    "count_only": "Recursos {} ignorados: {} (não do workshop)"
+  },
+  "identification": {
+    "workshop": "Recurso do Workshop",
+    "non_workshop": "Não do Workshop",
+    "method_tag": "Correspondência de Tag",
+    "method_naming": "Padrão de Nomenclatura",
+    "method_association": "Associação",
+    "method_none": "Sem Correspondência"
+  }
+}

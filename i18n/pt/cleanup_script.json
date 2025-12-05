@@ -5,19 +5,16 @@
   "learning_description": "Este script demonstra a limpeza adequada de recursos AWS IoT e gerenciamento de ciclo de vida.\nEle mostra como excluir recursos AWS IoT com segurança na ordem correta, lidar com dependências\nentre serviços e evitar recursos órfãos. Compreender a limpeza é crucial para\ngerenciamento de custos e manutenção de um ambiente AWS limpo. Este script lida tanto com\ncoisas Vehicle-VIN-* quanto com Grupos de Coisas baseados em AWS IoT Fleet Indexing da convenção de nomenclatura alinhada.",
   "region_label": "📍 Região:",
   "account_id_label": "🆔 ID da Conta:",
-  
   "warnings": {
     "debug_warning": "⚠️  AVISO: O modo debug expõe informações sensíveis (ARNs, IDs de conta, respostas da API)",
     "deletion_warning": "⚠️  AVISO: Isso excluirá permanentemente:",
     "starting_cleanup": "🚨 Iniciando processo de limpeza..."
   },
-  
   "prompts": {
     "debug_mode": "🔧 Habilitar modo debug (mostrar todas as chamadas e respostas da API)? [y/N]: ",
     "cleanup_choice": "Digite a opção [1-3]: ",
     "confirm_deletion": "Digite 'DELETE' para confirmar: "
   },
-  
   "status": {
     "debug_enabled": "✅ Modo debug habilitado",
     "clients_initialized": "🔍 DEBUG: Configuração do cliente:",
@@ -68,9 +65,43 @@
     "package_role_deleted": "✅ Função de configuração do Catálogo de Pacotes de Software AWS IoT excluída com sucesso",
     "package_config_disabled": "✅ Configuração global do Catálogo de Pacotes de Software AWS IoT desabilitada",
     "fleet_indexing_disabled": "✅ AWS IoT Fleet Indexing desabilitado com sucesso",
-    "completion_summary": "📊 Exclusão de {} concluída: {}/{} bem-sucedidas"
+    "completion_summary": "📊 Exclusão de {} concluída: {}/{} bem-sucedidas",
+    "scanning_commands": "🔍 Verificando Comandos IoT...",
+    "found_total_things": "Encontrados {} objetos totais na conta",
+    "found_total_groups": "Encontrados {} grupos de objetos totais na conta",
+    "found_total_packages": "Encontrados {} pacotes totais na conta",
+    "found_total_commands": "Encontrados {} comandos totais na conta",
+    "found_total_jobs": "Encontrados {} trabalhos totais na conta",
+    "found_workshop_types": "Encontrados {} tipos de objetos do workshop de {} totais",
+    "dry_run_things": "[MODO DE TESTE] Excluiria objetos que correspondem aos critérios do workshop",
+    "dry_run_groups": "[MODO DE TESTE] Excluiria grupos de objetos que correspondem aos critérios do workshop",
+    "dry_run_types": "[MODO DE TESTE] Descontinuaria e excluiria {} tipos de objetos do workshop",
+    "dry_run_packages": "[MODO DE TESTE] Excluiria pacotes que correspondem aos critérios do workshop",
+    "dry_run_buckets": "[MODO DE TESTE] Excluiria buckets S3 que correspondem aos critérios do workshop",
+    "dry_run_roles": "[MODO DE TESTE] Excluiria funções IAM que correspondem aos critérios do workshop",
+    "dry_run_commands": "[MODO DE TESTE] Excluiria comandos que correspondem aos critérios do workshop",
+    "dry_run_jobs": "[MODO DE TESTE] Excluiria trabalhos que correspondem aos critérios do workshop",
+    "filtering_things": "Filtrando e excluindo objetos do workshop...",
+    "filtering_groups": "Filtrando e excluindo grupos de objetos do workshop...",
+    "filtering_packages": "Filtrando e excluindo pacotes do workshop...",
+    "filtering_commands": "Filtrando e excluindo comandos do workshop...",
+    "filtering_jobs": "Filtrando e excluindo trabalhos do workshop...",
+    "identifying_types": "Identificando tipos de objetos do workshop...",
+    "no_workshop_types": "Nenhum tipo de objeto do workshop encontrado para excluir",
+    "deprecated_types": "Descontinuados {} tipos de objetos do workshop",
+    "processed_things": "Processados {} objetos do workshop: {} excluídos, {} falharam",
+    "processed_groups": "Processados {} grupos de objetos do workshop: {} excluídos, {} falharam",
+    "processed_packages": "Processados {} pacotes do workshop: {} excluídos, {} falharam",
+    "processed_commands": "Processados {} comandos do workshop: {} excluídos, {} falharam",
+    "processed_jobs": "Processados {} trabalhos do workshop: {} excluídos, {} falharam",
+    "skipped_things": "Ignorados {} objetos que não são do workshop",
+    "skipped_groups": "Ignorados {} grupos de objetos que não são do workshop",
+    "skipped_types": "Ignorados {} tipos de objetos que não são do workshop",
+    "skipped_packages": "Ignorados {} pacotes que não são do workshop",
+    "skipped_buckets": "Ignorados {} buckets S3 que não são do workshop",
+    "skipped_commands": "Ignorados {} comandos que não são do workshop",
+    "skipped_jobs": "Ignorados {} trabalhos que não são do workshop"
   },
-  
   "errors": {
     "invalid_choice": "❌ Opção inválida. Digite 1-3",
     "invalid_number": "❌ Digite um número válido",
@@ -97,7 +128,6 @@
     "client_init_error": "❌ Erro ao inicializar clientes AWS: {}",
     "cleanup_failed": "❌ Limpeza falhou com erro: {}"
   },
-  
   "debug": {
     "debug_operation": "🔍 DEBUG: {}: {}",
     "api_call": "📤 Chamada da API: {}",
@@ -107,7 +137,6 @@
     "full_error": "🔍 DEBUG: Resposta completa do erro:",
     "full_traceback": "🔍 DEBUG: Traceback completo:"
   },
-  
   "ui": {
     "cleanup_menu": "🎯 Selecione a opção de limpeza:",
     "all_resources": "1. TODOS os recursos (Coisas AWS IoT, Grupos de Coisas AWS IoT, Tipos de Coisas AWS IoT, pacotes do Catálogo de Pacotes de Software AWS IoT, Buckets Amazon S3, Funções AWS Identity and Access Management (IAM))",
@@ -115,7 +144,6 @@
     "groups_only": "3. Apenas Grupos de Coisas AWS IoT",
     "cancelled": "👋 Limpeza cancelada pelo usuário. Tchau!"
   },
-  
   "results": {
     "no_things": "ℹ️  Nenhuma Coisa AWS IoT encontrada para excluir",
     "no_groups": "ℹ️  Nenhum Grupo de Coisas AWS IoT encontrado para excluir",
@@ -129,6 +157,7 @@
     "found_packages": "📊 Encontrados {} pacotes do Catálogo de Pacotes de Software AWS IoT para excluir",
     "found_buckets": "📊 Encontrados {} buckets para excluir",
     "found_jobs": "📊 Encontrados {} Trabalhos AWS IoT para excluir",
-    "bucket_tip": "💡 Dica: Se seus buckets estão em uma região diferente, defina a variável de ambiente AWS_DEFAULT_REGION"
+    "bucket_tip": "💡 Dica: Se seus buckets estão em uma região diferente, defina a variável de ambiente AWS_DEFAULT_REGION",
+    "no_commands": "ℹ️  Nenhum Comando IoT encontrado"
   }
 }

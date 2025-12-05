@@ -5,19 +5,16 @@
   "learning_description": "このスクリプトは、適切なAWS IoTリソースのクリーンアップとライフサイクル管理を実演します。\nAWS IoTリソースを正しい順序で安全に削除し、サービス間の依存関係を処理し、\n孤立したリソースを回避する方法を示します。クリーンアップの理解は、\nコスト管理とクリーンなAWS環境の維持に重要です。このスクリプトは、\n統一された命名規則からVehicle-VIN-*デバイスとAWS IoT Fleet Indexingベースのモノグループの両方を処理します。",
   "region_label": "📍 リージョン:",
   "account_id_label": "🆔 アカウントID:",
-  
   "warnings": {
     "debug_warning": "⚠️  警告: デバッグモードは機密情報（ARN、アカウントID、APIレスポンス）を公開します",
     "deletion_warning": "⚠️  警告: これにより以下が永続的に削除されます:",
     "starting_cleanup": "🚨 クリーンアップ処理を開始しています..."
   },
-  
   "prompts": {
     "debug_mode": "🔧 デバッグモード（すべてのAPI呼び出しとレスポンスを表示）を有効にしますか？ [y/N]: ",
     "cleanup_choice": "選択肢を入力してください [1-3]: ",
     "confirm_deletion": "'DELETE'と入力して確認してください: "
   },
-  
   "status": {
     "debug_enabled": "✅ デバッグモードが有効になりました",
     "clients_initialized": "🔍 DEBUG: クライアント設定:",
@@ -68,9 +65,43 @@
     "package_role_deleted": "✅ AWS IoTソフトウェアパッケージカタログ設定ロールが正常に削除されました",
     "package_config_disabled": "✅ AWS IoTソフトウェアパッケージカタログのグローバル設定が無効化されました",
     "fleet_indexing_disabled": "✅ AWS IoT Fleet Indexingが正常に無効化されました",
-    "completion_summary": "📊 {}削除完了: {}/{}成功"
+    "completion_summary": "📊 {}削除完了: {}/{}成功",
+    "scanning_commands": "🔍 IoTコマンドをスキャンしています...",
+    "found_total_things": "アカウント内で合計{}個のデバイスが見つかりました",
+    "found_total_groups": "アカウント内で合計{}個のモノグループが見つかりました",
+    "found_total_packages": "アカウント内で合計{}個のパッケージが見つかりました",
+    "found_total_commands": "アカウント内で合計{}個のコマンドが見つかりました",
+    "found_total_jobs": "アカウント内で合計{}個のジョブが見つかりました",
+    "found_workshop_types": "合計{}個中{}個のワークショップモノタイプが見つかりました",
+    "dry_run_things": "[ドライランモード] ワークショップ基準に一致するデバイスを削除します",
+    "dry_run_groups": "[ドライランモード] ワークショップ基準に一致するモノグループを削除します",
+    "dry_run_types": "[ドライランモード] {}個のワークショップモノタイプを非推奨化して削除します",
+    "dry_run_packages": "[ドライランモード] ワークショップ基準に一致するパッケージを削除します",
+    "dry_run_buckets": "[ドライランモード] ワークショップ基準に一致するS3バケットを削除します",
+    "dry_run_roles": "[ドライランモード] ワークショップ基準に一致するIAMロールを削除します",
+    "dry_run_commands": "[ドライランモード] ワークショップ基準に一致するコマンドを削除します",
+    "dry_run_jobs": "[ドライランモード] ワークショップ基準に一致するジョブを削除します",
+    "filtering_things": "ワークショップデバイスをフィルタリングして削除中...",
+    "filtering_groups": "ワークショップモノグループをフィルタリングして削除中...",
+    "filtering_packages": "ワークショップパッケージをフィルタリングして削除中...",
+    "filtering_commands": "ワークショップコマンドをフィルタリングして削除中...",
+    "filtering_jobs": "ワークショップジョブをフィルタリングして削除中...",
+    "identifying_types": "ワークショップモノタイプを識別中...",
+    "no_workshop_types": "削除するワークショップモノタイプが見つかりませんでした",
+    "deprecated_types": "{}個のワークショップモノタイプを非推奨化しました",
+    "processed_things": "{}個のワークショップデバイスを処理: {}個削除、{}個失敗",
+    "processed_groups": "{}個のワークショップモノグループを処理: {}個削除、{}個失敗",
+    "processed_packages": "{}個のワークショップパッケージを処理: {}個削除、{}個失敗",
+    "processed_commands": "{}個のワークショップコマンドを処理: {}個削除、{}個失敗",
+    "processed_jobs": "{}個のワークショップジョブを処理: {}個削除、{}個失敗",
+    "skipped_things": "{}個の非ワークショップデバイスをスキップしました",
+    "skipped_groups": "{}個の非ワークショップモノグループをスキップしました",
+    "skipped_types": "{}個の非ワークショップモノタイプをスキップしました",
+    "skipped_packages": "{}個の非ワークショップパッケージをスキップしました",
+    "skipped_buckets": "{}個の非ワークショップS3バケットをスキップしました",
+    "skipped_commands": "{}個の非ワークショップコマンドをスキップしました",
+    "skipped_jobs": "{}個の非ワークショップジョブをスキップしました"
   },
-  
   "errors": {
     "invalid_choice": "❌ 無効な選択です。1-3を入力してください",
     "invalid_number": "❌ 有効な数値を入力してください",
@@ -97,7 +128,6 @@
     "client_init_error": "❌ AWSクライアントの初期化エラー: {}",
     "cleanup_failed": "❌ クリーンアップがエラーで失敗しました: {}"
   },
-  
   "debug": {
     "debug_operation": "🔍 DEBUG: {}: {}",
     "api_call": "📤 API呼び出し: {}",
@@ -107,7 +137,6 @@
     "full_error": "🔍 DEBUG: 完全なエラーレスポンス:",
     "full_traceback": "🔍 DEBUG: 完全なトレースバック:"
   },
-  
   "ui": {
     "cleanup_menu": "🎯 クリーンアップオプションを選択:",
     "all_resources": "1. すべてのリソース（AWS IoTデバイス、AWS IoTモノグループ、AWS IoTモノタイプ、AWS IoTソフトウェアパッケージカタログパッケージ、Amazon S3バケット、AWS Identity and Access Management（IAM）ロール）",
@@ -115,7 +144,6 @@
     "groups_only": "3. AWS IoTモノグループのみ",
     "cancelled": "👋 ユーザーによりクリーンアップがキャンセルされました。さようなら！"
   },
-  
   "results": {
     "no_things": "ℹ️  削除するAWS IoTデバイスが見つかりません",
     "no_groups": "ℹ️  削除するAWS IoTモノグループが見つかりません",
@@ -129,6 +157,7 @@
     "found_packages": "📊 削除する{}個のAWS IoTソフトウェアパッケージカタログパッケージが見つかりました",
     "found_buckets": "📊 削除する{}個のバケットが見つかりました",
     "found_jobs": "📊 削除する{}個のAWS IoTジョブが見つかりました",
-    "bucket_tip": "💡 ヒント: バケットが別のリージョンにある場合は、AWS_DEFAULT_REGION環境変数を設定してください"
+    "bucket_tip": "💡 ヒント: バケットが別のリージョンにある場合は、AWS_DEFAULT_REGION環境変数を設定してください",
+    "no_commands": "ℹ️  IoTコマンドが見つかりませんでした"
   }
 }

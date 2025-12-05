@@ -577,6 +577,171 @@ python scripts/cleanup_script.py
 # Confirm: DELETE
 ```
 
+### 使用自定义Thing前缀进行配置
+```bash
+# 使用自定义thing前缀进行配置
+python scripts/provision_script.py
+# Thing prefix: Fleet-VIN-
+# Thing types: SedanVehicle
+# Versions: 1.0.0
+# Countries: US
+# Devices: 50
+
+# 预期输出:
+# ✓ Created thing: Fleet-VIN-001
+# ✓ Created thing: Fleet-VIN-002
+# ✓ Created thing: Fleet-VIN-003
+# ...
+# ✓ Created thing: Fleet-VIN-050
+```
+
+### Dry-Run模式清理预览
+```bash
+# 预览将被删除的内容而不实际删除
+python scripts/cleanup_script.py
+# Enable dry-run mode: yes
+# Option 1: ALL resources
+
+# 预期输出:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# DRY RUN模式 - 不会删除任何资源
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 
+# 清理摘要 (Dry Run):
+# ================
+# 将被删除的资源:
+#   - IoT Things: 50
+#   - Thing Shadows: 50
+#   - Certificates: 50
+#   - Thing Groups: 5
+#   - Packages: 3
+#   - Package Versions: 6
+#   - S3 Buckets: 1
+#   - IAM Roles: 2
+#   - Thing Types: 3
+#   总计: 170
+# 
+# 将被跳过的资源:
+#   - IoT Things: 2 (非研讨会资源)
+#   总计: 2
+# 
+# 执行时间: 12.5秒
+```
+
+### 使用自定义Thing前缀进行清理
+```bash
+# 清理使用自定义前缀创建的资源
+python scripts/cleanup_script.py
+# Enable dry-run mode: no
+# Thing prefix: Fleet-VIN-
+# Option 1: ALL resources
+# Confirm: DELETE
+
+# 预期输出:
+# 扫描研讨会资源...
+# ✓ 识别出50个匹配前缀的thing: Fleet-VIN-
+# ✓ 识别出5个带有研讨会标签的thing groups
+# ✓ 识别出3个带有研讨会标签的packages
+# 
+# 删除资源中...
+# [1/50] 已删除thing: Fleet-VIN-001 (标签匹配)
+# [2/50] 已删除thing: Fleet-VIN-002 (标签匹配)
+# ...
+# [50/50] 已删除thing: Fleet-VIN-050 (标签匹配)
+# 
+# 清理摘要:
+# ================
+# 已删除的资源:
+#   - IoT Things: 50
+#   - Thing Shadows: 50
+#   - Certificates: 50
+#   - Thing Groups: 5
+#   - Packages: 3
+#   总计: 158
+# 
+# 已跳过的资源:
+#   - IoT Things: 0
+#   总计: 0
+```
+
+### 显示识别方法的调试模式
+```bash
+# 使用调试模式运行清理以查看识别方法
+python scripts/cleanup_script.py
+# Enable debug mode: yes
+# Enable dry-run mode: yes
+# Option 1: ALL resources
+
+# 包含识别详细信息的预期输出:
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 调试模式已启用
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 
+# 扫描IoT Things...
+# [DEBUG] Thing: Vehicle-VIN-001
+#   → 检查标签... ✓ 找到研讨会标签
+#   → 识别: 标签匹配
+# 
+# [DEBUG] Thing: Vehicle-VIN-002
+#   → 检查标签... ✗ 无研讨会标签
+#   → 检查命名模式... ✓ 匹配Vehicle-VIN-*模式
+#   → 识别: 命名匹配
+# 
+# [DEBUG] Thing: production-sensor-001
+#   → 检查标签... ✗ 无研讨会标签
+#   → 检查命名模式... ✗ 无模式匹配
+#   → 识别: 已跳过 (非研讨会资源)
+# 
+# 扫描Certificates...
+# [DEBUG] Certificate: abc123def456
+#   → 检查标签... N/A (证书不可标记)
+#   → 检查关联... ✓ 附加到Vehicle-VIN-001
+#   → 识别: 关联匹配
+# 
+# [DEBUG] Certificate: xyz789ghi012
+#   → 检查标签... N/A (证书不可标记)
+#   → 检查关联... ✗ 未附加到研讨会thing
+#   → 识别: 已跳过 (非研讨会资源)
+# 
+# 扫描Thing Shadows...
+# [DEBUG] Shadow: Vehicle-VIN-001 (classic)
+#   → 检查标签... N/A (shadow不可标记)
+#   → 检查关联... ✓ 属于Vehicle-VIN-001
+#   → 识别: 关联匹配
+# 
+# 扫描Thing Groups...
+# [DEBUG] Thing Group: USFleet
+#   → 检查标签... ✓ 找到研讨会标签
+#   → 识别: 标签匹配
+# 
+# [DEBUG] Thing Group: ProductionFleet
+#   → 检查标签... ✗ 无研讨会标签
+#   → 检查命名模式... ✗ 无模式匹配
+#   → 识别: 已跳过 (非研讨会资源)
+# 
+# 清理摘要 (Dry Run):
+# ================
+# 将被删除的资源:
+#   - IoT Things: 48 (标签45个, 命名3个)
+#   - Certificates: 48 (关联)
+#   - Thing Shadows: 48 (关联)
+#   - Thing Groups: 5 (标签)
+#   - Packages: 3 (标签)
+#   总计: 152
+# 
+# 将被跳过的资源:
+#   - IoT Things: 2 (无匹配)
+#   - Certificates: 1 (无匹配)
+#   - Thing Groups: 1 (无匹配)
+#   总计: 4
+# 
+# 识别方法摘要:
+#   - 标签匹配: 56
+#   - 命名匹配: 3
+#   - 关联匹配: 96
+#   - 无匹配 (已跳过): 4
+```
+
 ## 车队管理模式
 
 ### 地理部署

@@ -3,5 +3,31 @@
     "region": "Region",
     "press_enter": "Press Enter to continue...",
     "goodbye": "Goodbye!",
-    "cancelled_by_user": "👋 Cancelled by user. Goodbye!"
+    "cancelled_by_user": "👋 Cancelled by user. Goodbye!",
+    "tagging": {
+        "workshop_tag_key": "workshop",
+        "workshop_tag_value": "learning-aws-iot-dm-basics",
+        "applying": "Applying tags...",
+        "success": "✅ Tags applied",
+        "failed": "⚠️  Tagging failed"
+    },
+    "naming": {
+        "validation": {
+            "prefix_empty": "❌ Error: Thing prefix cannot be empty",
+            "prefix_too_long": "❌ Error: Thing prefix must be 20 characters or less (got {length} characters)",
+            "prefix_invalid_chars": "❌ Error: Thing prefix contains invalid characters. Only alphanumeric, hyphens (-), underscores (_), and colons (:) are allowed",
+            "prefix_valid": "✅ Thing prefix is valid: {prefix}",
+            "sequential_number_invalid": "❌ Error: Sequential number must be between 1 and 999 (got {number})"
+        },
+        "pattern_matching": {
+            "checking": "🔍 Checking if '{name}' matches workshop pattern for {type}...",
+            "matched": "✅ Matched workshop pattern: {pattern}",
+            "no_match": "❌ No workshop pattern match found",
+            "custom_prefix_match": "✅ Matched custom prefix pattern: {prefix}"
+        },
+        "generation": {
+            "generating": "🔧 Generating thing name with prefix '{prefix}' and number {number}...",
+            "generated": "✅ Generated thing name: {name}"
+        }
+    }
 }

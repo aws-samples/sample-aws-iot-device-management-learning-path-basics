@@ -9,7 +9,8 @@
   "warnings": {
     "debug_warning": "⚠️  ADVERTENCIA: El modo de depuración expone información sensible (ARNs, IDs de cuenta, respuestas de API)",
     "revert_warning": "⚠️  ADVERTENCIA: Esto actualizará {} Sombras de Dispositivos de AWS IoT a la versión '{}'",
-    "important_changes": "⚠️  Cambios importantes:"
+    "important_changes": "⚠️  Cambios importantes:",
+    "tag_failed": "⚠️  Advertencia: Error al aplicar etiquetas de taller (el recurso dependerá de convenciones de nomenclatura para limpieza)"
   },
   
   "prompts": {
@@ -50,7 +51,8 @@
     "role_exists": "✅ Rol de configuración de paquete ya existe",
     "policy_attached": "✅ Política de configuración de paquete adjuntada",
     "revert_completed": "✅ Reversión de versión completada: {}/{} exitosa",
-    "all_devices_current": "✅ Todos los dispositivos de tipo '{}' ya están en la versión '{}'"
+    "all_devices_current": "✅ Todos los dispositivos de tipo '{}' ya están en la versión '{}'",
+    "tags_applied": "✅ Etiquetas de taller aplicadas exitosamente"
   },
   
   "errors": {

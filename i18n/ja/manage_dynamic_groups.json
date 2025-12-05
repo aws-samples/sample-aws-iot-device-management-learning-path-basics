@@ -7,7 +7,9 @@
   "account_id_label": "🆔 アカウントID:",
   
   "warnings": {
-    "debug_warning": "⚠️  警告: デバッグモードは機密情報（ARN、アカウントID、APIレスポンス）を公開します"
+    "debug_warning": "⚠️  警告: デバッグモードは機密情報（ARN、アカウントID、APIレスポンス）を公開します",
+    "tag_failed": "⚠️  警告: {}へのワークショップタグの適用に失敗しました",
+    "naming_fallback": "💡 リソースはクリーンアップ時に命名規則で識別されます"
   },
   
   "prompts": {
@@ -47,7 +49,8 @@
     "group_created": "✅ 動的モノグループが正常に作成されました",
     "group_deleted": "✅ 動的モノグループ'{}'が正常に削除されました",
     "creation_completed": "🎉 動的グループ作成が正常に完了しました！",
-    "auto_update_note": "💡 グループは、デバイス属性の変更に応じて自動的に更新されます"
+    "auto_update_note": "💡 グループは、デバイス属性の変更に応じて自動的に更新されます",
+    "tags_applied": "✅ ワークショップタグが正常に適用されました"
   },
   
   "errors": {

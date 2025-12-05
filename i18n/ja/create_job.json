@@ -7,7 +7,8 @@
   "account_id_label": "   アカウントID: {}",
   "region_label": "   リージョン: {}",
   "warnings": {
-    "debug_warning": "⚠️  警告: デバッグモードは機密情報（ARN、アカウントID、APIレスポンス）を公開します"
+    "debug_warning": "⚠️  警告: デバッグモードは機密情報（ARN、アカウントID、APIレスポンス）を公開します",
+    "tag_failed": "⚠️  警告: ジョブへのワークショップタグの適用に失敗しました（ジョブはクリーンアップ識別のために命名規則に依存します）"
   },
   "prompts": {
     "debug_mode": "🔧 デバッグモード（すべてのAPI呼び出しとレスポンスを表示）を有効にしますか？ [y/N]: ",
@@ -51,6 +52,7 @@
     "getting_versions": "🔍 パッケージのバージョンを取得中: {}",
     "creating_job": "🚀 IoTジョブを作成中...",
     "job_created": "✅ IoTジョブが正常に作成されました！",
+    "tags_applied": "🏷️  ワークショップタグがジョブに適用されました",
     "using_defaults": "✅ デフォルト設定を使用: CONTINUOUSターゲット選択",
     "found_resources": "📊 {}個のモノグループと{}個のパッケージが見つかりました",
     "creation_completed": "🎉 ジョブ作成が正常に完了しました！",

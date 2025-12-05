@@ -7,7 +7,9 @@
   "account_id_label": "🆔 계정 ID:",
   
   "warnings": {
-    "debug_warning": "⚠️  경고: 디버그 모드는 민감한 정보(ARN, 계정 ID, API 응답)를 노출합니다"
+    "debug_warning": "⚠️  경고: 디버그 모드는 민감한 정보(ARN, 계정 ID, API 응답)를 노출합니다",
+    "tag_failed": "⚠️  경고: {}에 워크샵 태그 적용 실패",
+    "naming_fallback": "💡 리소스는 정리 중 명명 규칙으로 식별됩니다"
   },
   
   "prompts": {
@@ -47,7 +49,8 @@
     "group_created": "✅ 동적 사물 그룹이 성공적으로 생성되었습니다",
     "group_deleted": "✅ 동적 사물 그룹 '{}'이 성공적으로 삭제되었습니다",
     "creation_completed": "🎉 동적 그룹 생성이 성공적으로 완료되었습니다!",
-    "auto_update_note": "💡 그룹은 디바이스 속성이 변경됨에 따라 자동으로 업데이트됩니다"
+    "auto_update_note": "💡 그룹은 디바이스 속성이 변경됨에 따라 자동으로 업데이트됩니다",
+    "tags_applied": "✅ 워크샵 태그가 성공적으로 적용되었습니다"
   },
   
   "errors": {

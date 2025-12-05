@@ -9,7 +9,8 @@
   "warnings": {
     "debug_warning": "⚠️  警告：调试模式会暴露敏感信息（ARN、账户 ID、API 响应）",
     "revert_warning": "⚠️  警告：这将更新 {} 个 AWS IoT 设备影子到版本 '{}'",
-    "important_changes": "⚠️  重要更改："
+    "important_changes": "⚠️  重要更改：",
+    "tag_failed": "⚠️  警告：应用工作坊标签失败（资源将依赖命名约定进行清理）"
   },
   
   "prompts": {
@@ -50,7 +51,8 @@
     "role_exists": "✅ 软件包配置角色已存在",
     "policy_attached": "✅ 软件包配置策略已附加",
     "revert_completed": "✅ 版本回滚完成：{}/{} 成功",
-    "all_devices_current": "✅ 类型 '{}' 的所有设备都已在版本 '{}' 上"
+    "all_devices_current": "✅ 类型 '{}' 的所有设备都已在版本 '{}' 上",
+    "tags_applied": "✅ 工作坊标签应用成功"
   },
   
   "errors": {

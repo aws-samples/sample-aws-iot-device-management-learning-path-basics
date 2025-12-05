@@ -25,6 +25,32 @@ Este documento proporciona información completa sobre cada script en el proyect
 4. Países (cantidad o códigos específicos)
 5. Cantidad de dispositivos (predeterminado: 100)
 
+**Parámetros de Línea de Comandos**:
+- `--things-prefix PREFIJO` - Prefijo personalizado para nombres de cosas (predeterminado: "Vehicle-VIN-")
+  - Debe tener 1-20 caracteres
+  - Solo alfanuméricos, guiones, guiones bajos y dos puntos
+  - Ejemplo: `--things-prefix "Fleet-Device-"` crea Fleet-Device-001, Fleet-Device-002, etc.
+
+**Comportamiento de Etiquetado de Recursos**:
+Todos los recursos creados se etiquetan automáticamente con:
+- `workshop=learning-aws-iot-dm-basics` - Identifica recursos del taller
+- `creation-date=YYYY-MM-DD` - Marca de tiempo para seguimiento
+
+**Recursos Etiquetados**:
+- Tipos de cosas
+- Grupos de cosas (grupos estáticos)
+- Paquetes de software
+- Versiones de paquetes de software
+- Trabajos
+- Buckets de S3
+- Roles de IAM
+
+**Manejo de Fallos de Etiquetado**:
+- Los fallos de etiquetado no impiden la creación de recursos
+- El script continúa con advertencias para etiquetas fallidas
+- El informe de resumen muestra recursos sin etiquetas
+- El script de limpieza usa patrones de nomenclatura como respaldo
+
 **Pausas Educativas**: 8 momentos de aprendizaje explicando conceptos de IoT
 
 **Límites de Tasa**: Limitación inteligente de API de AWS (80 TPS para cosas, 8 TPS para tipos de cosas)
@@ -34,15 +60,64 @@ Este documento proporciona información completa sobre cada script en el proyect
 ---
 
 ### scripts/cleanup_script.py
-**Propósito**: Eliminación segura de recursos AWS IoT para evitar costos continuos utilizando APIs nativas de boto3.
+**Propósito**: Eliminación segura de recursos AWS IoT para evitar costos continuos utilizando APIs nativas de boto3 con identificación inteligente de recursos.
 
 **Opciones de Limpieza**:
 1. **TODOS los recursos** - Limpieza completa de infraestructura
 2. **Solo cosas** - Eliminar dispositivos pero mantener infraestructura
 3. **Solo grupos de cosas** - Eliminar agrupaciones pero mantener dispositivos
 
+**Parámetros de Línea de Comandos**:
+- `--things-prefix PREFIJO` - Prefijo personalizado para identificación de cosas (predeterminado: "Vehicle-VIN-")
+  - Debe coincidir con el prefijo usado durante el aprovisionamiento
+  - Usado para identificar cosas con patrones de nomenclatura personalizados
+  - Ejemplo: `--things-prefix "Fleet-Device-"` identifica Fleet-Device-001, Fleet-Device-002, etc.
+- `--dry-run` - Vista previa de lo que se eliminaría sin hacer cambios
+  - Muestra todos los recursos que se eliminarían
+  - Muestra el método de identificación para cada recurso
+  - No se realizan eliminaciones reales
+  - Útil para verificar el alcance de la limpieza antes de la ejecución
+
+**Métodos de Identificación de Recursos**:
+
+El script de limpieza utiliza un sistema de identificación de tres niveles para identificar de forma segura los recursos del taller:
+
+**1. Identificación Basada en Etiquetas (Prioridad Más Alta)**:
+- Verifica la etiqueta `workshop=learning-aws-iot-dm-basics`
+- Método más confiable para recursos creados con etiquetado
+- Funciona para: tipos de cosas, grupos de cosas, paquetes, versiones de paquetes, trabajos, buckets de S3, roles de IAM
+
+**2. Identificación por Patrón de Nomenclatura (Respaldo)**:
+- Coincide nombres de recursos con patrones del taller
+- Usado cuando las etiquetas no están presentes o no son compatibles
+- Los patrones incluyen:
+  - Cosas: `Vehicle-VIN-###` o patrón de prefijo personalizado (ej., `Fleet-Device-###`)
+  - Tipos de cosas: `SedanVehicle`, `SUVVehicle`, `TruckVehicle`
+  - Grupos de cosas: `Fleet-*` (grupos estáticos)
+  - Grupos dinámicos: `DynamicGroup-*`
+  - Paquetes: `SedanVehicle-Package`, `SUVVehicle-Package`, `TruckVehicle-Package`
+  - Trabajos: `OTA-Job-*`, `Command-Job-*`
+  - Buckets de S3: `iot-dm-workshop-*`
+  - Roles de IAM: `IoTJobsRole`, `IoTPackageConfigRole`
+
+**3. Identificación Basada en Asociación (Para Recursos No Etiquetables)**:
+- Usado para recursos que no pueden ser etiquetados directamente
+- Certificados: Identificados por vinculación a cosas del taller
+- Shadows: Identificados por pertenencia a cosas del taller
+- Asegura limpieza completa de recursos dependientes
+
+**Proceso de Identificación**:
+1. Para cada recurso, verificar etiquetas primero
+2. Si no se encuentra etiqueta del taller, verificar patrón de nomenclatura
+3. Si no hay coincidencia de patrón, verificar asociaciones (para certificados/shadows)
+4. Si ningún método de identificación tiene éxito, el recurso se omite
+5. El modo de depuración muestra qué método identificó cada recurso
+
 **Características**:
 - **Implementación Nativa de boto3**: Sin dependencias de CLI, mejor manejo de errores
+- **Identificación Inteligente de Recursos**: Sistema de tres niveles (etiquetas → nomenclatura → asociaciones)
+- **Modo de Ejecución en Seco**: Vista previa de eliminaciones sin hacer cambios
+- **Soporte de Prefijo Personalizado**: Identificar cosas con patrones de nomenclatura personalizados
 - **Procesamiento paralelo** con limitación de tasa inteligente
 - **Limpieza Mejorada de S3**: Eliminación adecuada de objetos versionados usando paginadores
 - Distingue automáticamente grupos estáticos vs dinámicos
@@ -52,10 +127,301 @@ Este documento proporciona información completa sobre cada script en el proyect
 - Deshabilita la configuración de Fleet Indexing
 - **Limpieza de Shadows**: Elimina shadows clásicos y $package
 - **Desvinculación de Principales**: Desvincula adecuadamente certificados y políticas
+- **Informes Completos**: Muestra recursos eliminados y omitidos con conteos
 
-**Seguridad**: Requiere escribir "DELETE" para confirmar
+**Características de Seguridad**:
+- Requiere escribir "DELETE" para confirmar (a menos que esté en modo de ejecución en seco)
+- Omite automáticamente recursos que no son del taller
+- Muestra resumen de lo que se eliminará
+- Modo de ejecución en seco para verificación antes de la eliminación real
+- El manejo de errores continúa la limpieza incluso si fallan recursos individuales
+
+**Ejemplo de Modo de Ejecución en Seco**:
+```bash
+python scripts/cleanup_script.py --dry-run
+```
+La salida muestra:
+- Recursos que se eliminarían (con método de identificación)
+- Recursos que se omitirían (recursos que no son del taller)
+- Conteos totales por tipo de recurso
+- No se realizan eliminaciones reales
+
+**Ejemplo de Prefijo Personalizado**:
+```bash
+python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
+```
+Identifica y elimina:
+- Cosas que coinciden con el patrón Fleet-Device-###
+- Certificados y shadows asociados
+- Otros recursos del taller (identificados por etiquetas o patrones)
 
 **Rendimiento**: Ejecución paralela respetando límites de API de AWS (80 TPS cosas, 4 TPS grupos dinámicos)
+
+**Ejemplo de Limpieza Basada en Etiquetas**:
+```
+Escaneando tipos de cosas...
+Se encontraron 3 tipos de cosas
+  ✓ SedanVehicle (identificado por etiqueta: workshop=learning-aws-iot-dm-basics)
+  ✓ SUVVehicle (identificado por etiqueta: workshop=learning-aws-iot-dm-basics)
+  ✓ TruckVehicle (identificado por etiqueta: workshop=learning-aws-iot-dm-basics)
+
+Escaneando grupos de cosas...
+Se encontraron 5 grupos de cosas
+  ✓ fleet-US (identificado por etiqueta: workshop=learning-aws-iot-dm-basics)
+  ✓ fleet-CA (identificado por etiqueta: workshop=learning-aws-iot-dm-basics)
+  ✗ production-fleet (omitido - sin etiqueta del taller)
+```
+
+**Ejemplo de Limpieza Basada en Nomenclatura**:
+```
+Escaneando cosas...
+Se encontraron 102 cosas
+  ✓ Vehicle-VIN-001 (identificado por patrón de nomenclatura: Vehicle-VIN-###)
+  ✓ Vehicle-VIN-002 (identificado por patrón de nomenclatura: Vehicle-VIN-###)
+  ✓ vehicle-US-sedan-1 (identificado por patrón heredado)
+  ✗ production-device-001 (omitido - sin coincidencia de patrón)
+```
+
+**Ejemplo de Limpieza Basada en Asociación**:
+```
+Procesando cosa: Vehicle-VIN-001
+  ✓ Shadow clásico (identificado por asociación con cosa del taller)
+  ✓ Shadow $package (identificado por asociación con cosa del taller)
+  ✓ Certificado abc123 (identificado por asociación con cosa del taller)
+  
+Procesando cosa: production-device-001
+  ✗ Certificado xyz789 (omitido - vinculado a cosa que no es del taller)
+```
+
+**Salida de Resumen de Limpieza**:
+```
+Resumen de Limpieza:
+====================
+Recursos Eliminados:
+  - Cosas IoT: 100
+  - Grupos de Cosas: 5
+  - Tipos de Cosas: 3
+  - Paquetes: 3
+  - Trabajos: 2
+  - Buckets de S3: 1
+  - Roles de IAM: 2
+  Total: 116
+
+Recursos Omitidos:
+  - Cosas IoT: 2 (recursos que no son del taller)
+  - Grupos de Cosas: 1 (recurso que no es del taller)
+  Total: 3
+
+Tiempo de Ejecución: 45.3 segundos
+```
+
+**Solución de Problemas de Limpieza**:
+
+**Problema: Recursos No Se Están Eliminando**
+
+Síntomas:
+- El script de limpieza omite recursos que espera que se eliminen
+- El conteo de "Recursos omitidos" es mayor de lo esperado
+- Recursos específicos permanecen después de la limpieza
+
+Soluciones:
+1. **Verificar Coincidencia de Prefijo de Cosas**:
+   ```bash
+   # Si usó un prefijo personalizado durante el aprovisionamiento:
+   python scripts/provision_script.py --things-prefix "MiPrefijo-"
+   
+   # DEBE usar el mismo prefijo durante la limpieza:
+   python scripts/cleanup_script.py --things-prefix "MiPrefijo-"
+   ```
+
+2. **Verificar Etiquetas de Recursos**:
+   - Ejecutar limpieza en modo de depuración para ver métodos de identificación
+   - Verificar que los recursos etiquetables tengan la etiqueta `workshop=learning-aws-iot-dm-basics`
+   - Verificar en la Consola de AWS → IoT Core → Etiquetas de recursos
+
+3. **Verificar Patrones de Nomenclatura**:
+   - Las cosas deben coincidir con: `{prefijo}###` o `vehicle-{país}-{tipo}-{índice}`
+   - Los grupos deben coincidir con: `fleet-{país}` o contener "workshop"
+   - Usar modo de ejecución en seco para ver qué se identificaría
+
+4. **Usar Ejecución en Seco Primero**:
+   ```bash
+   # Vista previa de lo que se eliminará
+   python scripts/cleanup_script.py --dry-run
+   
+   # Verificar salida para recursos omitidos
+   # Verificar métodos de identificación en modo de depuración
+   ```
+
+**Problema: Fallos de Aplicación de Etiquetas Durante el Aprovisionamiento**
+
+Síntomas:
+- El script de aprovisionamiento muestra advertencias de "Falló al aplicar etiquetas"
+- Recursos creados pero sin etiquetas del taller
+- El script de limpieza omite recursos que deberían eliminarse
+
+Soluciones:
+1. **Verificar Permisos de IAM**:
+   - Verificar que el usuario/rol de IAM tenga permisos de etiquetado
+   - Acciones requeridas: `iot:TagResource`, `s3:PutBucketTagging`, `iam:TagRole`
+
+2. **Confiar en Convenciones de Nomenclatura**:
+   - Los recursos sin etiquetas aún pueden identificarse por patrones de nomenclatura
+   - Asegurar nomenclatura consistente durante el aprovisionamiento
+   - Usar el mismo --things-prefix para aprovisionamiento y limpieza
+
+3. **Adición Manual de Etiquetas** (si es necesario):
+   ```bash
+   # Agregar etiquetas manualmente vía AWS CLI
+   aws iot tag-resource --resource-arn <arn> --tags workshop=learning-aws-iot-dm-basics
+   ```
+
+**Problema: La Limpieza Elimina Recursos Incorrectos**
+
+Síntomas:
+- Recursos que no son del taller están siendo identificados para eliminación
+- La ejecución en seco muestra recursos inesperados
+
+Soluciones:
+1. **Siempre Usar Ejecución en Seco Primero**:
+   ```bash
+   python scripts/cleanup_script.py --dry-run
+   ```
+
+2. **Revisar Patrones de Nomenclatura**:
+   - Asegurar que los recursos de producción no coincidan con patrones del taller
+   - Evitar usar el prefijo "Vehicle-VIN-" para cosas de producción
+   - No usar el prefijo "fleet-" para grupos de producción
+
+3. **Verificar Conflictos de Etiquetas**:
+   - Verificar que ningún recurso de producción tenga etiquetas del taller
+   - Revisar políticas de etiquetas en su cuenta de AWS
+
+**Problema: La Limpieza Falla con Errores de Permisos**
+
+Síntomas:
+- Errores "AccessDeniedException" o "UnauthorizedException"
+- Finalización parcial de limpieza
+- Algunos tipos de recursos eliminados, otros omitidos
+
+Soluciones:
+1. **Verificar Permisos de IAM**:
+   - Permisos requeridos listados en README.md
+   - Verificar política de IAM para todas las acciones requeridas
+   - Verificar permisos para: IoT, S3, IAM, Fleet Indexing
+
+2. **Verificar Políticas de Recursos**:
+   - Las políticas de buckets de S3 pueden bloquear la eliminación
+   - Las políticas de confianza de roles de IAM pueden prevenir la eliminación
+   - Revisar políticas a nivel de recurso
+
+3. **Usar Modo de Depuración**:
+   ```bash
+   # Ejecutar con depuración para ver errores exactos de API
+   python scripts/cleanup_script.py
+   # Responder 'y' para modo de depuración
+   ```
+
+**Problema: La Limpieza Toma Demasiado Tiempo**
+
+Síntomas:
+- La limpieza se ejecuta por períodos extendidos
+- El progreso parece lento
+- Errores de tiempo de espera
+
+Soluciones:
+1. **Duración Esperada**:
+   - 100 cosas: ~2-3 minutos
+   - 1000 cosas: ~15-20 minutos
+   - Eliminación de tipos de cosas: +5 minutos (espera de depreciación requerida)
+
+2. **Limitación de Tasa**:
+   - El script respeta los límites de API de AWS automáticamente
+   - El procesamiento paralelo optimiza el rendimiento
+   - El modo de depuración se ejecuta secuencialmente (más lento pero salida más clara)
+
+3. **Monitorear Progreso**:
+   - Observar indicadores de progreso en tiempo real
+   - Verificar la Consola de AWS para el estado de eliminación
+   - Usar modo de depuración para ver cada operación
+
+**Problema: La Ejecución en Seco Muestra Resultados Diferentes a la Limpieza Real**
+
+Síntomas:
+- La ejecución en seco identifica recursos que la limpieza real omite
+- Comportamiento inconsistente entre modos
+
+Soluciones:
+1. **Cambios de Estado de Recursos**:
+   - Los recursos pueden modificarse entre la ejecución en seco y la limpieza real
+   - Las etiquetas pueden agregarse/eliminarse por otros procesos
+   - Volver a ejecutar la ejecución en seco inmediatamente antes de la limpieza real
+
+2. **Modificaciones Concurrentes**:
+   - Otros usuarios/procesos pueden estar modificando recursos
+   - Coordinar el tiempo de limpieza con el equipo
+   - Usar bloqueo de recursos si está disponible
+
+3. **Problemas de Caché**:
+   - Las respuestas de API de AWS pueden almacenarse en caché brevemente
+   - Esperar unos segundos entre la ejecución en seco y la limpieza real
+   - Actualizar la Consola de AWS para verificar el estado actual
+
+**Problema: Limpieza Parcial**
+
+Síntomas:
+- Algunos recursos eliminados, otros permanecen
+- Mensajes de error durante la limpieza
+- Resultados de limpieza incompletos
+
+Soluciones:
+1. **Problemas de Dependencias**:
+   - Algunos recursos pueden fallar al eliminarse debido a dependencias
+   - El script continúa con los recursos restantes
+   - Verificar mensajes de error para fallos específicos
+   - Volver a ejecutar el script para limpiar recursos restantes
+
+2. **Estado de Recursos**:
+   - Los tipos de cosas deben depreciarse antes de la eliminación (espera de 5 minutos)
+   - Los trabajos deben cancelarse antes de la eliminación
+   - Los buckets de S3 deben estar vacíos antes de la eliminación
+
+3. **Volver a Ejecutar Limpieza**:
+   ```bash
+   # Ejecutar limpieza nuevamente para capturar recursos restantes
+   python scripts/cleanup_script.py
+   ```
+
+**Mejores Prácticas para Limpieza Segura**:
+
+1. **Siempre Comenzar con Ejecución en Seco**:
+   ```bash
+   python scripts/cleanup_script.py --dry-run
+   ```
+
+2. **Verificar Coincidencia de Prefijo de Cosas**:
+   - Usar el mismo --things-prefix que el aprovisionamiento
+   - Documentar prefijos personalizados para referencia del equipo
+
+3. **Usar Modo de Depuración para Solución de Problemas**:
+   - Ver métodos de identificación para cada recurso
+   - Entender por qué se omiten recursos
+   - Verificar coincidencias de etiquetas y patrones de nomenclatura
+
+4. **Coordinar con el Equipo**:
+   - Comunicar el tiempo de limpieza
+   - Verificar que no haya talleres activos usando recursos
+   - Documentar resultados de limpieza
+
+5. **Monitorear la Consola de AWS**:
+   - Verificar que los recursos se eliminaron como se esperaba
+   - Verificar cualquier recurso del taller restante
+   - Revisar registros de CloudWatch si están disponibles
+
+6. **Mantener Nomenclatura Consistente**:
+   - Usar prefijos estándar en todos los talleres
+   - Documentar convenciones de nomenclatura
+   - Evitar conflictos de nomenclatura de producción
 
 ---
 

@@ -85,14 +85,14 @@ pip install -r requirements.txt
 aws configure
 
 # 3. 完整工作流程（推荐顺序）
-python scripts/provision_script.py        # 创建基础设施
+python scripts/provision_script.py        # 创建带标签的基础设施
 python scripts/manage_dynamic_groups.py   # 创建设备组
 python scripts/manage_packages.py         # 管理固件包
 python scripts/create_job.py              # 部署固件更新
 python scripts/simulate_job_execution.py  # 模拟设备更新
 python scripts/explore_jobs.py            # 监控作业进度
 python scripts/manage_commands.py         # 向设备发送实时命令
-python scripts/cleanup_script.py          # 清理资源
+python scripts/cleanup_script.py          # 通过资源识别进行安全清理
 ```
 
 ## 📚 可用脚本
@@ -125,6 +125,45 @@ export AWS_IOT_LANG=zh                    # 设置默认语言（en、es、fr �
 - **并行处理**：非调试模式下的并发操作
 - **速率限制**：自动 AWS API 节流合规性
 - **进度跟踪**：实时操作状态
+- **资源标记**：自动工作坊标签以实现安全清理
+- **可配置命名**：可自定义的设备命名模式
+
+### 资源标记
+
+所有工作坊脚本都会自动为创建的资源标记 `workshop=learning-aws-iot-dm-basics`，以便在清理期间进行安全识别。这确保只删除工作坊创建的资源。
+
+**已标记的资源**：
+- IoT Thing 类型
+- IoT Thing 组（静态和动态）
+- IoT 软件包
+- IoT 作业
+- Amazon S3 存储桶
+- IAM 角色
+
+**未标记的资源**（通过命名模式识别）：
+- IoT Thing（使用命名约定）
+- 证书（通过关联识别）
+- Thing 影子（通过关联识别）
+
+### 设备命名配置
+
+使用 `--things-prefix` 参数自定义设备命名模式：
+
+```bash
+# 默认命名：Vehicle-VIN-001、Vehicle-VIN-002 等
+python scripts/provision_script.py
+
+# 自定义前缀：Fleet-Device-001、Fleet-Device-002 等
+python scripts/provision_script.py --things-prefix "Fleet-Device-"
+
+# 清理的自定义前缀（必须与配置前缀匹配）
+python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
+```
+
+**前缀要求**：
+- 仅限字母数字字符、连字符、下划线和冒号
+- 最多 20 个字符
+- 序列号自动补零（001-999）
 
 ## 🌍 国际化支持
 
@@ -224,13 +263,43 @@ python scripts/cleanup_script.py
 # 输入：DELETE
 ```
 
+### 安全清理功能
+
+清理脚本使用多种识别方法来确保仅删除工作坊资源：
+
+1. **基于标签的识别**（主要）：检查 `workshop=learning-aws-iot-dm-basics` 标签
+2. **命名模式匹配**（次要）：匹配已知的工作坊命名约定
+3. **基于关联**（第三）：识别附加到工作坊资源的资源
+
+**清理选项**：
+```bash
+# 标准清理（交互式）
+python scripts/cleanup_script.py
+
+# 试运行模式（预览而不删除）
+python scripts/cleanup_script.py --dry-run
+
+# 自定义设备前缀（必须与配置前缀匹配）
+python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
+
+# 带自定义前缀的试运行
+python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
+```
+
 **清理删除的内容**：
-- 所有 AWS IoT 设备和组
-- Amazon S3 存储桶和固件文件
-- AWS IoT 软件包
-- AWS IoT 命令模板
-- IAM 角色和策略
+- 所有 AWS IoT 设备和组（带有工作坊标签或匹配的命名模式）
+- Amazon S3 存储桶和固件文件（已标记）
+- AWS IoT 软件包（已标记）
+- AWS IoT 命令模板（已标记）
+- IAM 角色和策略（已标记）
 - Fleet Indexing 配置
+- 关联的证书和影子
+
+**安全功能**：
+- 非工作坊资源会自动跳过
+- 详细摘要显示已删除和跳过的资源
+- 调试模式显示每个资源的识别方法
+- 试运行模式允许在实际删除前预览
 
 ## 🔧 开发者指南：添加新语言
 

@@ -7,7 +7,8 @@
   "account_id_label": "   账户 ID：{}",
   "region_label": "   区域：{}",
   "warnings": {
-    "debug_warning": "⚠️  警告：调试模式会暴露敏感信息（ARN、账户 ID、API 响应）"
+    "debug_warning": "⚠️  警告：调试模式会暴露敏感信息（ARN、账户 ID、API 响应）",
+    "tag_failed": "⚠️  警告：未能将工作坊标签应用于作业（作业将依赖命名规则进行清理识别）"
   },
   "prompts": {
     "debug_mode": "🔧 启用调试模式（显示所有 API 调用和响应）？[y/N]：",
@@ -51,6 +52,7 @@
     "getting_versions": "🔍 获取软件包版本：{}",
     "creating_job": "🚀 创建 IoT 作业...",
     "job_created": "✅ IoT 作业创建成功！",
+    "tags_applied": "🏷️  工作坊标签已应用于作业",
     "using_defaults": "✅ 使用默认设置：CONTINUOUS 目标选择",
     "found_resources": "📊 找到 {} 个设备组和 {} 个软件包",
     "creation_completed": "🎉 作业创建成功完成！",

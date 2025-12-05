@@ -1,0 +1,28 @@
+{
+  "debug": {
+    "processing_resources": "========== {0}個の{1}リソースを処理中 ==========",
+    "processing_item": "--- 処理中 {0}/{1}: {2} ---",
+    "resource_name": "リソース: {0}",
+    "is_workshop_resource": "ワークショップリソース: {0}",
+    "identification_method": "識別方法: {0}",
+    "skipping_non_workshop": "ワークショップ以外のリソースをスキップ: {0}",
+    "proceeding_to_delete": "ワークショップリソースの削除を続行: {0}",
+    "deleting_with_dependencies": "依存関係ハンドラーで削除中...",
+    "dependency_handler_result": "依存関係ハンドラーの結果: 成功={0}, 削除項目={1}",
+    "deleting_single_resource": "単一リソースを削除中（依存関係なし）...",
+    "single_resource_result": "単一リソース削除結果: 成功={0}",
+    "successfully_deleted": "✓ 正常に削除されました: {0}",
+    "failed_to_delete": "✗ 削除に失敗しました: {0}",
+    "completed_processing": "========== {0}の処理が完了しました ==========",
+    "processing_stats": "合計: {0}, 削除: {1}, スキップ: {2}, 失敗: {3}",
+    "rate_limiting": "レート制限: {1}のために{0:.3f}秒待機中"
+  },
+  "warning": {
+    "unknown_resource_type": "不明なリソースタイプ: {0}"
+  },
+  "error": {
+    "processing_error": "{0}の処理中にエラー: {1}",
+    "aws_api_error": "{0}の削除中にAWS APIエラー: {1}",
+    "unexpected_error": "リソース削除中に予期しないエラー: {0}"
+  }
+}

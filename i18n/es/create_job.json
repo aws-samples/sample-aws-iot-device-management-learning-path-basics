@@ -7,7 +7,8 @@
   "account_id_label": "   ID de Cuenta: {}",
   "region_label": "   Región: {}",
   "warnings": {
-    "debug_warning": "⚠️  ADVERTENCIA: El modo de depuración expone información sensible (ARNs, IDs de cuenta, respuestas de API)"
+    "debug_warning": "⚠️  ADVERTENCIA: El modo de depuración expone información sensible (ARNs, IDs de cuenta, respuestas de API)",
+    "tag_failed": "⚠️  Advertencia: Error al aplicar etiquetas de taller al trabajo (el trabajo dependerá del nombre para la identificación de limpieza)"
   },
   "prompts": {
     "debug_mode": "🔧 ¿Habilitar modo de depuración (mostrar todas las llamadas y respuestas de API)? [y/N]: ",
@@ -51,6 +52,7 @@
     "getting_versions": "🔍 Obteniendo versiones para paquete: {}",
     "creating_job": "🚀 Creando trabajo IoT...",
     "job_created": "✅ ¡Trabajo IoT creado exitosamente!",
+    "tags_applied": "🏷️  Etiquetas de taller aplicadas al trabajo",
     "using_defaults": "✅ Usando configuraciones predeterminadas: selección de objetivo CONTINUOUS",
     "found_resources": "📊 Se encontraron {} grupos de objetos y {} paquetes",
     "creation_completed": "🎉 ¡Creación de trabajo completada exitosamente!",

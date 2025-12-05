@@ -85,14 +85,14 @@ pip install -r requirements.txt
 aws configure
 
 # 3. 완전한 워크플로우 (권장 순서)
-python scripts/provision_script.py        # 인프라 생성
+python scripts/provision_script.py        # 태그가 포함된 인프라 생성
 python scripts/manage_dynamic_groups.py   # 디바이스 그룹 생성
 python scripts/manage_packages.py         # 펌웨어 패키지 관리
 python scripts/create_job.py              # 펌웨어 업데이트 배포
 python scripts/simulate_job_execution.py  # 디바이스 업데이트 시뮬레이션
 python scripts/explore_jobs.py            # 작업 진행 상황 모니터링
 python scripts/manage_commands.py         # 디바이스에 실시간 명령 전송
-python scripts/cleanup_script.py          # 리소스 정리
+python scripts/cleanup_script.py          # 리소스 식별을 통한 안전한 정리
 ```
 
 ## 📚 사용 가능한 스크립트
@@ -125,6 +125,45 @@ export AWS_IOT_LANG=ko                    # 기본 언어 설정 (en, es, fr 등
 - **병렬 처리**: 디버그 모드가 아닐 때 동시 작업
 - **속도 제한**: 자동 AWS API 스로틀링 준수
 - **진행 상황 추적**: 실시간 작업 상태
+- **리소스 태깅**: 안전한 정리를 위한 자동 워크샵 태그
+- **구성 가능한 명명**: 사용자 정의 가능한 디바이스 명명 패턴
+
+### 리소스 태깅
+
+모든 워크샵 스크립트는 정리 시 안전한 식별을 위해 생성된 리소스에 자동으로 `workshop=learning-aws-iot-dm-basics` 태그를 지정합니다. 이를 통해 워크샵에서 생성된 리소스만 삭제됩니다.
+
+**태그가 지정된 리소스**:
+- IoT Thing 유형
+- IoT Thing 그룹 (정적 및 동적)
+- IoT 소프트웨어 패키지
+- IoT 작업
+- Amazon S3 버킷
+- IAM 역할
+
+**태그가 지정되지 않은 리소스** (명명 패턴으로 식별):
+- IoT Thing (명명 규칙 사용)
+- 인증서 (연결로 식별)
+- Thing 섀도우 (연결로 식별)
+
+### 디바이스 명명 구성
+
+`--things-prefix` 매개변수로 디바이스 명명 패턴 사용자 정의:
+
+```bash
+# 기본 명명: Vehicle-VIN-001, Vehicle-VIN-002 등
+python scripts/provision_script.py
+
+# 사용자 정의 접두사: Fleet-Device-001, Fleet-Device-002 등
+python scripts/provision_script.py --things-prefix "Fleet-Device-"
+
+# 정리용 사용자 정의 접두사 (프로비저닝 접두사와 일치해야 함)
+python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
+```
+
+**접두사 요구사항**:
+- 영숫자, 하이픈, 밑줄, 콜론만 사용
+- 최대 20자
+- 순차 번호는 자동으로 0으로 채워짐 (001-999)
 
 ## 🌍 국제화 지원
 
@@ -224,13 +263,43 @@ python scripts/cleanup_script.py
 # 입력: DELETE
 ```
 
+### 안전한 정리 기능
+
+정리 스크립트는 워크샵 리소스만 삭제되도록 여러 식별 방법을 사용합니다:
+
+1. **태그 기반 식별** (기본): `workshop=learning-aws-iot-dm-basics` 태그 확인
+2. **명명 패턴 매칭** (보조): 알려진 워크샵 명명 규칙과 일치
+3. **연결 기반** (3차): 워크샵 리소스에 연결된 리소스 식별
+
+**정리 옵션**:
+```bash
+# 표준 정리 (대화형)
+python scripts/cleanup_script.py
+
+# 드라이런 모드 (삭제하지 않고 미리보기)
+python scripts/cleanup_script.py --dry-run
+
+# 사용자 정의 디바이스 접두사 (프로비저닝 접두사와 일치해야 함)
+python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
+
+# 사용자 정의 접두사로 드라이런
+python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
+```
+
 **정리가 제거하는 것:**
-- 모든 AWS IoT 디바이스 및 그룹
-- Amazon S3 버킷 및 펌웨어 파일
-- AWS IoT 소프트웨어 패키지
-- AWS IoT 명령 템플릿
-- IAM 역할 및 정책
+- 모든 AWS IoT 디바이스 및 그룹 (워크샵 태그 또는 일치하는 명명 패턴 포함)
+- Amazon S3 버킷 및 펌웨어 파일 (태그 지정됨)
+- AWS IoT 소프트웨어 패키지 (태그 지정됨)
+- AWS IoT 명령 템플릿 (태그 지정됨)
+- IAM 역할 및 정책 (태그 지정됨)
 - Fleet Indexing 구성
+- 연결된 인증서 및 섀도우
+
+**안전 기능**:
+- 워크샵이 아닌 리소스는 자동으로 건너뜀
+- 상세한 요약으로 삭제 및 건너뛴 리소스 표시
+- 디버그 모드에서 각 리소스의 식별 방법 표시
+- 드라이런 모드로 실제 삭제 전 미리보기 가능
 
 ## 🔧 개발자 가이드: 새 언어 추가
 

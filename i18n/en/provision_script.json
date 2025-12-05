@@ -4,7 +4,12 @@
   "aws_config": "📍 AWS Configuration:",
 
   "warnings": {
-    "debug_warning": "⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses)"
+    "debug_warning": "⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses)",
+    "tag_failure_thing_type": "⚠️  Warning: Failed to apply tags to thing type {}",
+    "tag_failure_thing_group": "⚠️  Warning: Failed to apply tags to thing group {}",
+    "tag_failure_package": "⚠️  Warning: Failed to apply tags to package {}",
+    "tag_failure_s3_bucket": "⚠️  Warning: Failed to apply tags to S3 bucket {}",
+    "tag_failure_iam_role": "⚠️  Warning: Failed to apply tags to IAM role {}"
   },
   "prompts": {
     "debug_mode": "🔧 Enable debug mode (show all API calls and responses)? [y/N]: ",
@@ -140,7 +145,12 @@
     "cancelled_by_user": "👋 Provisioning cancelled by user. Goodbye!",
     "provisioning_failed": "❌ Provisioning failed with error",
     "error_checking_file": "❌ Error checking file: {}",
-    "error_message": "❌ Error: {}"
+    "error_message": "❌ Error: {}",
+    "invalid_thing_prefix": "Error: Invalid thing prefix '{}'",
+    "thing_prefix_requirements": "Thing prefix must:",
+    "thing_prefix_chars": "  - Contain only alphanumeric characters, hyphens (-), underscores (_), or colons (:)",
+    "thing_prefix_length": "  - Be no longer than 20 characters",
+    "thing_prefix_not_empty": "  - Not be empty"
   },
   "debug": {
     "debug_operation": "🔍 DEBUG: {}: {}",
@@ -211,6 +221,14 @@
     "learned_package_config": "✅ Package Configuration automates shadow updates via UpdatePackageConfiguration API",
     "learned_device_creation": "✅ Device fleet creation uses CreateThing and CreateThingGroup APIs",
     "learned_boto3": "✅ Boto3 provides direct AWS API access with detailed request/response visibility"
+  },
+  "tagging": {
+    "summary_title": "⚠️  Tag Application Summary",
+    "summary_separator": "==================================================",
+    "summary_intro": "The following resources were created but failed to receive workshop tags:",
+    "summary_fallback": "These resources will rely on naming conventions for cleanup identification.",
+    "resource_count": "{}: {} resource(s)",
+    "total_without_tags": "Total resources without tags: {}"
   },
   "learning_moments": {
     "thing_types": {

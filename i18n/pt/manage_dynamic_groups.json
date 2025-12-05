@@ -7,7 +7,9 @@
   "account_id_label": "🆔 ID da Conta:",
   
   "warnings": {
-    "debug_warning": "⚠️  AVISO: O modo debug expõe informações sensíveis (ARNs, IDs de conta, respostas da API)"
+    "debug_warning": "⚠️  AVISO: O modo debug expõe informações sensíveis (ARNs, IDs de conta, respostas da API)",
+    "tag_failed": "⚠️  Aviso: Falha ao aplicar tags do workshop em {}",
+    "naming_fallback": "💡 O recurso será identificado pela convenção de nomenclatura durante a limpeza"
   },
   
   "prompts": {
@@ -47,7 +49,8 @@
     "group_created": "✅ Grupo Dinâmico de Coisas criado com sucesso",
     "group_deleted": "✅ Grupo Dinâmico de Coisas '{}' excluído com sucesso",
     "creation_completed": "🎉 Criação do grupo dinâmico concluída com sucesso!",
-    "auto_update_note": "💡 O grupo será atualizado automaticamente conforme os atributos do dispositivo mudarem"
+    "auto_update_note": "💡 O grupo será atualizado automaticamente conforme os atributos do dispositivo mudarem",
+    "tags_applied": "✅ Tags do workshop aplicadas com sucesso"
   },
   
   "errors": {

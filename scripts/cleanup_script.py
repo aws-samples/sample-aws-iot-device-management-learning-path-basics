@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import json
 import os
 import sys
@@ -11,11 +12,21 @@ import boto3
 from botocore.exceptions import ClientError
 from colorama import Fore, Style, init
 
-# Add i18n to path
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "i18n"))
+# Add repository root and i18n to path
+repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if repo_root not in sys.path:
+    sys.path.insert(0, repo_root)
+sys.path.append(os.path.join(repo_root, "i18n"))
 
 from language_selector import get_language
 from loader import load_messages
+
+# Import new cleanup modules from iot_helpers package
+from iot_helpers.cleanup.resource_identifier import ResourceIdentifier
+from iot_helpers.utils.dependency_handler import DependencyHandler
+from iot_helpers.cleanup.deletion_engine import DeletionEngine
+from iot_helpers.cleanup.reporter import CleanupReporter
+from iot_helpers.utils.naming_conventions import validate_thing_prefix
 
 # Initialize colorama
 init()
@@ -26,10 +37,12 @@ messages = {}
 
 
 class IoTCleanupBoto3:
-    def __init__(self):
+    def __init__(self, things_prefix="Vehicle-VIN-", dry_run=False):
         self.region = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
         self.account_id = None
         self.debug_mode = False
+        self.things_prefix = things_prefix
+        self.dry_run = dry_run
 
         # AWS clients
         self.iot_client = None
@@ -37,6 +50,12 @@ class IoTCleanupBoto3:
         self.s3_client = None
         self.iam_client = None
         self.sts_client = None
+
+        # New module instances (initialized after clients are ready)
+        self.resource_identifier = None
+        self.dependency_handler = None
+        self.deletion_engine = None
+        self.cleanup_reporter = None
 
         # Cleanup options will be populated with localized messages
 
@@ -129,6 +148,30 @@ class IoTCleanupBoto3:
             # Initialize IoT Data client with endpoint
             self.iot_data_client = boto3.client("iot-data", region_name=self.region, endpoint_url=f"https://{data_endpoint}")
 
+            # Initialize new module instances now that clients are ready
+            self.resource_identifier = ResourceIdentifier(
+                iot_client=self.iot_client, s3_client=self.s3_client, iam_client=self.iam_client, debug_mode=self.debug_mode
+            )
+
+            self.dependency_handler = DependencyHandler(
+                iot_client=self.iot_client,
+                s3_client=self.s3_client,
+                iam_client=self.iam_client,
+                language=USER_LANG,
+                debug_mode=self.debug_mode,
+            )
+
+            clients_dict = {
+                "iot": self.iot_client,
+                "iot_data": self.iot_data_client,
+                "s3": self.s3_client,
+                "iam": self.iam_client,
+            }
+
+            self.deletion_engine = DeletionEngine(clients=clients_dict, debug_mode=self.debug_mode, dry_run=self.dry_run)
+
+            self.cleanup_reporter = CleanupReporter(language=USER_LANG)
+
             if self.debug_mode:
                 print(f"{self.get_message('status.clients_initialized')}")
                 print(f"{self.get_message('status.iot_service', self.iot_client.meta.service_model.service_name)}")
@@ -161,6 +204,14 @@ class IoTCleanupBoto3:
 
         if self.debug_mode:
             print(f"{Fore.GREEN}{self.get_message('status.debug_enabled')}{Style.RESET_ALL}\n")
+            
+            # Update debug mode in all modules
+            if self.resource_identifier:
+                self.resource_identifier.debug_mode = True
+            if self.dependency_handler:
+                self.dependency_handler.debug_mode = True
+            if self.deletion_engine:
+                self.deletion_engine.debug_mode = True
 
     def get_cleanup_choice(self):
         """Get cleanup option from user"""
@@ -195,80 +246,10 @@ class IoTCleanupBoto3:
         confirm = input(f"\n{Fore.YELLOW}{self.get_message('prompts.confirm_deletion')}{Style.RESET_ALL}")
         return confirm == "DELETE"
 
-    def delete_single_thing(self, thing_name, index, total):
-        """Delete a single IoT thing with its shadows and principals"""
-        with self.thing_deletion_semaphore:
-            try:
-                # Delete classic shadow first
-                try:
-                    self.safe_api_call(
-                        self.iot_data_client.delete_thing_shadow,
-                        "Thing Shadow Delete",
-                        f"{thing_name} (classic)",
-                        debug=False,
-                        thingName=thing_name,
-                    )
-                except (ClientError, Exception):
-                    pass  # Shadow might not exist
 
-                # Delete $package shadow
-                try:
-                    self.safe_api_call(
-                        self.iot_data_client.delete_thing_shadow,
-                        "Thing Shadow Delete",
-                        f"{thing_name} ($package)",
-                        debug=False,
-                        thingName=thing_name,
-                        shadowName="$package",
-                    )
-                except (ClientError, Exception):
-                    pass  # Shadow might not exist
-
-                # Detach all principals from thing
-                principals_response = self.safe_api_call(
-                    self.iot_client.list_thing_principals,
-                    "Thing Principals List",
-                    thing_name,
-                    debug=False,
-                    thingName=thing_name,
-                )
-
-                if principals_response:
-                    principals = principals_response.get("principals", [])
-                    for principal in principals:
-                        self.safe_api_call(
-                            self.iot_client.detach_thing_principal,
-                            "Thing Principal Detach",
-                            f"{thing_name} from {principal}",
-                            debug=False,
-                            thingName=thing_name,
-                            principal=principal,
-                        )
-
-                # Delete the thing (AWS automatically removes from all groups)
-                delete_response = self.safe_api_call(
-                    self.iot_client.delete_thing, "Thing Delete", thing_name, debug=self.debug_mode, thingName=thing_name
-                )
-
-                if delete_response is not None:
-                    with self.progress_lock:
-                        self.deleted_count += 1
-                        print(
-                            f"{Fore.GREEN}{self.get_message('status.thing_deleted', self.deleted_count, total, thing_name)}{Style.RESET_ALL}"
-                        )
-                    return True
-                else:
-                    print(f"{Fore.RED}{self.get_message('errors.failed_delete_thing', thing_name)}{Style.RESET_ALL}")
-                    return False
-
-            except Exception as e:
-                print(f"{Fore.RED}{self.get_message('errors.error_deleting_thing', thing_name, str(e))}{Style.RESET_ALL}")
-                return False
-
-            time.sleep(0.0125)  # AWS API rate limiting: 80 TPS for things  # nosemgrep: arbitrary-sleep
 
     def delete_things(self):
-        """Delete all IoT things in parallel"""
+        """Delete all IoT things using new deletion engine"""
         print(f"{Fore.BLUE}{self.get_message('status.scanning_things')}{Style.RESET_ALL}")
 
         # List all things
@@ -277,216 +258,107 @@ class IoTCleanupBoto3:
 
         for page in paginator.paginate():
             things = page.get("things", [])
-            thing_names = [thing["thingName"] for thing in things]
-            all_things.extend(thing_names)
+            all_things.extend(things)
 
         if not all_things:
             print(f"{Fore.YELLOW}{self.get_message('results.no_things')}{Style.RESET_ALL}")
-            return
+            return {}
 
-        print(f"{Fore.GREEN}{self.get_message('results.found_things', len(all_things))}{Style.RESET_ALL}")
-        print(f"{Fore.BLUE}{self.get_message('status.deleting_things')}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('status.found_total_things', len(all_things))}{Style.RESET_ALL}")
+        
+        if self.dry_run:
+            print(f"{Fore.YELLOW}{self.get_message('status.dry_run_things')}{Style.RESET_ALL}")
+        
+        print(f"{Fore.BLUE}{self.get_message('status.filtering_things')}{Style.RESET_ALL}")
 
-        self.deleted_count = 0  # Reset counter
-
-        if self.debug_mode:
-            print(f"{Fore.BLUE}{self.get_message('status.processing_sequential', 'things')}{Style.RESET_ALL}")
-            success_count = 0
-            for i, thing_name in enumerate(all_things, 1):
-                if self.delete_single_thing(thing_name, i, len(all_things)):
-                    success_count += 1
-        else:
-            with ThreadPoolExecutor(max_workers=80) as executor:
-                futures = [
-                    executor.submit(self.delete_single_thing, thing_name, i, len(all_things))
-                    for i, thing_name in enumerate(all_things, 1)
-                ]
-
-                success_count = sum(1 for future in as_completed(futures) if future.result())
-
-        print(
-            f"{Fore.CYAN}{self.get_message('status.completion_summary', 'AWS IoT Things', success_count, len(all_things))}{Style.RESET_ALL}"
+        # Use deletion engine with resource identifier
+        stats = self.deletion_engine.delete_resources(
+            resources=all_things,
+            resource_type="thing",
+            identifier=self.resource_identifier,
+            dependency_handler=self.dependency_handler,
+            custom_prefix=self.things_prefix,
         )
 
-    def delete_single_thing_group(self, group_name, index, total):
-        """Delete a single thing group (handles both static and dynamic groups)"""
-        try:
-            # First, check if it's a dynamic thing group by getting its info
-            if self.debug_mode:
-                print(f"{Fore.CYAN}{self.get_message('status.checking_group_type', group_name)}{Style.RESET_ALL}")
+        workshop_things = stats['deleted'] + stats['failed']
+        print(
+            f"{Fore.CYAN}{self.get_message('status.processed_things', workshop_things, stats['deleted'], stats['failed'])}{Style.RESET_ALL}"
+        )
+        
+        if stats['skipped'] > 0:
+            print(f"{Fore.YELLOW}{self.get_message('status.skipped_things', stats['skipped'])}{Style.RESET_ALL}")
+        
+        return stats
 
-            describe_response = self.safe_api_call(
-                self.iot_client.describe_thing_group,
-                "Thing Group Describe",
-                group_name,
-                debug=False,
-                thingGroupName=group_name,
-            )
 
-            if not describe_response:
-                print(f"{Fore.RED}❌ Failed to describe thing group: {group_name}{Style.RESET_ALL}")
-                return False
-
-            # Check if this is a dynamic thing group by looking for queryString
-            query_string = describe_response.get("queryString")
-
-            if query_string:
-                # This is a dynamic thing group - use 5 TPS limit
-                with self.dynamic_group_deletion_semaphore:
-                    if self.debug_mode:
-                        print(f"{Fore.CYAN}{self.get_message('status.dynamic_group_detected', query_string)}{Style.RESET_ALL}")
-
-                    delete_response = self.safe_api_call(
-                        self.iot_client.delete_dynamic_thing_group,
-                        "Dynamic Thing Group Delete",
-                        group_name,
-                        debug=self.debug_mode,
-                        thingGroupName=group_name,
-                    )
-
-                    if delete_response is not None:
-                        with self.progress_lock:
-                            self.deleted_count += 1
-                            print(
-                                f"{Fore.GREEN}{self.get_message('status.group_deleted_dynamic', self.deleted_count, total, group_name)}{Style.RESET_ALL}"
-                            )
-                        return True
-                    else:
-                        print(
-                            f"{Fore.RED}{self.get_message('errors.failed_delete_group_dynamic', group_name)}{Style.RESET_ALL}"
-                        )
-                        return False
-
-                    time.sleep(0.25)  # AWS API rate limiting: 4 TPS for dynamic groups  # nosemgrep: arbitrary-sleep
-
-            else:
-                # This is a static thing group - use 100 TPS limit
-                with self.static_group_deletion_semaphore:
-                    if self.debug_mode:
-                        print(f"{Fore.CYAN}{self.get_message('status.static_group_detected')}{Style.RESET_ALL}")
-
-                    delete_response = self.safe_api_call(
-                        self.iot_client.delete_thing_group,
-                        "Thing Group Delete",
-                        group_name,
-                        debug=self.debug_mode,
-                        thingGroupName=group_name,
-                    )
-
-                    if delete_response is not None:
-                        with self.progress_lock:
-                            self.deleted_count += 1
-                            print(
-                                f"{Fore.GREEN}{self.get_message('status.group_deleted_static', self.deleted_count, total, group_name)}{Style.RESET_ALL}"
-                            )
-                        return True
-                    else:
-                        print(
-                            f"{Fore.RED}{self.get_message('errors.failed_delete_group_static', group_name)}{Style.RESET_ALL}"
-                        )
-                        return False
-
-                    time.sleep(0.0125)  # AWS API rate limiting: 80 TPS for static groups  # nosemgrep: arbitrary-sleep
-
-        except Exception as e:
-            print(f"{Fore.RED}{self.get_message('errors.error_deleting_group', group_name, str(e))}{Style.RESET_ALL}")
-            return False
 
     def delete_thing_groups(self):
-        """Delete all thing groups in parallel"""
+        """Delete all thing groups using new deletion engine"""
         print(f"{Fore.BLUE}{self.get_message('status.scanning_groups')}{Style.RESET_ALL}")
 
-        # List all thing groups
+        # List all thing groups (both static and dynamic)
+        # AWS list_thing_groups returns ALL groups including dynamic ones
         all_groups = []
-        paginator = self.iot_client.get_paginator("list_thing_groups")
-
-        for page in paginator.paginate():
-            groups = page.get("thingGroups", [])
-            group_names = [group["groupName"] for group in groups]
-            all_groups.extend(group_names)
+        
+        # Use non-paginated call first to get all groups (including dynamic)
+        try:
+            response = self.iot_client.list_thing_groups(maxResults=250)
+            groups = response.get("thingGroups", [])
+            all_groups.extend(groups)
+            
+            # Handle pagination if there are more groups
+            next_token = response.get("nextToken")
+            while next_token:
+                response = self.iot_client.list_thing_groups(maxResults=250, nextToken=next_token)
+                groups = response.get("thingGroups", [])
+                all_groups.extend(groups)
+                next_token = response.get("nextToken")
+                
+        except Exception as e:
+            if self.debug_mode:
+                print(f"[DEBUG] Error listing thing groups: {str(e)}")
+            # Fall back to paginator
+            paginator = self.iot_client.get_paginator("list_thing_groups")
+            for page in paginator.paginate():
+                groups = page.get("thingGroups", [])
+                all_groups.extend(groups)
 
         if not all_groups:
             print(f"{Fore.YELLOW}{self.get_message('results.no_groups')}{Style.RESET_ALL}")
-            return
-
-        print(f"{Fore.GREEN}{self.get_message('results.found_groups', len(all_groups))}{Style.RESET_ALL}")
-        print(f"{Fore.BLUE}{self.get_message('status.deleting_groups')}{Style.RESET_ALL}")
-
-        self.deleted_count = 0  # Reset counter
+            return {}
 
         if self.debug_mode:
-            print(f"{Fore.BLUE}{self.get_message('status.processing_sequential', 'groups')}{Style.RESET_ALL}")
-            success_count = 0
-            for i, group_name in enumerate(all_groups, 1):
-                if self.delete_single_thing_group(group_name, i, len(all_groups)):
-                    success_count += 1
-        else:
-            with ThreadPoolExecutor(max_workers=min(80, len(all_groups))) as executor:
-                futures = [
-                    executor.submit(self.delete_single_thing_group, group_name, i, len(all_groups))
-                    for i, group_name in enumerate(all_groups, 1)
-                ]
+            print(f"[DEBUG] Raw groups from API: {[g.get('groupName') for g in all_groups]}")
 
-                success_count = sum(1 for future in as_completed(futures) if future.result())
+        print(f"{Fore.GREEN}{self.get_message('status.found_total_groups', len(all_groups))}{Style.RESET_ALL}")
+        
+        if self.dry_run:
+            print(f"{Fore.YELLOW}{self.get_message('status.dry_run_groups')}{Style.RESET_ALL}")
+        
+        print(f"{Fore.BLUE}{self.get_message('status.filtering_groups')}{Style.RESET_ALL}")
 
-        print(
-            f"{Fore.CYAN}{self.get_message('status.completion_summary', 'AWS IoT Thing Groups', success_count, len(all_groups))}{Style.RESET_ALL}"
+        # Use deletion engine with resource identifier
+        stats = self.deletion_engine.delete_resources(
+            resources=all_groups,
+            resource_type="thing-group",
+            identifier=self.resource_identifier,
+            dependency_handler=self.dependency_handler,
         )
 
-    def deprecate_single_thing_type(self, type_name, index, total):
-        """Deprecate a single thing type"""
-        with self.thing_type_semaphore:
-            try:
-                deprecate_response = self.safe_api_call(
-                    self.iot_client.deprecate_thing_type,
-                    "Thing Type Deprecate",
-                    type_name,
-                    debug=self.debug_mode,
-                    thingTypeName=type_name,
-                )
+        workshop_groups = stats['deleted'] + stats['failed']
+        print(
+            f"{Fore.CYAN}{self.get_message('status.processed_groups', workshop_groups, stats['deleted'], stats['failed'])}{Style.RESET_ALL}"
+        )
+        
+        if stats['skipped'] > 0:
+            print(f"{Fore.YELLOW}{self.get_message('status.skipped_groups', stats['skipped'])}{Style.RESET_ALL}")
+        
+        return stats
 
-                if deprecate_response is not None:
-                    with self.progress_lock:
-                        self.deleted_count += 1
-                        print(
-                            f"{Fore.YELLOW}{self.get_message('status.type_deprecated', self.deleted_count, total, type_name)}{Style.RESET_ALL}"
-                        )
-                    return True
-                else:
-                    print(f"{Fore.YELLOW}{self.get_message('errors.type_already_deprecated', type_name)}{Style.RESET_ALL}")
-                    return False
-            except Exception as e:
-                print(f"{Fore.RED}{self.get_message('errors.error_deprecating_type', type_name, str(e))}{Style.RESET_ALL}")
-                return False
 
-    def delete_single_thing_type(self, type_name, index, total):
-        """Delete a single thing type"""
-        with self.thing_type_semaphore:
-            try:
-                delete_response = self.safe_api_call(
-                    self.iot_client.delete_thing_type,
-                    "Thing Type Delete",
-                    type_name,
-                    debug=self.debug_mode,
-                    thingTypeName=type_name,
-                )
-
-                if delete_response is not None:
-                    with self.progress_lock:
-                        self.deleted_count += 1
-                        print(
-                            f"{Fore.GREEN}{self.get_message('status.type_deleted', self.deleted_count, total, type_name)}{Style.RESET_ALL}"
-                        )
-                    return True
-                else:
-                    print(f"{Fore.RED}{self.get_message('errors.failed_delete_type', type_name)}{Style.RESET_ALL}")
-                    return False
-            except Exception as e:
-                print(f"{Fore.RED}{self.get_message('errors.error_deleting_type', type_name, str(e))}{Style.RESET_ALL}")
-                return False
 
     def delete_thing_types(self):
-        """Delete all thing types in parallel"""
+        """Delete all thing types using new deletion engine (with deprecation and wait)"""
         print(f"{Fore.BLUE}{self.get_message('status.scanning_types')}{Style.RESET_ALL}")
 
         # List all thing types
@@ -495,125 +367,109 @@ class IoTCleanupBoto3:
 
         for page in paginator.paginate():
             types = page.get("thingTypes", [])
-            type_names = [thing_type["thingTypeName"] for thing_type in types]
-            all_types.extend(type_names)
+            all_types.extend(types)
 
         if not all_types:
             print(f"{Fore.YELLOW}{self.get_message('results.no_types')}{Style.RESET_ALL}")
-            return
+            return {}
 
         print(f"{Fore.GREEN}{self.get_message('results.found_types', len(all_types))}{Style.RESET_ALL}")
 
-        # Deprecate thing types first in parallel
+        # First, identify which thing types are workshop resources
+        print(f"{Fore.BLUE}{self.get_message('status.identifying_types')}{Style.RESET_ALL}")
+        workshop_types = []
+        
+        for thing_type in all_types:
+            is_workshop, identification_method = self.resource_identifier.identify_resource(
+                thing_type, "thing-type", None
+            )
+            
+            if is_workshop:
+                workshop_types.append(thing_type)
+                if self.debug_mode:
+                    type_name = thing_type.get("thingTypeName")
+                    print(f"[DEBUG] Identified workshop thing type: {type_name} (method: {identification_method})")
+        
+        if not workshop_types:
+            print(f"{Fore.YELLOW}{self.get_message('status.no_workshop_types')}{Style.RESET_ALL}")
+            return {
+                "total": len(all_types),
+                "deleted": 0,
+                "skipped": len(all_types),
+                "failed": 0,
+                "skipped_resources": [t.get("thingTypeName") for t in all_types]
+            }
+        
+        print(f"{Fore.GREEN}{self.get_message('status.found_workshop_types', len(workshop_types), len(all_types))}{Style.RESET_ALL}")
+        
+        if self.dry_run:
+            print(f"{Fore.YELLOW}{self.get_message('status.dry_run_types', len(workshop_types))}{Style.RESET_ALL}")
+            for thing_type in workshop_types:
+                type_name = thing_type.get("thingTypeName")
+                print(f"{Fore.CYAN}  - {type_name}{Style.RESET_ALL}")
+            
+            return {
+                "total": len(all_types),
+                "deleted": 0,
+                "skipped": len(all_types) - len(workshop_types),
+                "failed": 0,
+                "skipped_resources": [t.get("thingTypeName") for t in all_types if t not in workshop_types]
+            }
+
+        # Deprecate ONLY workshop thing types
         print(f"{Fore.BLUE}{self.get_message('status.deprecating_types')}{Style.RESET_ALL}")
+        deprecated_count = 0
+        
+        for thing_type in workshop_types:
+            type_name = thing_type.get("thingTypeName")
+            if type_name:
+                result = self.safe_api_call(
+                    self.iot_client.deprecate_thing_type,
+                    "Thing Type Deprecate",
+                    type_name,
+                    debug=self.debug_mode,
+                    thingTypeName=type_name,
+                )
+                if result is not None:
+                    deprecated_count += 1
 
-        self.deleted_count = 0  # Reset counter
+        print(f"{Fore.CYAN}{self.get_message('status.deprecated_types', deprecated_count)}{Style.RESET_ALL}")
 
-        if self.debug_mode:
-            print(f"{Fore.BLUE}{self.get_message('status.processing_sequential', 'types')}{Style.RESET_ALL}")
-            deprecate_success = 0
-            for i, type_name in enumerate(all_types, 1):
-                if self.deprecate_single_thing_type(type_name, i, len(all_types)):
-                    deprecate_success += 1
-        else:
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                deprecate_futures = [
-                    executor.submit(self.deprecate_single_thing_type, type_name, i, len(all_types))
-                    for i, type_name in enumerate(all_types, 1)
-                ]
-
-                deprecate_success = sum(1 for future in as_completed(deprecate_futures) if future.result())
-
-        print(
-            f"{Fore.CYAN}{self.get_message('status.completion_summary', 'AWS IoT Thing Types deprecation', deprecate_success, len(all_types))}{Style.RESET_ALL}"
-        )
-
-        # Wait 5 minutes before deletion
+        # Wait 5 minutes before deletion (AWS requirement)
         print(f"{Fore.YELLOW}{self.get_message('status.waiting_types')}{Style.RESET_ALL}")
         for remaining in range(300, 0, -30):
             mins, secs = divmod(remaining, 60)
             print(f"{Fore.CYAN}{self.get_message('status.time_remaining', mins, secs)}{Style.RESET_ALL}")
             time.sleep(30)  # AWS thing type deletion wait period  # nosemgrep: arbitrary-sleep
 
-        # Delete thing types in parallel
+        # Delete thing types using deletion engine
         print(f"{Fore.BLUE}{self.get_message('status.deleting_types')}{Style.RESET_ALL}")
 
-        self.deleted_count = 0  # Reset counter
-
-        if self.debug_mode:
-            print(f"{Fore.BLUE}{self.get_message('status.processing_sequential', 'types')}{Style.RESET_ALL}")
-            delete_success = 0
-            for i, type_name in enumerate(all_types, 1):
-                if self.delete_single_thing_type(type_name, i, len(all_types)):
-                    delete_success += 1
-        else:
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                delete_futures = [
-                    executor.submit(self.delete_single_thing_type, type_name, i, len(all_types))
-                    for i, type_name in enumerate(all_types, 1)
-                ]
-
-                delete_success = sum(1 for future in as_completed(delete_futures) if future.result())
+        stats = self.deletion_engine.delete_resources(
+            resources=workshop_types,  # Only delete workshop types
+            resource_type="thing-type",
+            identifier=self.resource_identifier,
+            dependency_handler=self.dependency_handler,
+        )
+        
+        # Adjust stats to account for all types scanned
+        stats['total'] = len(all_types)
+        stats['skipped'] = len(all_types) - len(workshop_types)
+        stats['skipped_resources'] = [t.get("thingTypeName") for t in all_types if t not in workshop_types]
 
         print(
-            f"{Fore.CYAN}{self.get_message('status.completion_summary', 'AWS IoT Thing Types deletion', delete_success, len(all_types))}{Style.RESET_ALL}"
+            f"{Fore.CYAN}{self.get_message('status.completion_summary', 'AWS IoT Thing Types', stats['deleted'], len(workshop_types))}{Style.RESET_ALL}"
         )
+        
+        if stats['skipped'] > 0:
+            print(f"{Fore.YELLOW}{self.get_message('status.skipped_types', stats['skipped'])}{Style.RESET_ALL}")
+        
+        return stats
 
-    def delete_single_package(self, package_name, index, total):
-        """Delete a single IoT package and its versions"""
-        with self.package_semaphore:
-            try:
-                # Delete package versions first
-                versions_response = self.safe_api_call(
-                    self.iot_client.list_package_versions,
-                    "Package Versions List",
-                    package_name,
-                    debug=False,
-                    packageName=package_name,
-                )
 
-                if versions_response:
-                    versions = versions_response.get("packageVersionSummaries", [])
-                    for version in versions:
-                        version_name = version.get("versionName")
-                        if version_name:
-                            self.safe_api_call(
-                                self.iot_client.delete_package_version,
-                                "Package Version Delete",
-                                f"{package_name} v{version_name}",
-                                debug=False,
-                                packageName=package_name,
-                                versionName=version_name,
-                            )
-
-                # Delete the package
-                delete_response = self.safe_api_call(
-                    self.iot_client.delete_package,
-                    "Package Delete",
-                    package_name,
-                    debug=self.debug_mode,
-                    packageName=package_name,
-                )
-
-                if delete_response is not None:
-                    with self.progress_lock:
-                        self.deleted_count += 1
-                        print(
-                            f"{Fore.GREEN}{self.get_message('status.package_deleted', self.deleted_count, total, package_name)}{Style.RESET_ALL}"
-                        )
-                    return True
-                else:
-                    print(f"{Fore.RED}{self.get_message('errors.failed_delete_package', package_name)}{Style.RESET_ALL}")
-                    return False
-
-            except Exception as e:
-                print(f"{Fore.RED}{self.get_message('errors.error_deleting_package', package_name, str(e))}{Style.RESET_ALL}")
-                return False
-
-            time.sleep(0.125)  # AWS API rate limiting: 8 TPS for packages  # nosemgrep: arbitrary-sleep
 
     def delete_packages(self):
-        """Delete IoT software packages in parallel"""
+        """Delete IoT software packages using new deletion engine"""
         print(f"{Fore.BLUE}{self.get_message('status.scanning_packages')}{Style.RESET_ALL}")
 
         # List all packages
@@ -622,113 +478,41 @@ class IoTCleanupBoto3:
 
         for page in paginator.paginate():
             packages = page.get("packageSummaries", [])
-            package_names = [package["packageName"] for package in packages]
-            all_packages.extend(package_names)
+            all_packages.extend(packages)
 
         if not all_packages:
             print(f"{Fore.YELLOW}{self.get_message('results.no_packages')}{Style.RESET_ALL}")
-            return
+            return {}
 
-        print(f"{Fore.GREEN}{self.get_message('results.found_packages', len(all_packages))}{Style.RESET_ALL}")
-        print(f"{Fore.BLUE}{self.get_message('status.deleting_packages')}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('status.found_total_packages', len(all_packages))}{Style.RESET_ALL}")
+        
+        if self.dry_run:
+            print(f"{Fore.YELLOW}{self.get_message('status.dry_run_packages')}{Style.RESET_ALL}")
+        
+        print(f"{Fore.BLUE}{self.get_message('status.filtering_packages')}{Style.RESET_ALL}")
 
-        self.deleted_count = 0  # Reset counter
-
-        if self.debug_mode:
-            print(f"{Fore.BLUE}{self.get_message('status.processing_sequential', 'packages')}{Style.RESET_ALL}")
-            success_count = 0
-            for i, package_name in enumerate(all_packages, 1):
-                if self.delete_single_package(package_name, i, len(all_packages)):
-                    success_count += 1
-        else:
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                futures = [
-                    executor.submit(self.delete_single_package, package_name, i, len(all_packages))
-                    for i, package_name in enumerate(all_packages, 1)
-                ]
-
-                success_count = sum(1 for future in as_completed(futures) if future.result())
-
-        print(
-            f"{Fore.CYAN}{self.get_message('status.completion_summary', 'AWS IoT Software Packages', success_count, len(all_packages))}{Style.RESET_ALL}"
+        # Use deletion engine with resource identifier
+        stats = self.deletion_engine.delete_resources(
+            resources=all_packages,
+            resource_type="package",
+            identifier=self.resource_identifier,
+            dependency_handler=self.dependency_handler,
         )
 
-    def delete_single_s3_bucket(self, bucket_name, index, total):
-        """Delete a single Amazon S3 bucket with all versions and delete markers"""
-        print(f"{Fore.BLUE}{self.get_message('status.processing_bucket', index, total, bucket_name)}{Style.RESET_ALL}")
+        workshop_packages = stats['deleted'] + stats['failed']
+        print(
+            f"{Fore.CYAN}{self.get_message('status.processed_packages', workshop_packages, stats['deleted'], stats['failed'])}{Style.RESET_ALL}"
+        )
+        
+        if stats['skipped'] > 0:
+            print(f"{Fore.YELLOW}{self.get_message('status.skipped_packages', stats['skipped'])}{Style.RESET_ALL}")
+        
+        return stats
 
-        try:
-            # First, delete all object versions and delete markers
-            print(f"  {self.get_message('status.deleting_versions')}")
 
-            # List all object versions
-            paginator = self.s3_client.get_paginator("list_object_versions")
-
-            for page in paginator.paginate(Bucket=bucket_name):
-                # Delete all versions
-                versions = page.get("Versions", [])
-                if versions:
-                    print(f"    {self.get_message('status.deleting_versions_batch', len(versions))}")
-                    delete_keys = [{"Key": obj["Key"], "VersionId": obj["VersionId"]} for obj in versions]
-
-                    # Delete in batches of 1000 (AWS limit)
-                    for i in range(0, len(delete_keys), 1000):
-                        batch = delete_keys[i : i + 1000]
-                        self.safe_api_call(
-                            self.s3_client.delete_objects,
-                            "S3 Objects Delete",
-                            f"{bucket_name} versions batch",
-                            debug=False,
-                            Bucket=bucket_name,
-                            Delete={"Objects": batch},
-                        )
-
-                # Delete all delete markers
-                delete_markers = page.get("DeleteMarkers", [])
-                if delete_markers:
-                    print(f"    {self.get_message('status.deleting_markers_batch', len(delete_markers))}")
-                    delete_keys = [{"Key": obj["Key"], "VersionId": obj["VersionId"]} for obj in delete_markers]
-
-                    # Delete in batches of 1000 (AWS limit)
-                    for i in range(0, len(delete_keys), 1000):
-                        batch = delete_keys[i : i + 1000]
-                        self.safe_api_call(
-                            self.s3_client.delete_objects,
-                            "S3 Objects Delete",
-                            f"{bucket_name} delete markers batch",
-                            debug=False,
-                            Bucket=bucket_name,
-                            Delete={"Objects": batch},
-                        )
-
-            # Delete bucket
-            print(f"  {self.get_message('status.deleting_bucket')}")
-            delete_response = self.safe_api_call(
-                self.s3_client.delete_bucket, "S3 Bucket Delete", bucket_name, debug=self.debug_mode, Bucket=bucket_name
-            )
-
-            if delete_response is not None:
-                with self.progress_lock:
-                    self.deleted_count += 1
-                    print(
-                        f"{Fore.GREEN}{self.get_message('status.bucket_deleted', self.deleted_count, total, bucket_name)}{Style.RESET_ALL}"
-                    )
-                return True
-            else:
-                print(f"{Fore.RED}{self.get_message('errors.failed_delete_bucket', bucket_name)}{Style.RESET_ALL}")
-                return False
-
-        except Exception as e:
-            print(f"{Fore.RED}{self.get_message('errors.failed_delete_bucket', bucket_name)}{Style.RESET_ALL}")
-            print(f"  Error: {str(e)}")
-            if self.debug_mode:
-                import traceback
-
-                traceback.print_exc()
-            return False
 
     def delete_s3_buckets(self):
-        """Delete Amazon S3 buckets with iot-firmware prefix for current region only"""
+        """Delete Amazon S3 buckets using new deletion engine"""
         print(f"{Fore.BLUE}{self.get_message('status.scanning_buckets')}{Style.RESET_ALL}")
 
         # List all buckets and filter for iot-firmware buckets in current region
@@ -738,70 +522,67 @@ class IoTCleanupBoto3:
 
         if not buckets_response:
             print(f"{Fore.RED}{self.get_message('errors.failed_list_buckets')}{Style.RESET_ALL}")
-            return
+            return {}
 
         all_buckets = buckets_response.get("Buckets", [])
-        iot_buckets = [bucket["Name"] for bucket in all_buckets if bucket["Name"].startswith(f"iot-firmware-{self.region}")]
+        iot_buckets = [bucket for bucket in all_buckets if bucket["Name"].startswith(f"iot-firmware-{self.region}")]
 
         if not iot_buckets:
             print(f"{Fore.YELLOW}{self.get_message('results.no_buckets', self.region)}{Style.RESET_ALL}")
             print(f"{Fore.CYAN}{self.get_message('results.bucket_tip')}{Style.RESET_ALL}")
-            return
+            return {}
 
         print(f"{Fore.GREEN}{self.get_message('results.found_buckets', len(iot_buckets))}{Style.RESET_ALL}")
+        
+        if self.dry_run:
+            print(f"{Fore.YELLOW}{self.get_message('status.dry_run_buckets')}{Style.RESET_ALL}")
+        
         print(f"{Fore.BLUE}{self.get_message('status.deleting_buckets')}{Style.RESET_ALL}")
 
-        self.deleted_count = 0  # Reset counter
-
-        if self.debug_mode:
-            print(f"{Fore.BLUE}{self.get_message('status.processing_sequential', 'buckets')}{Style.RESET_ALL}")
-            success_count = 0
-            for i, bucket_name in enumerate(iot_buckets, 1):
-                if self.delete_single_s3_bucket(bucket_name, i, len(iot_buckets)):
-                    success_count += 1
-        else:
-            with ThreadPoolExecutor(max_workers=min(10, len(iot_buckets))) as executor:
-                futures = [
-                    executor.submit(self.delete_single_s3_bucket, bucket_name, i, len(iot_buckets))
-                    for i, bucket_name in enumerate(iot_buckets, 1)
-                ]
-
-                success_count = sum(1 for future in as_completed(futures) if future.result())
-
-        print(
-            f"{Fore.CYAN}{self.get_message('status.completion_summary', 'Amazon S3 buckets', success_count, len(iot_buckets))}{Style.RESET_ALL}"
+        # Use deletion engine with resource identifier
+        stats = self.deletion_engine.delete_resources(
+            resources=iot_buckets,
+            resource_type="s3-bucket",
+            identifier=self.resource_identifier,
+            dependency_handler=self.dependency_handler,
         )
 
+        print(
+            f"{Fore.CYAN}{self.get_message('status.completion_summary', 'Amazon S3 buckets', stats['deleted'], stats['total'])}{Style.RESET_ALL}"
+        )
+        
+        if stats['skipped'] > 0:
+            print(f"{Fore.YELLOW}{self.get_message('status.skipped_buckets', stats['skipped'])}{Style.RESET_ALL}")
+        
+        return stats
+
     def delete_iot_jobs_role(self):
-        """Delete IoT Jobs IAM role"""
+        """Delete IoT Jobs IAM role using new deletion engine"""
         print(f"{Fore.BLUE}{self.get_message('status.deleting_iot_roles')}{Style.RESET_ALL}")
 
         # Try both old and new role naming patterns
         role_names = [
-            "IoTJobsRole",  # Legacy name
-            f"IoTJobsRole-{self.region}-{self.account_id[:8]}",  # New configurable name
+            {"RoleName": "IoTJobsRole"},  # Legacy name
+            {"RoleName": f"IoTJobsRole-{self.region}-{self.account_id[:8]}"},  # New configurable name
         ]
 
-        for role_name in role_names:
-            # Delete inline policy first
-            self.safe_api_call(
-                self.iam_client.delete_role_policy,
-                "IAM Role Policy Delete",
-                f"{role_name}/IoTJobsS3Policy",
-                debug=self.debug_mode,
-                RoleName=role_name,
-                PolicyName="IoTJobsS3Policy",
-            )
+        if self.dry_run:
+            print(f"{Fore.YELLOW}{self.get_message('status.dry_run_roles')}{Style.RESET_ALL}")
 
-            # Delete role
-            delete_response = self.safe_api_call(
-                self.iam_client.delete_role, "IAM Role Delete", role_name, debug=self.debug_mode, RoleName=role_name
-            )
+        # Use deletion engine with resource identifier
+        stats = self.deletion_engine.delete_resources(
+            resources=role_names,
+            resource_type="iam-role",
+            identifier=self.resource_identifier,
+            dependency_handler=self.dependency_handler,
+        )
 
-        if delete_response is not None:
+        if stats['deleted'] > 0:
             print(f"{Fore.GREEN}{self.get_message('status.iot_role_deleted')}{Style.RESET_ALL}")
         else:
             print(f"{Fore.YELLOW}{self.get_message('errors.iot_role_not_exist')}{Style.RESET_ALL}")
+        
+        return stats
 
     def disable_package_configuration(self):
         """Disable global package configuration for automated shadow updates"""
@@ -821,111 +602,127 @@ class IoTCleanupBoto3:
             print(f"{Fore.YELLOW}{self.get_message('errors.package_config_failed')}{Style.RESET_ALL}")
 
     def delete_package_config_role(self):
-        """Delete package configuration IAM role"""
+        """Delete package configuration IAM role using new deletion engine"""
         print(f"{Fore.BLUE}{self.get_message('status.deleting_package_roles')}{Style.RESET_ALL}")
 
         # Try both old and new role naming patterns
         role_names = [
-            "IoTPackageConfigRole",  # Legacy name
-            f"IoTPackageConfigRole-{self.region}-{self.account_id[:8]}",  # New configurable name
+            {"RoleName": "IoTPackageConfigRole"},  # Legacy name
+            {"RoleName": f"IoTPackageConfigRole-{self.region}-{self.account_id[:8]}"},  # New configurable name
         ]
 
-        for role_name in role_names:
-            # Delete inline policy first
-            self.safe_api_call(
-                self.iam_client.delete_role_policy,
-                "IAM Role Policy Delete",
-                f"{role_name}/PackageConfigPolicy",
-                debug=self.debug_mode,
-                RoleName=role_name,
-                PolicyName="PackageConfigPolicy",
-            )
+        if self.dry_run:
+            print(f"{Fore.YELLOW}{self.get_message('status.dry_run_roles')}{Style.RESET_ALL}")
 
-            # Delete role
-            delete_response = self.safe_api_call(
-                self.iam_client.delete_role, "IAM Role Delete", role_name, debug=self.debug_mode, RoleName=role_name
-            )
+        # Use deletion engine with resource identifier
+        stats = self.deletion_engine.delete_resources(
+            resources=role_names,
+            resource_type="iam-role",
+            identifier=self.resource_identifier,
+            dependency_handler=self.dependency_handler,
+        )
 
-        if delete_response is not None:
+        if stats['deleted'] > 0:
             print(f"{Fore.GREEN}{self.get_message('status.package_role_deleted')}{Style.RESET_ALL}")
         else:
             print(f"{Fore.YELLOW}{self.get_message('errors.package_role_not_exist')}{Style.RESET_ALL}")
+        
+        return stats
+
+    def delete_commands(self):
+        """Delete all IoT commands using new deletion engine"""
+        print(f"{Fore.BLUE}{self.get_message('status.scanning_commands')}{Style.RESET_ALL}")
+
+        # List all commands
+        all_commands = []
+        try:
+            # Note: AWS IoT Commands API may vary by region/availability
+            # Using list_commands if available
+            paginator = self.iot_client.get_paginator("list_commands")
+            for page in paginator.paginate():
+                commands = page.get("commands", [])
+                all_commands.extend(commands)
+        except (ClientError, AttributeError) as e:
+            # Commands API might not be available in all regions or accounts
+            if self.debug_mode:
+                print(f"{Fore.YELLOW}Commands API not available or no commands found: {str(e)}{Style.RESET_ALL}")
+            return {}
+
+        if not all_commands:
+            print(f"{Fore.YELLOW}{self.get_message('results.no_commands')}{Style.RESET_ALL}")
+            return {}
+
+        print(f"{Fore.GREEN}{self.get_message('status.found_total_commands', len(all_commands))}{Style.RESET_ALL}")
+        
+        if self.dry_run:
+            print(f"{Fore.YELLOW}{self.get_message('status.dry_run_commands')}{Style.RESET_ALL}")
+        
+        print(f"{Fore.BLUE}{self.get_message('status.filtering_commands')}{Style.RESET_ALL}")
+
+        # Use deletion engine with resource identifier
+        stats = self.deletion_engine.delete_resources(
+            resources=all_commands,
+            resource_type="command",
+            identifier=self.resource_identifier,
+            dependency_handler=self.dependency_handler,
+        )
+
+        workshop_commands = stats['deleted'] + stats['failed']
+        print(
+            f"{Fore.CYAN}{self.get_message('status.processed_commands', workshop_commands, stats['deleted'], stats['failed'])}{Style.RESET_ALL}"
+        )
+        
+        if stats['skipped'] > 0:
+            print(f"{Fore.YELLOW}{self.get_message('status.skipped_commands', stats['skipped'])}{Style.RESET_ALL}")
+        
+        return stats
 
     def delete_jobs(self):
-        """Delete all IoT jobs in parallel"""
+        """Delete all IoT jobs using new deletion engine"""
         print(f"{Fore.BLUE}{self.get_message('status.scanning_jobs')}{Style.RESET_ALL}")
 
         # Get all jobs (IN_PROGRESS, COMPLETED, CANCELED, etc.)
         statuses = ["IN_PROGRESS", "COMPLETED", "CANCELED", "DELETION_IN_PROGRESS", "SCHEDULED"]
-        all_jobs = set()  # Use set to avoid duplicates
+        all_jobs = []
+        seen_job_ids = set()  # Track unique job IDs
 
         for status in statuses:
             paginator = self.iot_client.get_paginator("list_jobs")
             for page in paginator.paginate(status=status):
                 jobs = page.get("jobs", [])
-                job_ids = [job["jobId"] for job in jobs]
-                all_jobs.update(job_ids)  # Use update for set
-
-        all_jobs = list(all_jobs)  # Convert back to list
+                for job in jobs:
+                    if job["jobId"] not in seen_job_ids:
+                        all_jobs.append(job)
+                        seen_job_ids.add(job["jobId"])
 
         if not all_jobs:
             print(f"{Fore.YELLOW}{self.get_message('results.no_jobs')}{Style.RESET_ALL}")
-            return
+            return {}
 
-        print(f"{Fore.GREEN}{self.get_message('results.found_jobs', len(all_jobs))}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('status.found_total_jobs', len(all_jobs))}{Style.RESET_ALL}")
+        
+        if self.dry_run:
+            print(f"{Fore.YELLOW}{self.get_message('status.dry_run_jobs')}{Style.RESET_ALL}")
+        
+        print(f"{Fore.BLUE}{self.get_message('status.filtering_jobs')}{Style.RESET_ALL}")
 
-        # Process jobs in parallel for better performance
-        def delete_single_job(job_id, index, total):
-            try:
-                print(f"{Fore.BLUE}{self.get_message('status.processing_job', index, total, job_id)}{Style.RESET_ALL}")
-
-                # Get job status
-                job_response = self.safe_api_call(
-                    self.iot_client.describe_job, "Job Describe", job_id, debug=False, jobId=job_id
-                )
-
-                if job_response:
-                    job_status = job_response.get("job", {}).get("status", "UNKNOWN")
-
-                    # Cancel job if not completed/canceled
-                    if job_status in ["IN_PROGRESS", "SCHEDULED"]:
-                        print(f"  {self.get_message('status.cancelling_job', job_status)}")
-                        self.safe_api_call(self.iot_client.cancel_job, "Job Cancel", job_id, debug=False, jobId=job_id)
-                        # Brief wait for cancellation to propagate
-                        time.sleep(5)  # nosemgrep: arbitrary-sleep
-
-                    # Delete job with force flag  # nosemgrep: arbitrary-sleep
-                    print(f"  {self.get_message('status.deleting_job', job_id)}")
-                    delete_response = self.safe_api_call(
-                        self.iot_client.delete_job, "Job Delete", job_id, debug=self.debug_mode, jobId=job_id, force=True
-                    )
-
-                    if delete_response is not None:
-                        print(f"{Fore.GREEN}{self.get_message('status.job_deleted')}{Style.RESET_ALL}")
-                        return True
-                    else:
-                        print(f"{Fore.RED}{self.get_message('errors.failed_delete_job')}{Style.RESET_ALL}")
-                        return False
-                return False
-            except Exception as e:
-                print(f"{Fore.RED}{self.get_message('errors.error_deleting_job', job_id, str(e))}{Style.RESET_ALL}")
-                return False
-
-        if self.debug_mode:
-            success_count = 0
-            for i, job_id in enumerate(all_jobs, 1):
-                if delete_single_job(job_id, i, len(all_jobs)):
-                    success_count += 1
-        else:
-            with ThreadPoolExecutor(max_workers=min(10, len(all_jobs))) as executor:
-                futures = [
-                    executor.submit(delete_single_job, job_id, i, len(all_jobs)) for i, job_id in enumerate(all_jobs, 1)
-                ]
-                success_count = sum(1 for future in as_completed(futures) if future.result())
-
-        print(
-            f"{Fore.CYAN}{self.get_message('status.completion_summary', 'AWS IoT Jobs', success_count, len(all_jobs))}{Style.RESET_ALL}"
+        # Use deletion engine with resource identifier
+        stats = self.deletion_engine.delete_resources(
+            resources=all_jobs,
+            resource_type="job",
+            identifier=self.resource_identifier,
+            dependency_handler=self.dependency_handler,
         )
+
+        workshop_jobs = stats['deleted'] + stats['failed']
+        print(
+            f"{Fore.CYAN}{self.get_message('status.processed_jobs', workshop_jobs, stats['deleted'], stats['failed'])}{Style.RESET_ALL}"
+        )
+        
+        if stats['skipped'] > 0:
+            print(f"{Fore.YELLOW}{self.get_message('status.skipped_jobs', stats['skipped'])}{Style.RESET_ALL}")
+        
+        return stats
 
     def disable_fleet_indexing(self):
         """Disable Fleet Indexing"""
@@ -960,26 +757,40 @@ class IoTCleanupBoto3:
 
         print(f"\n{Fore.RED}{self.get_message('warnings.starting_cleanup')}{Style.RESET_ALL}\n")
 
+        if self.dry_run:
+            print(f"{Fore.YELLOW}{'='*60}{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}DRY RUN MODE - No resources will be deleted{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}{'='*60}{Style.RESET_ALL}\n")
+
         start_time = time.time()
 
+        # Collect statistics from all deletion operations
+        all_stats = {}
+
         if choice == 1:  # ALL resources
-            self.delete_things()
-            self.delete_thing_groups()
-            self.delete_jobs()
-            self.delete_packages()
-            self.delete_s3_buckets()
+            all_stats['things'] = self.delete_things()
+            all_stats['thing_groups'] = self.delete_thing_groups()
+            all_stats['commands'] = self.delete_commands()
+            all_stats['jobs'] = self.delete_jobs()
+            all_stats['packages'] = self.delete_packages()
+            all_stats['s3_buckets'] = self.delete_s3_buckets()
             self.disable_package_configuration()
-            self.delete_iot_jobs_role()
-            self.delete_package_config_role()
+            all_stats['iot_jobs_role'] = self.delete_iot_jobs_role()
+            all_stats['package_config_role'] = self.delete_package_config_role()
             self.disable_fleet_indexing()
-            self.delete_thing_types()  # Move to last - takes 5+ minutes
+            all_stats['thing_types'] = self.delete_thing_types()  # Move to last - takes 5+ minutes
         elif choice == 2:  # Things only
-            self.delete_things()
+            all_stats['things'] = self.delete_things()
         elif choice == 3:  # Thing Groups only
-            self.delete_thing_groups()
+            all_stats['thing_groups'] = self.delete_thing_groups()
 
         end_time = time.time()
         duration = end_time - start_time
+
+        # Use cleanup reporter for summary
+        print(f"\n{Fore.CYAN}{'='*60}{Style.RESET_ALL}")
+        self.cleanup_reporter.report_summary(all_stats, dry_run=self.dry_run)
+        print(f"{Fore.CYAN}{'='*60}{Style.RESET_ALL}")
 
         print(f"\n{Fore.GREEN}{self.get_message('status.cleanup_completed')}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{self.get_message('status.execution_time', duration)}{Style.RESET_ALL}")
@@ -992,7 +803,32 @@ if __name__ == "__main__":
     # Load messages for this script and language
     messages = load_messages("cleanup_script", USER_LANG)
 
-    cleanup = IoTCleanupBoto3()
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Clean up AWS IoT Device Management workshop resources")
+    parser.add_argument(
+        "--things-prefix",
+        type=str,
+        default="Vehicle-VIN-",
+        help="Prefix used for thing names (default: Vehicle-VIN-). Must be alphanumeric with hyphens, underscores, or colons, max 20 characters.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="Preview which resources would be deleted without actually deleting them",
+    )
+    args = parser.parse_args()
+
+    # Validate things prefix
+    if not validate_thing_prefix(args.things_prefix):
+        print(f"{Fore.RED}Error: Invalid thing prefix '{args.things_prefix}'{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}Thing prefix must:{Style.RESET_ALL}")
+        print(f"  - Contain only alphanumeric characters, hyphens, underscores, or colons")
+        print(f"  - Be no longer than 20 characters")
+        print(f"  - Not be empty")
+        sys.exit(1)
+
+    cleanup = IoTCleanupBoto3(things_prefix=args.things_prefix, dry_run=args.dry_run)
     try:
         cleanup.run()
     except KeyboardInterrupt:

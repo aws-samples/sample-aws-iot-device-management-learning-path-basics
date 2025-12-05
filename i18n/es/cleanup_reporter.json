@@ -1,0 +1,30 @@
+{
+  "summary": {
+    "header": "Resumen de Limpieza",
+    "header_dry_run": "Resumen de Limpieza (SIMULACIÓN - No se Eliminaron Recursos)",
+    "deleted_section": "Recursos Eliminados:",
+    "skipped_section": "Recursos Omitidos:",
+    "failed_section": "Eliminaciones Fallidas:",
+    "overall_section": "Resumen General:",
+    "non_workshop_reason": "recursos no del taller",
+    "total": "Total",
+    "total_resources_processed": "Total de Recursos Procesados",
+    "would_delete": "Se Eliminarían",
+    "successfully_deleted": "Eliminados Exitosamente",
+    "skipped_non_workshop": "Omitidos (No del Taller)",
+    "failed": "Fallidos",
+    "execution_time": "Tiempo de Ejecución"
+  },
+  "skipped": {
+    "header_debug": "Recursos {} Omitidos ({} total):",
+    "count_only": "Recursos {} omitidos: {} (no del taller)"
+  },
+  "identification": {
+    "workshop": "Recurso del Taller",
+    "non_workshop": "No del Taller",
+    "method_tag": "Coincidencia de Etiqueta",
+    "method_naming": "Patrón de Nomenclatura",
+    "method_association": "Asociación",
+    "method_none": "Sin Coincidencia"
+  }
+}
