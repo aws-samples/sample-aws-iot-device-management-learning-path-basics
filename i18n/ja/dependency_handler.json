@@ -70,6 +70,10 @@
     "deleting_dynamic_group": "動的モノグループを削除中: {}",
     "deleting_static_group": "静的モノグループを削除中: {}",
     "deleting_command": "コマンドを削除中（ID: {}）",
+    "dry_run_delete_rule": "ドライラン: IoTルールを削除します: {}",
+    "deleting_rule": "IoTルールを削除中: {}",
+    "deleted_rule": "IoTルールを正常に削除しました: {}",
+    "rule_delete_error": "IoTルール {} の削除エラー: {}",
     "unhandled_resource_type": "依存関係ハンドラーで処理されていないリソースタイプ: {}",
     "exception_in_delete": "delete_with_dependencies での例外: {}"
   }

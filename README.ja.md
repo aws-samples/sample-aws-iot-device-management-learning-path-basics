@@ -32,6 +32,7 @@
 - **ジョブ実行**: ファームウェアアップデート中のリアルなデバイス動作のシミュレーション
 - **バージョン管理**: デバイスを以前のファームウェアバージョンにロールバック
 - **リモートコマンド**: AWS IoT Commandsを使用したデバイスへのリアルタイムコマンド送信
+- **一括登録**: 製造規模のプロビジョニングを使用して数百または数千のデバイスを効率的に登録
 - **リソースクリーンアップ**: 不要なコストを避けるためのAWSリソースの適切な管理
 
 ## 📋 前提条件
@@ -54,8 +55,9 @@
 | **Amazon S3** | ファームウェアのストレージ + リクエスト | $0.05 - $0.25 |
 | **AWS IoT Fleet Indexing** | デバイスクエリとインデックス作成 | $0.02 - $0.20 |
 | **AWS IoT Device Management Software Package Catalog** | パッケージ操作 | $0.01 - $0.05 |
+| **AWS IoT Device Management Bulk Registration** | デバイスの一括プロビジョニング | $0.05 - $0.50 |
 | **AWS Identity and Access Management（AWS Identity and Access Management (IAM)）** | ロール/ポリシー管理 | $0.00 |
-| **合計推定** | **完全なデモセッション** | **$0.28 - $2.45** |
+| **合計推定** | **完全なデモセッション** | **$0.33 - $2.95** |
 
 **コスト要因：**
 - デバイス数（100-10,000設定可能）
@@ -92,23 +94,23 @@ python scripts/create_job.py              # ファームウェアアップデー
 python scripts/simulate_job_execution.py  # デバイスアップデートのシミュレーション
 python scripts/explore_jobs.py            # ジョブ進捗の監視
 python scripts/manage_commands.py         # デバイスへのリアルタイムコマンド送信
+python scripts/manage_bulk_provisioning.py # デバイスの一括登録（製造規模）
 python scripts/cleanup_script.py          # リソース識別による安全なクリーンアップ
 ```
 
 ## 📚 利用可能なスクリプト
 
-| スクリプト | 目的 | 主要機能 | ドキュメント |
-|--------|---------|-------------|---------------|
-| **provision_script.py** | 完全なインフラストラクチャセットアップ | デバイス、グループ、パッケージ、Amazon S3ストレージの作成 | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptsprovision_scriptpy) |
-| **manage_dynamic_groups.py** | 動的デバイスグループの管理 | Fleet Indexing検証による作成、一覧表示、削除 | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptsmanage_dynamic_groupspy) |
-| **manage_packages.py** | 包括的なパッケージ管理 | パッケージ/バージョンの作成、Amazon S3統合、個別復元ステータス付きデバイス追跡 | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptsmanage_packagespy) |
-| **create_job.py** | OTAアップデートジョブの作成 | マルチグループターゲティング、事前署名URL | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptscreate_jobpy) |
-| **simulate_job_execution.py** | デバイスアップデートのシミュレーション | 実際のAmazon S3ダウンロード、可視化されたプラン準備、デバイス別進捗追跡 | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptssimulate_job_executionpy) |
-| **explore_jobs.py** | ジョブの監視と管理 | インタラクティブなジョブ探索、キャンセル、削除、分析 | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
-| **manage_commands.py** | デバイスへのリアルタイムコマンド送信 | テンプレート管理、コマンド実行、ステータス監視、履歴追跡 | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptsmanage_commandspy) |
-| **cleanup_script.py** | AWSリソースの削除 | 選択的クリーンアップ、コスト管理 | [📖 詳細](docs/DETAILED_SCRIPTS.md#scriptscleanup_scriptpy) |
-
-> 📖 **詳細ドキュメント**: 包括的なスクリプト情報については[docs/DETAILED_SCRIPTS.md](docs/DETAILED_SCRIPTS.md)を参照してください。
+| スクリプト | 目的 | 主要機能 |
+|--------|---------|-------------|
+| **provision_script.py** | 完全なインフラストラクチャセットアップ | デバイス、グループ、パッケージ、Amazon S3ストレージの作成 |
+| **manage_dynamic_groups.py** | 動的デバイスグループの管理 | Fleet Indexing検証による作成、一覧表示、削除 |
+| **manage_packages.py** | 包括的なパッケージ管理 | パッケージ/バージョンの作成、Amazon S3統合、個別復元ステータス付きデバイス追跡 |
+| **create_job.py** | OTAアップデートジョブの作成 | マルチグループターゲティング、事前署名URL |
+| **simulate_job_execution.py** | デバイスアップデートのシミュレーション | 実際のAmazon S3ダウンロード、可視化されたプラン準備、デバイス別進捗追跡 |
+| **explore_jobs.py** | ジョブの監視と管理 | インタラクティブなジョブ探索、キャンセル、削除、分析 |
+| **manage_commands.py** | デバイスへのリアルタイムコマンド送信 | テンプレート管理、コマンド実行、ステータス監視、履歴追跡 |
+| **manage_bulk_provisioning.py** | デバイスの一括登録 | 製造規模のデバイスプロビジョニング、証明書生成、タスク監視 |
+| **cleanup_script.py** | AWSリソースの削除 | 選択的クリーンアップ、コスト管理 |
 
 ## ⚙️ 設定
 
@@ -228,7 +230,8 @@ python scripts/create_job.py              # 4. ファームウェアアップデ
 python scripts/simulate_job_execution.py  # 5. デバイスアップデートのシミュレーション
 python scripts/explore_jobs.py            # 6. ジョブ進捗の監視
 python scripts/manage_commands.py         # 7. デバイスへのリアルタイムコマンド送信
-python scripts/cleanup_script.py          # 8. リソースのクリーンアップ
+python scripts/manage_bulk_provisioning.py # 8. デバイスの一括登録（製造規模）
+python scripts/cleanup_script.py          # 9. リソースのクリーンアップ
 ```
 
 **個別操作**：
@@ -236,8 +239,6 @@ python scripts/cleanup_script.py          # 8. リソースのクリーンアッ
 python scripts/manage_packages.py         # パッケージとバージョン管理
 python scripts/manage_dynamic_groups.py   # 動的グループ操作
 ```
-
-> 📖 **その他の例**: 詳細な使用シナリオについては[docs/EXAMPLES.md](docs/EXAMPLES.md)を参照してください。
 
 ## 🛠️ トラブルシューティング
 
@@ -428,8 +429,6 @@ python scripts/provision_script.py  # 英語にフォールバックするはず
 
 ## 📚 ドキュメント
 
-- **[詳細スクリプト](docs/DETAILED_SCRIPTS.md)** - 包括的なスクリプトドキュメント
-- **[使用例](docs/EXAMPLES.md)** - 実用的なシナリオとワークフロー
 - **[トラブルシューティング](docs/TROUBLESHOOTING.md)** - よくある問題と解決策
 
 ## 📄 ライセンス

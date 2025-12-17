@@ -1036,12 +1036,17 @@ class IoTProvisioner:
                     "Statement": [
                         {
                             "Effect": "Allow",
-                            "Action": ["s3:GetObject", "s3:GetObjectVersion"],
+                            "Action": ["s3:*"],
                             "Resource": f"arn:aws:s3:::iot-firmware-{self.region}-*/*",
                             "Condition": {
                                 "StringEquals": {"aws:RequestedRegion": self.region},
                                 "Bool": {"aws:SecureTransport": "true"},
                             },
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": ["iot:*"],
+                           "Resource": f"arn:aws:iot:{self.region}:{self.account_id}:*/*",
                         }
                     ],
                 }

@@ -48,6 +48,11 @@ NAMING_PATTERNS = {
     "iam_role": [
         r"^IoTJobsRole(-[a-z0-9-]+-[a-z0-9]+)?$",  # IoTJobsRole or IoTJobsRole-us-east-1-123456789
         r"^IoTPackageConfigRole(-[a-z0-9-]+-[a-z0-9]+)?$"  # IoTPackageConfigRole or with region-account
+    ],
+    "iot_rule": [
+        r"^.*Rule$",  # Rules ending with "Rule"
+        r"^rule_.*$",  # Rules starting with "rule_"
+        r"^.*_workshop_.*$"  # Rules containing "_workshop_"
     ]
 }
 

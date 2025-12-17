@@ -1,0 +1,40 @@
+{
+    "Parameters" : {
+        "ThingName" : {
+            "Type" : "String"
+        },
+        "ManufacturingDate" : {
+            "Type" : "String"
+        },
+        "ThingType" : {
+            "Type" : "String",
+            "Default" : "NOT_PROVIDED"
+        },
+        "CSR" : {
+            "Type" : "String"    
+        }
+    },
+    "Resources" : {
+        "thing" : {
+            "Type" : "AWS::IoT::Thing",
+            "Properties" : {
+                "ThingName" : {"Ref" : "ThingName"},
+                "AttributePayload" : { "manufacturingDate" :  {"Ref" : "ManufacturingDate"}}, 
+                "ThingTypeName" :  {"Ref" : "ThingType"}
+            }
+        },
+        "certificate" : {
+            "Type" : "AWS::IoT::Certificate",
+            "Properties" : {
+                "CertificateSigningRequest": {"Ref" : "CSR"},
+                "Status" : "ACTIVE"
+            }
+        },
+        "policy" : {
+            "Type" : "AWS::IoT::Policy",
+            "Properties" : {
+                "PolicyName" : "BulkProvisioningPolicy"
+            }
+        }
+    }
+}

@@ -68,7 +68,7 @@ def apply_workshop_tags(
         client: Boto3 client for the service (iot, s3, or iam)
         resource_arn: ARN of the resource to tag
         resource_type: Type of resource (thing-type, thing-group, package, 
-                      package-version, job, command, s3-bucket, iam-role)
+                      package-version, job, command, s3-bucket, s3-object, iam-role)
         additional_tags: Optional additional tags to apply
         script_name: Name of the script creating the resource (default: provision-script)
         
@@ -83,6 +83,7 @@ def apply_workshop_tags(
         - job: IoT Jobs
         - command: IoT Commands
         - s3-bucket: S3 Buckets
+        - s3-object: S3 Objects
         - iam-role: IAM Roles
     """
     try:
@@ -119,6 +120,26 @@ def apply_workshop_tags(
                 Tagging={"TagSet": tag_set}
             )
             return True
+            
+        elif resource_type == "s3-object":
+            # S3 objects use put_object_tagging API
+            # Extract bucket name and object key from ARN (arn:aws:s3:::bucket-name/object-key)
+            arn_parts = resource_arn.split(":")
+            if len(arn_parts) >= 6:
+                # Get the part after the last colon which contains bucket/key
+                bucket_and_key = arn_parts[-1]
+                # Split on first slash to separate bucket from key
+                parts = bucket_and_key.split("/", 1)
+                if len(parts) == 2:
+                    bucket_name, object_key = parts
+                    tag_set = [{"Key": k, "Value": v} for k, v in tags.items()]
+                    client.put_object_tagging(
+                        Bucket=bucket_name,
+                        Key=object_key,
+                        Tagging={"TagSet": tag_set}
+                    )
+                    return True
+            return False
             
         elif resource_type == "iam-role":
             # IAM roles use tag_role API

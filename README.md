@@ -32,6 +32,7 @@ A comprehensive demonstration of AWS IoT Device Management capabilities includin
 - **Job Execution**: Simulate realistic device behavior during firmware updates
 - **Version Control**: Rollback devices to previous firmware versions
 - **Remote Commands**: Send real-time commands to devices using AWS IoT Commands
+- **Bulk Registration**: Register hundreds or thousands of devices efficiently using manufacturing-scale provisioning
 - **Resource Cleanup**: Properly manage AWS resources to avoid unnecessary costs
 
 
@@ -56,8 +57,9 @@ A comprehensive demonstration of AWS IoT Device Management capabilities includin
 | **Amazon S3** | Storage + requests for firmware | $0.05 - $0.25 |
 | **AWS IoT Fleet Indexing** | Device queries and indexing | $0.02 - $0.20 |
 | **AWS IoT Device Management Software Package Catalog** | Package operations | $0.01 - $0.05 |
+| **AWS IoT Device Management Bulk Registration** | Bulk device provisioning | $0.05 - $0.50 |
 | **AWS Identity and Access Management (IAM)** | Role/policy management | $0.00 |
-| **Total Estimated** | **Complete demo session** | **$0.28 - $2.45** |
+| **Total Estimated** | **Complete demo session** | **$0.33 - $2.95** |
 
 **Cost Factors:**
 - Device count (100-10,000 configurable)
@@ -94,23 +96,23 @@ python scripts/create_job.py              # Deploy firmware updates
 python scripts/simulate_job_execution.py  # Simulate device updates
 python scripts/explore_jobs.py            # Monitor job progress
 python scripts/manage_commands.py         # Send real-time commands to devices
+python scripts/manage_bulk_provisioning.py # Bulk device registration (manufacturing scale)
 python scripts/cleanup_script.py          # Safe cleanup with resource identification
 ```
 
 ## 📚 Available Scripts
 
-| Script | Purpose | Key Features | Documentation |
-|--------|---------|-------------|---------------|
-| **provision_script.py** | Complete infrastructure setup | Creates devices, groups, packages, Amazon S3 storage | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptsprovision_scriptpy) |
-| **manage_dynamic_groups.py** | Manage dynamic device groups | Create, list, delete with Fleet Indexing validation | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptsmanage_dynamic_groupspy) |
-| **manage_packages.py** | Comprehensive package management | Create packages/versions, Amazon S3 integration, device tracking with individual revert status | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptsmanage_packagespy) |
-| **create_job.py** | Create OTA update jobs | Multi-group targeting, presigned URLs | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptscreate_jobpy) |
-| **simulate_job_execution.py** | Simulate device updates | Real Amazon S3 downloads, visible plan preparation, per-device progress tracking | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptssimulate_job_executionpy) |
-| **explore_jobs.py** | Monitor and manage jobs | Interactive job exploration, cancellation, deletion, and analytics | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
-| **manage_commands.py** | Send real-time commands to devices | Template management, command execution, status monitoring, history tracking | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptsmanage_commandspy) |
-| **cleanup_script.py** | Remove AWS resources | Selective cleanup, cost management | [📖 Details](docs/DETAILED_SCRIPTS.md#scriptscleanup_scriptpy) |
-
-> 📖 **Detailed Documentation**: See [docs/DETAILED_SCRIPTS.md](docs/DETAILED_SCRIPTS.md) for comprehensive script information.
+| Script | Purpose | Key Features |
+|--------|---------|-------------|
+| **provision_script.py** | Complete infrastructure setup | Creates devices, groups, packages, Amazon S3 storage |
+| **manage_dynamic_groups.py** | Manage dynamic device groups | Create, list, delete with Fleet Indexing validation |
+| **manage_packages.py** | Comprehensive package management | Create packages/versions, Amazon S3 integration, device tracking with individual revert status |
+| **create_job.py** | Create OTA update jobs | Multi-group targeting, presigned URLs |
+| **simulate_job_execution.py** | Simulate device updates | Real Amazon S3 downloads, visible plan preparation, per-device progress tracking |
+| **explore_jobs.py** | Monitor and manage jobs | Interactive job exploration, cancellation, deletion, and analytics |
+| **manage_commands.py** | Send real-time commands to devices | Template management, command execution, status monitoring, history tracking |
+| **manage_bulk_provisioning.py** | Bulk device registration | Manufacturing-scale device provisioning, certificate generation, task monitoring |
+| **cleanup_script.py** | Remove AWS resources | Selective cleanup, cost management |
 
 ## ⚙️ Configuration
 
@@ -239,8 +241,6 @@ python scripts/manage_packages.py         # Package and version management
 python scripts/manage_dynamic_groups.py   # Dynamic group operations
 ```
 
-> 📖 **More Examples**: See [docs/EXAMPLES.md](docs/EXAMPLES.md) for detailed usage scenarios.
-
 ## 🛠️ Troubleshooting
 
 **Common Issues**:
@@ -331,8 +331,6 @@ sample-aws-iot-device-management-learning-path-basics/
 │   ├── language_selector.py        # Language selection
 │   └── {language_code}/            # Language-specific messages
 ├── docs/                            # Documentation
-│   ├── DETAILED_SCRIPTS.md         # Script documentation
-│   ├── EXAMPLES.md                 # Usage examples
 │   └── TROUBLESHOOTING.md          # Troubleshooting guide
 ├── tests/                           # Test files
 └── requirements.txt                 # Python dependencies
@@ -465,8 +463,6 @@ python scripts/provision_script.py  # Should fall back to English
 
 ## 📚 Documentation
 
-- **[Detailed Scripts](docs/DETAILED_SCRIPTS.md)** - Comprehensive scripts documentation
-- **[Usage Examples](docs/EXAMPLES.md)** - Practical scenarios and workflows  
 - **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
 
 ## 📄 License

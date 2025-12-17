@@ -32,6 +32,7 @@
 - **作业执行**：在固件更新期间模拟真实的设备行为
 - **版本控制**：将设备回滚到以前的固件版本
 - **远程命令**：使用 AWS IoT Commands 向设备发送实时命令
+- **批量注册**：使用制造规模配置高效注册数百或数千台设备
 - **资源清理**：正确管理 AWS 资源以避免不必要的成本
 
 ## 📋 先决条件
@@ -54,8 +55,9 @@
 | **Amazon S3** | 固件存储 + 请求 | $0.05 - $0.25 |
 | **AWS IoT Fleet Indexing** | 设备查询和索引 | $0.02 - $0.20 |
 | **AWS IoT Device Management Software Package Catalog** | 包操作 | $0.01 - $0.05 |
+| **AWS IoT Device Management Bulk Registration** | 批量设备配置 | $0.05 - $0.50 |
 | **AWS Identity and Access Management (IAM)** | 角色/策略管理 | $0.00 |
-| **总预估** | **完整演示会话** | **$0.28 - $2.45** |
+| **总预估** | **完整演示会话** | **$0.33 - $2.95** |
 
 **成本因素：**
 - 设备数量（可配置 100-10,000）
@@ -92,23 +94,23 @@ python scripts/create_job.py              # 部署固件更新
 python scripts/simulate_job_execution.py  # 模拟设备更新
 python scripts/explore_jobs.py            # 监控作业进度
 python scripts/manage_commands.py         # 向设备发送实时命令
+python scripts/manage_bulk_provisioning.py # 批量设备注册（制造规模）
 python scripts/cleanup_script.py          # 通过资源识别进行安全清理
 ```
 
 ## 📚 可用脚本
 
-| 脚本 | 目的 | 主要功能 | 文档 |
-|--------|---------|-------------|---------------|
-| **provision_script.py** | 完整基础设施设置 | 创建设备、组、包、Amazon S3 存储 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptsprovision_scriptpy) |
-| **manage_dynamic_groups.py** | 管理动态设备组 | 使用 Fleet Indexing 验证创建、列出、删除 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptsmanage_dynamic_groupspy) |
-| **manage_packages.py** | 综合包管理 | 创建包/版本、Amazon S3 集成、具有个别回滚状态的设备跟踪 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptsmanage_packagespy) |
-| **create_job.py** | 创建 OTA 更新作业 | 多组目标、预签名 URL | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptscreate_jobpy) |
-| **simulate_job_execution.py** | 模拟设备更新 | 真实 Amazon S3 下载、可见计划准备、每设备进度跟踪 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptssimulate_job_executionpy) |
-| **explore_jobs.py** | 监控和管理作业 | 交互式作业探索、取消、删除和分析 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
-| **manage_commands.py** | 向设备发送实时命令 | 模板管理、命令执行、状态监控、历史跟踪 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptsmanage_commandspy) |
-| **cleanup_script.py** | 删除 AWS 资源 | 选择性清理、成本管理 | [📖 详情](docs/DETAILED_SCRIPTS.md#scriptscleanup_scriptpy) |
-
-> 📖 **详细文档**：有关全面的脚本信息，请参阅 [docs/DETAILED_SCRIPTS.md](docs/DETAILED_SCRIPTS.md)。
+| 脚本 | 目的 | 主要功能 |
+|--------|---------|-------------|
+| **provision_script.py** | 完整基础设施设置 | 创建设备、组、包、Amazon S3 存储 |
+| **manage_dynamic_groups.py** | 管理动态设备组 | 使用 Fleet Indexing 验证创建、列出、删除 |
+| **manage_packages.py** | 综合包管理 | 创建包/版本、Amazon S3 集成、具有个别回滚状态的设备跟踪 |
+| **create_job.py** | 创建 OTA 更新作业 | 多组目标、预签名 URL |
+| **simulate_job_execution.py** | 模拟设备更新 | 真实 Amazon S3 下载、可见计划准备、每设备进度跟踪 |
+| **explore_jobs.py** | 监控和管理作业 | 交互式作业探索、取消、删除和分析 |
+| **manage_commands.py** | 向设备发送实时命令 | 模板管理、命令执行、状态监控、历史跟踪 |
+| **manage_bulk_provisioning.py** | 批量设备注册 | 制造规模设备配置、证书生成、任务监控 |
+| **cleanup_script.py** | 删除 AWS 资源 | 选择性清理、成本管理 |
 
 ## ⚙️ 配置
 
@@ -228,7 +230,8 @@ python scripts/create_job.py              # 4. 部署固件更新
 python scripts/simulate_job_execution.py  # 5. 模拟设备更新
 python scripts/explore_jobs.py            # 6. 监控作业进度
 python scripts/manage_commands.py         # 7. 向设备发送实时命令
-python scripts/cleanup_script.py          # 8. 清理资源
+python scripts/manage_bulk_provisioning.py # 8. 批量设备注册（制造规模）
+python scripts/cleanup_script.py          # 9. 清理资源
 ```
 
 **单独操作**：
@@ -236,8 +239,6 @@ python scripts/cleanup_script.py          # 8. 清理资源
 python scripts/manage_packages.py         # 包和版本管理
 python scripts/manage_dynamic_groups.py   # 动态组操作
 ```
-
-> 📖 **更多示例**：有关详细使用场景，请参阅 [docs/EXAMPLES.md](docs/EXAMPLES.md)。
 
 ## 🛠️ 故障排除
 
@@ -428,8 +429,6 @@ python scripts/provision_script.py  # 应该回退到英语
 
 ## 📚 文档
 
-- **[详细脚本](docs/DETAILED_SCRIPTS.md)** - 全面的脚本文档
-- **[使用示例](docs/EXAMPLES.md)** - 实际场景和工作流程
 - **[故障排除](docs/TROUBLESHOOTING.md)** - 常见问题和解决方案
 
 ## 📄 许可证
