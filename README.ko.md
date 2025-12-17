@@ -32,6 +32,7 @@
 - **작업 실행**: 펌웨어 업데이트 중 현실적인 디바이스 동작 시뮬레이션
 - **버전 제어**: 디바이스를 이전 펌웨어 버전으로 롤백
 - **원격 명령**: AWS IoT Commands를 사용하여 디바이스에 실시간 명령 전송
+- **대량 등록**: 제조 규모 프로비저닝을 사용하여 수백 또는 수천 개의 디바이스를 효율적으로 등록
 - **리소스 정리**: 불필요한 비용을 피하기 위한 AWS 리소스 적절한 관리
 
 ## 📋 전제 조건
@@ -54,8 +55,9 @@
 | **Amazon S3** | 펌웨어용 스토리지 + 요청 | $0.05 - $0.25 |
 | **AWS IoT Fleet Indexing** | 디바이스 쿼리 및 인덱싱 | $0.02 - $0.20 |
 | **AWS IoT Device Management Software Package Catalog** | 패키지 작업 | $0.01 - $0.05 |
+| **AWS IoT Device Management Bulk Registration** | 대량 디바이스 프로비저닝 | $0.05 - $0.50 |
 | **AWS Identity and Access Management (IAM)** | 역할/정책 관리 | $0.00 |
-| **총 예상 비용** | **완전한 데모 세션** | **$0.28 - $2.45** |
+| **총 예상 비용** | **완전한 데모 세션** | **$0.33 - $2.95** |
 
 **비용 요인:**
 - 디바이스 수 (100-10,000 구성 가능)
@@ -92,23 +94,23 @@ python scripts/create_job.py              # 펌웨어 업데이트 배포
 python scripts/simulate_job_execution.py  # 디바이스 업데이트 시뮬레이션
 python scripts/explore_jobs.py            # 작업 진행 상황 모니터링
 python scripts/manage_commands.py         # 디바이스에 실시간 명령 전송
+python scripts/manage_bulk_provisioning.py # 대량 디바이스 등록 (제조 규모)
 python scripts/cleanup_script.py          # 리소스 식별을 통한 안전한 정리
 ```
 
 ## 📚 사용 가능한 스크립트
 
-| 스크립트 | 목적 | 주요 기능 | 문서 |
-|--------|---------|-------------|---------------|
-| **provision_script.py** | 완전한 인프라 설정 | 디바이스, 그룹, 패키지, Amazon S3 스토리지 생성 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptsprovision_scriptpy) |
-| **manage_dynamic_groups.py** | 동적 디바이스 그룹 관리 | Fleet Indexing 검증을 통한 생성, 목록, 삭제 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptsmanage_dynamic_groupspy) |
-| **manage_packages.py** | 포괄적인 패키지 관리 | 패키지/버전 생성, Amazon S3 통합, 개별 되돌리기 상태를 통한 디바이스 추적 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptsmanage_packagespy) |
-| **create_job.py** | OTA 업데이트 작업 생성 | 다중 그룹 타겟팅, 사전 서명된 URL | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptscreate_jobpy) |
-| **simulate_job_execution.py** | 디바이스 업데이트 시뮬레이션 | 실제 Amazon S3 다운로드, 가시적 계획 준비, 디바이스별 진행 상황 추적 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptssimulate_job_executionpy) |
-| **explore_jobs.py** | 작업 모니터링 및 관리 | 대화형 작업 탐색, 취소, 삭제 및 분석 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
-| **manage_commands.py** | 디바이스에 실시간 명령 전송 | 템플릿 관리, 명령 실행, 상태 모니터링, 기록 추적 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptsmanage_commandspy) |
-| **cleanup_script.py** | AWS 리소스 제거 | 선택적 정리, 비용 관리 | [📖 세부사항](docs/DETAILED_SCRIPTS.md#scriptscleanup_scriptpy) |
-
-> 📖 **상세 문서**: 포괄적인 스크립트 정보는 [docs/DETAILED_SCRIPTS.md](docs/DETAILED_SCRIPTS.md)를 참조하세요.
+| 스크립트 | 목적 | 주요 기능 |
+|--------|---------|-------------|
+| **provision_script.py** | 완전한 인프라 설정 | 디바이스, 그룹, 패키지, Amazon S3 스토리지 생성 |
+| **manage_dynamic_groups.py** | 동적 디바이스 그룹 관리 | Fleet Indexing 검증을 통한 생성, 목록, 삭제 |
+| **manage_packages.py** | 포괄적인 패키지 관리 | 패키지/버전 생성, Amazon S3 통합, 개별 되돌리기 상태를 통한 디바이스 추적 |
+| **create_job.py** | OTA 업데이트 작업 생성 | 다중 그룹 타겟팅, 사전 서명된 URL |
+| **simulate_job_execution.py** | 디바이스 업데이트 시뮬레이션 | 실제 Amazon S3 다운로드, 가시적 계획 준비, 디바이스별 진행 상황 추적 |
+| **explore_jobs.py** | 작업 모니터링 및 관리 | 대화형 작업 탐색, 취소, 삭제 및 분석 |
+| **manage_commands.py** | 디바이스에 실시간 명령 전송 | 템플릿 관리, 명령 실행, 상태 모니터링, 기록 추적 |
+| **manage_bulk_provisioning.py** | 대량 디바이스 등록 | 제조 규모 디바이스 프로비저닝, 인증서 생성, 작업 모니터링 |
+| **cleanup_script.py** | AWS 리소스 제거 | 선택적 정리, 비용 관리 |
 
 ## ⚙️ 구성
 
@@ -228,7 +230,8 @@ python scripts/create_job.py              # 4. 펌웨어 업데이트 배포
 python scripts/simulate_job_execution.py  # 5. 디바이스 업데이트 시뮬레이션
 python scripts/explore_jobs.py            # 6. 작업 진행 상황 모니터링
 python scripts/manage_commands.py         # 7. 디바이스에 실시간 명령 전송
-python scripts/cleanup_script.py          # 8. 리소스 정리
+python scripts/manage_bulk_provisioning.py # 8. 대량 디바이스 등록 (제조 규모)
+python scripts/cleanup_script.py          # 9. 리소스 정리
 ```
 
 **개별 작업**:
@@ -236,8 +239,6 @@ python scripts/cleanup_script.py          # 8. 리소스 정리
 python scripts/manage_packages.py         # 패키지 및 버전 관리
 python scripts/manage_dynamic_groups.py   # 동적 그룹 작업
 ```
-
-> 📖 **더 많은 예시**: 상세한 사용 시나리오는 [docs/EXAMPLES.md](docs/EXAMPLES.md)를 참조하세요.
 
 ## 🛠️ 문제 해결
 
@@ -428,8 +429,6 @@ python scripts/provision_script.py  # 영어로 폴백되어야 함
 
 ## 📚 문서
 
-- **[상세 스크립트](docs/DETAILED_SCRIPTS.md)** - 포괄적인 스크립트 문서
-- **[사용 예시](docs/EXAMPLES.md)** - 실용적인 시나리오 및 워크플로우
 - **[문제 해결](docs/TROUBLESHOOTING.md)** - 일반적인 문제 및 솔루션
 
 ## 📄 라이선스

@@ -70,6 +70,10 @@
     "deleting_dynamic_group": "Deleting dynamic thing group: {}",
     "deleting_static_group": "Deleting static thing group: {}",
     "deleting_command": "Deleting command with ID: {}",
+    "dry_run_delete_rule": "DRY RUN: Would delete IoT rule: {}",
+    "deleting_rule": "Deleting IoT rule: {}",
+    "deleted_rule": "Successfully deleted IoT rule: {}",
+    "rule_delete_error": "Error deleting IoT rule {}: {}",
     "unhandled_resource_type": "Unhandled resource type in dependency handler: {}",
     "exception_in_delete": "Exception in delete_with_dependencies: {}"
   }

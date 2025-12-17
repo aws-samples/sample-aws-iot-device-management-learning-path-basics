@@ -70,6 +70,10 @@
     "deleting_dynamic_group": "동적 사물 그룹 삭제 중: {}",
     "deleting_static_group": "정적 사물 그룹 삭제 중: {}",
     "deleting_command": "명령 삭제 중(ID: {})",
+    "dry_run_delete_rule": "드라이 런: IoT 규칙 삭제 예정: {}",
+    "deleting_rule": "IoT 규칙 삭제 중: {}",
+    "deleted_rule": "IoT 규칙을 성공적으로 삭제했습니다: {}",
+    "rule_delete_error": "IoT 규칙 {} 삭제 오류: {}",
     "unhandled_resource_type": "종속성 핸들러에서 처리되지 않은 리소스 유형: {}",
     "exception_in_delete": "delete_with_dependencies에서 예외 발생: {}"
   }

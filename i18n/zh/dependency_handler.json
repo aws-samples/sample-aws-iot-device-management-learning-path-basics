@@ -70,6 +70,10 @@
     "deleting_dynamic_group": "正在删除动态事物组: {}",
     "deleting_static_group": "正在删除静态事物组: {}",
     "deleting_command": "正在删除命令（ID: {}）",
+    "dry_run_delete_rule": "模拟运行: 将删除 IoT 规则: {}",
+    "deleting_rule": "正在删除 IoT 规则: {}",
+    "deleted_rule": "成功删除 IoT 规则: {}",
+    "rule_delete_error": "删除 IoT 规则 {} 时出错: {}",
     "unhandled_resource_type": "依赖处理程序中未处理的资源类型: {}",
     "exception_in_delete": "delete_with_dependencies 中的异常: {}"
   }

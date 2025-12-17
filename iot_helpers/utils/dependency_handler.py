@@ -35,6 +35,7 @@ DELETION_ORDER = {
         "thing_shadows",      # Delete shadows first (attached to things)
         "certificates",       # Delete certs (detach from things first)
         "things",            # Delete things
+        "iot_rules",         # Delete IoT rules (no dependencies)
         "thing_groups",      # Delete groups
         "commands",          # Delete IoT commands
         "jobs",              # Delete jobs
@@ -561,6 +562,49 @@ class DependencyHandler:
                     print(msg.format(job_id, str(e)))
             return False
     
+    def delete_iot_rule(self, rule_name, dry_run=False):
+        """
+        Delete an IoT rule.
+        
+        IoT rules have no dependencies and can be deleted directly.
+        Used by IoT Core workshops.
+        
+        Args:
+            rule_name: Name of the IoT rule to delete
+            dry_run: If True, only simulate deletion without actually deleting
+            
+        Returns:
+            bool: True if rule was deleted successfully, False otherwise
+        """
+        if dry_run:
+            if self.debug_mode:
+                msg = self.messages.get('debug.dry_run_delete_rule', '')
+                if msg:
+                    print(msg.format(rule_name))
+            return True
+        
+        try:
+            if self.debug_mode:
+                msg = self.messages.get('debug.deleting_rule', '')
+                if msg:
+                    print(msg.format(rule_name))
+            
+            self.iot_client.delete_topic_rule(ruleName=rule_name)
+            
+            if self.debug_mode:
+                msg = self.messages.get('debug.deleted_rule', '')
+                if msg:
+                    print(msg.format(rule_name))
+            
+            return True
+            
+        except Exception as e:
+            if self.debug_mode:
+                msg = self.messages.get('debug.rule_delete_error', '')
+                if msg:
+                    print(msg.format(rule_name, str(e)))
+            return False
+    
     def is_dynamic_thing_group(self, group_name):
         """
         Check if a thing group is dynamic (has a query string).
@@ -863,6 +907,24 @@ class DependencyHandler:
                     msg = self.messages.get('debug.deleted_command', '')
                     if msg:
                         print(msg.format(command_id))
+            
+            elif resource_type in ['iot-rule', 'iot_rule']:
+                # IoT rules have no dependencies and can be deleted directly
+                rule_name = resource.get('ruleName')
+                
+                if self.debug_mode:
+                    msg = self.messages.get('debug.deleting_rule', '')
+                    if msg:
+                        print(msg.format(rule_name))
+                
+                # Delete the rule itself
+                self.iot_client.delete_topic_rule(ruleName=rule_name)
+                deleted_resources.append(f"iot-rule:{rule_name}")
+                
+                if self.debug_mode:
+                    msg = self.messages.get('debug.deleted_rule', '')
+                    if msg:
+                        print(msg.format(rule_name))
             
             elif resource_type in ['thing-type', 'thing_type']:
                 type_name = resource.get('thingTypeName')

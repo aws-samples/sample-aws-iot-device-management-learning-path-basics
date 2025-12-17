@@ -32,6 +32,7 @@ Una demostración integral de las capacidades de AWS IoT Device Management que i
 - **Ejecución de Trabajos**: Simular comportamiento realista de dispositivos durante actualizaciones de firmware
 - **Control de Versiones**: Revertir dispositivos a versiones anteriores de firmware
 - **Comandos Remotos**: Enviar comandos en tiempo real a dispositivos usando AWS IoT Commands
+- **Registro Masivo**: Registrar cientos o miles de dispositivos eficientemente usando aprovisionamiento a escala de manufactura
 - **Limpieza de Recursos**: Gestionar adecuadamente los recursos de AWS para evitar costos innecesarios
 
 ## 📋 Prerrequisitos
@@ -54,8 +55,9 @@ Una demostración integral de las capacidades de AWS IoT Device Management que i
 | **Amazon S3** | Almacenamiento + solicitudes para firmware | $0.05 - $0.25 |
 | **AWS IoT Fleet Indexing** | Consultas e indexación de dispositivos | $0.02 - $0.20 |
 | **AWS IoT Device Management Software Package Catalog** | Operaciones de paquetes | $0.01 - $0.05 |
+| **AWS IoT Device Management Bulk Registration** | Aprovisionamiento masivo de dispositivos | $0.05 - $0.50 |
 | **AWS Identity and Access Management (IAM)** | Gestión de roles/políticas | $0.00 |
-| **Total Estimado** | **Sesión de demostración completa** | **$0.28 - $2.45** |
+| **Total Estimado** | **Sesión de demostración completa** | **$0.33 - $2.95** |
 
 **Factores de Costo:**
 - Cantidad de dispositivos (100-10,000 configurable)
@@ -92,23 +94,23 @@ python scripts/create_job.py              # Desplegar actualizaciones de firmwar
 python scripts/simulate_job_execution.py  # Simular actualizaciones de dispositivos
 python scripts/explore_jobs.py            # Monitorear progreso de trabajos
 python scripts/manage_commands.py         # Enviar comandos en tiempo real a dispositivos
+python scripts/manage_bulk_provisioning.py # Registro masivo de dispositivos (escala de manufactura)
 python scripts/cleanup_script.py          # Limpieza segura con identificación de recursos
 ```
 
 ## 📚 Scripts Disponibles
 
-| Script | Propósito | Características Clave | Documentación |
-|--------|---------|-------------|---------------|
-| **provision_script.py** | Configuración completa de infraestructura | Crea dispositivos, grupos, paquetes, almacenamiento Amazon S3 | [📖 Detalles](docs/DETAILED_SCRIPTS.md#scriptsprovision_scriptpy) |
-| **manage_dynamic_groups.py** | Gestionar grupos dinámicos de dispositivos | Crear, listar, eliminar con validación de Fleet Indexing | [📖 Detalles](docs/DETAILED_SCRIPTS.md#scriptsmanage_dynamic_groupspy) |
-| **manage_packages.py** | Gestión integral de paquetes | Crear paquetes/versiones, integración Amazon S3, seguimiento de dispositivos con estado de reversión individual | [📖 Detalles](docs/DETAILED_SCRIPTS.md#scriptsmanage_packagespy) |
-| **create_job.py** | Crear trabajos de actualización OTA | Orientación multi-grupo, URLs prefirmadas | [📖 Detalles](docs/DETAILED_SCRIPTS.md#scriptscreate_jobpy) |
-| **simulate_job_execution.py** | Simular actualizaciones de dispositivos | Descargas reales de Amazon S3, preparación de plan visible, seguimiento de progreso por dispositivo | [📖 Detalles](docs/DETAILED_SCRIPTS.md#scriptssimulate_job_executionpy) |
-| **explore_jobs.py** | Monitorear y gestionar trabajos | Exploración interactiva de trabajos, cancelación, eliminación y análisis | [📖 Detalles](docs/DETAILED_SCRIPTS.md#scriptsexplore_jobspy) |
-| **manage_commands.py** | Enviar comandos en tiempo real a dispositivos | Gestión de plantillas, ejecución de comandos, monitoreo de estado, seguimiento de historial | [📖 Detalles](docs/DETAILED_SCRIPTS.md#scriptsmanage_commandspy) |
-| **cleanup_script.py** | Eliminar recursos de AWS | Limpieza selectiva, gestión de costos | [📖 Detalles](docs/DETAILED_SCRIPTS.md#scriptscleanup_scriptpy) |
-
-> 📖 **Documentación Detallada**: Ver [docs/DETAILED_SCRIPTS.md](docs/DETAILED_SCRIPTS.md) para información completa de scripts.
+| Script | Propósito | Características Clave |
+|--------|---------|-------------|
+| **provision_script.py** | Configuración completa de infraestructura | Crea dispositivos, grupos, paquetes, almacenamiento Amazon S3 |
+| **manage_dynamic_groups.py** | Gestionar grupos dinámicos de dispositivos | Crear, listar, eliminar con validación de Fleet Indexing |
+| **manage_packages.py** | Gestión integral de paquetes | Crear paquetes/versiones, integración Amazon S3, seguimiento de dispositivos con estado de reversión individual |
+| **create_job.py** | Crear trabajos de actualización OTA | Orientación multi-grupo, URLs prefirmadas |
+| **simulate_job_execution.py** | Simular actualizaciones de dispositivos | Descargas reales de Amazon S3, preparación de plan visible, seguimiento de progreso por dispositivo |
+| **explore_jobs.py** | Monitorear y gestionar trabajos | Exploración interactiva de trabajos, cancelación, eliminación y análisis |
+| **manage_commands.py** | Enviar comandos en tiempo real a dispositivos | Gestión de plantillas, ejecución de comandos, monitoreo de estado, seguimiento de historial |
+| **manage_bulk_provisioning.py** | Registro masivo de dispositivos | Aprovisionamiento a escala de manufactura, generación de certificados, monitoreo de tareas |
+| **cleanup_script.py** | Eliminar recursos de AWS | Limpieza selectiva, gestión de costos |
 
 ## ⚙️ Configuración
 
@@ -228,7 +230,8 @@ python scripts/create_job.py              # 4. Desplegar actualizaciones de firm
 python scripts/simulate_job_execution.py  # 5. Simular actualizaciones de dispositivos
 python scripts/explore_jobs.py            # 6. Monitorear progreso de trabajos
 python scripts/manage_commands.py         # 7. Enviar comandos en tiempo real a dispositivos
-python scripts/cleanup_script.py          # 8. Limpiar recursos
+python scripts/manage_bulk_provisioning.py # 8. Registro masivo de dispositivos (escala de manufactura)
+python scripts/cleanup_script.py          # 9. Limpiar recursos
 ```
 
 **Operaciones Individuales**:
@@ -237,9 +240,7 @@ python scripts/manage_packages.py         # Gestión de paquetes y versiones
 python scripts/manage_dynamic_groups.py   # Operaciones de grupos dinámicos
 ```
 
-> 📖 **Más Ejemplos**: Ver [docs/EXAMPLES.md](docs/EXAMPLES.md) para escenarios de uso detallados.
-
-## 🛠️ Resolución de Problemas
+## �*️ Resolución de Problemas
 
 **Problemas Comunes**:
 - **Credenciales**: Configurar credenciales de AWS vía `aws configure`, variables de entorno o roles AWS Identity and Access Management (IAM)
@@ -428,8 +429,6 @@ python scripts/provision_script.py  # Debería volver al inglés
 
 ## 📚 Documentación
 
-- **[Scripts Detallados](docs/DETAILED_SCRIPTS.md)** - Documentación completa de scripts
-- **[Ejemplos de Uso](docs/EXAMPLES.md)** - Escenarios prácticos y flujos de trabajo
 - **[Resolución de Problemas](docs/TROUBLESHOOTING.md)** - Problemas comunes y soluciones
 
 ## 📄 Licencia

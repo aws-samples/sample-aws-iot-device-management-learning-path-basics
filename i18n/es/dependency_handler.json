@@ -70,6 +70,10 @@
     "deleting_dynamic_group": "Eliminando grupo de cosas dinámico: {}",
     "deleting_static_group": "Eliminando grupo de cosas estático: {}",
     "deleting_command": "Eliminando comando con ID: {}",
+    "dry_run_delete_rule": "SIMULACIÓN: Se eliminaría la regla IoT: {}",
+    "deleting_rule": "Eliminando regla IoT: {}",
+    "deleted_rule": "Regla IoT eliminada exitosamente: {}",
+    "rule_delete_error": "Error al eliminar la regla IoT {}: {}",
     "unhandled_resource_type": "Tipo de recurso no manejado en el manejador de dependencias: {}",
     "exception_in_delete": "Excepción en delete_with_dependencies: {}"
   }
