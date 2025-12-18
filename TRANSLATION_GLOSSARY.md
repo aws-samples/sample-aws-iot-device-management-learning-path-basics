@@ -79,6 +79,7 @@ These AWS service names should NEVER be translated:
 | English | Spanish (es) | Japanese (ja) | Korean (ko) | Portuguese (pt) | Chinese (zh) |
 |---------|-------------|---------------|-------------|-----------------|--------------|
 | Provision | Aprovisionar | プロビジョニング | 프로비저닝 | Provisionar | 配置 |
+| Bulk Provisioning | Aprovisionamiento masivo | 一括プロビジョニング | 대량 프로비저닝 | Provisionamento em massa | 批量配置 |
 | Cleanup | Limpieza | クリーンアップ | 정리 | Limpeza | 清理 |
 | Simulate | Simular | シミュレート | 시뮬레이션 | Simular | 模拟 |
 | Explore | Explorar | 探索 | 탐색 | Explorar | 探索 |
@@ -86,6 +87,10 @@ These AWS service names should NEVER be translated:
 | Create | Crear | 作成 | 생성 | Criar | 创建 |
 | Delete | Eliminar | 削除 | 삭제 | Excluir | 删除 |
 | Update | Actualizar | 更新 | 업데이트 | Atualizar | 更新 |
+| Command | Comando | コマンド | 명령 | Comando | 命令 |
+| Template | Plantilla | テンプレート | 템플릿 | Template | 模板 |
+| Task | Tarea | タスク | 작업 | Tarefa | 任务 |
+| Certificate | Certificado | 証明書 | 인증서 | Certificado | 证书 |
 
 ### User Interface Terms
 
@@ -125,6 +130,8 @@ These should remain in English as they are system paths:
 - `scripts/simulate_job_execution.py`
 - `scripts/manage_dynamic_groups.py`
 - `scripts/manage_packages.py`
+- `scripts/manage_commands.py`
+- `scripts/manage_bulk_provisioning.py`
 - `i18n/`
 - `docs/`
 - `README.md`

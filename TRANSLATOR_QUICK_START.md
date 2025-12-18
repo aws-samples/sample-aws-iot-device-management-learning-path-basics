@@ -17,9 +17,8 @@ Welcome! This guide will help you get started with translating AWS IoT Device Ma
 - Access to AWS IoT documentation in your language (for reference)
 
 ### Required Reading
-1. **TRANSLATION_TASK_PLAN.md** - Overall project plan
-2. **TRANSLATION_GLOSSARY.md** - Terminology reference (CRITICAL!)
-3. **docs/TRANSLATION_MAINTENANCE.md** - Translation guidelines
+1. **TRANSLATION_GLOSSARY.md** - Terminology reference (CRITICAL!)
+2. **docs/TRANSLATION_MAINTENANCE.md** - Translation guidelines
 4. **Existing README.{lang}.md** - Style reference for your language
 
 ---
@@ -31,8 +30,6 @@ Check **TRANSLATION_PROGRESS_TRACKER.md** and select an available file:
 
 **Priority Order**:
 1. 🔴 TROUBLESHOOTING.{lang}.md (CRITICAL - Start here!)
-2. 🟡 EXAMPLES.{lang}.md (HIGH)
-3. 🟡 DETAILED_SCRIPTS.{lang}.md (HIGH)
 
 ### Step 2: Set Up Your Workspace
 ```bash
@@ -296,7 +293,6 @@ docs/TROUBLESHOOTING.md (keep unchanged in text)
 
 ### Essential Documents
 - **Glossary**: `TRANSLATION_GLOSSARY.md` - Check this FIRST for any technical term
-- **Task Plan**: `TRANSLATION_TASK_PLAN.md` - Overall project structure
 - **Progress**: `TRANSLATION_PROGRESS_TRACKER.md` - Track your work
 - **Guidelines**: `docs/TRANSLATION_MAINTENANCE.md` - Detailed guidelines
 
@@ -306,9 +302,7 @@ docs/TROUBLESHOOTING.md (keep unchanged in text)
 - **AWS Docs**: AWS documentation in your language (if available)
 
 ### Source Files to Translate
-- `docs/TROUBLESHOOTING.md` (601 lines) - CRITICAL priority
-- `docs/EXAMPLES.md` (354 lines) - HIGH priority
-- `docs/DETAILED_SCRIPTS.md` (322 lines) - HIGH priority
+- `docs/TROUBLESHOOTING.md` - CRITICAL priority
 
 ---
 
@@ -376,13 +370,11 @@ After translating a section:
 
 Based on experience, expect these times per document:
 
-| Document | Lines | Complexity | Estimated Time |
-|----------|-------|------------|----------------|
-| TROUBLESHOOTING.md | 601 | HIGH | 3-4 hours |
-| EXAMPLES.md | 354 | MODERATE | 2-3 hours |
-| DETAILED_SCRIPTS.md | 322 | MODERATE-HIGH | 2-3 hours |
+| Document | Complexity | Estimated Time |
+|----------|------------|----------------|
+| TROUBLESHOOTING.md | MODERATE | 2-3 hours |
 
-**Total per language**: 7-10 hours
+**Total per language**: 2-3 hours
 
 **Note**: First document takes longer as you learn the process. Subsequent documents go faster.
 
