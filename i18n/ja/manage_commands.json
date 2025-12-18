@@ -325,6 +325,10 @@
       "header": "📚 学習ポイント: Commandsとは？",
       "content": "Commandsは、デバイスに送信するコマンド実行の構造を指定する再利用可能な定義です。\nすべてのコマンド実行で一貫性と検証を確保する設計図と考えてください。\n\n主な利点:\n• 一貫性: すべてのコマンドが同じ構造に従う\n• 再利用性: 一度作成すれば何度でも使用可能\n• ドキュメント: コマンドはデバイスのAPIドキュメントとして機能"
     },
+    "static_vs_dynamic_payloads": {
+      "header": "📚 学習ポイント: 静的 vs 動的コマンドペイロード",
+      "content": "AWS IoT Commandsは現在、2種類のコマンドペイロードをサポートしています:\n\n🔒 静的ペイロード（このスクリプトで使用するもの）:\n• コマンド作成時に定義された固定ペイロード\n• このコマンドではすべてのデバイスに同じペイロードが送信される\n• シンプルで一貫性がある - 基本的なコマンドに適している\n• 例: {'action': 'lock'} - 常に同じ\n\n⚡ 動的ペイロード（高度な機能）:\n• 実行時にパラメータが定義される柔軟なペイロード\n• 各コマンド実行で異なる値を提供可能\n• より強力だが追加の設定が必要\n• 例: {'action': 'setTemperature', 'temperature': ${aws:iot:commandexecution::parameter:temperature}}\n• ${aws:iot:commandexecution::parameter:temperature}パラメータはコマンド実行時に提供される\n\n💡 使い分け:\n• 静的: シンプルなオン/オフコマンド、基本的なアクション\n• 動的: 毎回異なる値が必要なコマンド\n\n📖 詳細情報:\n動的ペイロードは、より高度なIoTワークショップで扱われます。\n詳細なドキュメントについては、以下をご覧ください:\nhttps://docs.aws.amazon.com/iot/latest/developerguide/iot-remote-command-create-manage.html"
+    },
     "commands_vs_shadow_vs_jobs": {
       "header": "📚 学習ポイント: Commands vs Device Shadow vs Jobs",
       "content": "AWS IoTは、デバイスとやり取りする3つの方法を提供します:\n\n🎮 Commands（この機能）:\n• 用途: 迅速な応答が必要な即時のリアルタイムアクション\n• 例: ロック/アンロック、ホーン起動、緊急停止\n• 応答時間: 数秒\n• オフライン動作: デバイスがオフラインの場合は失敗\n\n🔄 Device Shadow:\n• 用途: 望ましい状態の同期\n• 例: 温度設定、構成\n• 応答時間: 最終的な一貫性\n• オフライン動作: デバイスが再接続時に同期\n\n📦 Jobs:\n• 用途: 長時間実行される操作、バッチ更新\n• 例: ファームウェア更新、証明書のローテーション\n• 応答時間: 数分から数時間\n• オフライン動作: キューに入れられ、利用可能になったら実行"
