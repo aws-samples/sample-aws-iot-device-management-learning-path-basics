@@ -2902,6 +2902,10 @@ class IoTCommandsManager:
         print(f"{Fore.CYAN}{self.get_message('ui.create_command')}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{'='*80}{Style.RESET_ALL}")
 
+        # Display learning moments FIRST - before user starts creating commands
+        self.display_learning_moment("what_are_commands")
+        self.display_learning_moment("static_vs_dynamic_payloads")
+
         try:
             # Show predefined commands as options
             predefined = self.get_predefined_commands()
@@ -2972,10 +2976,6 @@ class IoTCommandsManager:
 
             if command_arn:
                 print(f"\n{Fore.GREEN}{self.get_message('ui.success')}{Style.RESET_ALL}")
-
-                # Trigger learning moment: What are Commands?
-                # Show after first successful command creation
-                self.display_learning_moment("what_are_commands")
             else:
                 print(f"\n{Fore.RED}{self.get_message('ui.operation_failed')}{Style.RESET_ALL}")
 

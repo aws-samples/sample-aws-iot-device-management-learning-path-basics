@@ -325,6 +325,10 @@
       "header": "📚 학습 포인트: Commands란 무엇인가?",
       "content": "Commands는 디바이스에 전송하는 명령 실행의 구조를 지정하는 재사용 가능한 정의입니다.\n일관성과 검증을 보장하는 청사진으로 생각하면 됩니다.\n\n주요 이점:\n• 일관성: 모든 명령이 동일한 구조를 따릅니다\n• 재사용성: 한 번 생성하여 여러 번 사용\n• 문서화: 명령이 디바이스의 API 문서 역할을 합니다"
     },
+    "static_vs_dynamic_payloads": {
+      "header": "📚 학습 포인트: 정적 vs 동적 명령 페이로드",
+      "content": "AWS IoT Commands는 이제 두 가지 유형의 명령 페이로드를 지원합니다:\n\n🔒 정적 페이로드 (이 스크립트에서 사용할 것):\n• 명령 생성 시 정의된 고정 페이로드\n• 이 명령에 대해 모든 디바이스에 동일한 페이로드가 전송됨\n• 간단하고 일관성 있음 - 기본 명령에 적합\n• 예시: {'action': 'lock'} - 항상 동일\n\n⚡ 동적 페이로드 (고급 기능):\n• 실행 시 매개변수가 정의되는 유연한 페이로드\n• 각 명령 실행에 대해 다른 값을 제공할 수 있음\n• 더 강력하지만 추가 설정이 필요\n• 예시: {'action': 'setTemperature', 'temperature': ${aws:iot:commandexecution::parameter:temperature}}\n• ${aws:iot:commandexecution::parameter:temperature} 매개변수는 명령 실행 시 제공됨\n\n💡 언제 사용할지:\n• 정적: 간단한 켜기/끄기 명령, 기본 작업\n• 동적: 매번 다른 값이 필요한 명령\n\n📖 자세히 알아보기:\n동적 페이로드는 더 고급 IoT 워크샵에서 다룰 예정입니다.\n자세한 문서는 다음을 참조하세요:\nhttps://docs.aws.amazon.com/iot/latest/developerguide/iot-remote-command-create-manage.html"
+    },
     "commands_vs_shadow_vs_jobs": {
       "header": "📚 학습 포인트: Commands vs Device Shadow vs Jobs",
       "content": "AWS IoT는 디바이스와 상호 작용하는 세 가지 방법을 제공합니다:\n\n🎮 Commands (이 기능):\n• 사용 시기: 빠른 응답이 필요한 즉각적인 실시간 작업\n• 예시: 잠금/잠금 해제, 경적 활성화, 긴급 정지\n• 응답 시간: 초 단위\n• 오프라인 동작: 디바이스가 오프라인이면 실패\n\n🔄 Device Shadow:\n• 사용 시기: 원하는 상태 동기화\n• 예시: 온도 설정, 구성\n• 응답 시간: 최종 일관성\n• 오프라인 동작: 디바이스가 다시 연결되면 동기화\n\n📦 Jobs:\n• 사용 시기: 장기 실행 작업, 일괄 업데이트\n• 예시: 펌웨어 업데이트, 인증서 교체\n• 응답 시간: 분에서 시간\n• 오프라인 동작: 대기열에 추가되고 사용 가능할 때 실행"

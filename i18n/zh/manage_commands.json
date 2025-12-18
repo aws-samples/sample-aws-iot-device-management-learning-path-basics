@@ -325,6 +325,10 @@
       "header": "📚 学习要点：什么是 Commands？",
       "content": "Commands 是可重用的定义，用于指定您发送到设备的命令执行的结构。\n可以将它们视为确保所有命令执行的一致性和验证的蓝图。\n\n主要优势：\n• 一致性：所有命令遵循相同的结构\n• 可重用性：创建一次，多次使用\n• 文档化：命令作为设备的 API 文档"
     },
+    "static_vs_dynamic_payloads": {
+      "header": "📚 学习要点：静态 vs 动态命令负载",
+      "content": "AWS IoT Commands 现在支持两种类型的命令负载：\n\n🔒 静态负载（您将在此脚本中使用的）：\n• 在命令创建时定义的固定负载\n• 此命令向所有设备发送相同的负载\n• 简单且一致 - 适用于基本命令\n• 示例：{'action': 'lock'} - 始终相同\n\n⚡ 动态负载（高级功能）：\n• 在执行时定义参数的灵活负载\n• 每次命令执行可以提供不同的值\n• 更强大但需要额外设置\n• 示例：{'action': 'setTemperature', 'temperature': ${aws:iot:commandexecution::parameter:temperature}}\n• ${aws:iot:commandexecution::parameter:temperature} 参数在执行命令时提供\n\n💡 何时使用：\n• 静态：简单的开/关命令、基本操作\n• 动态：每次需要不同值的命令\n\n📖 了解更多：\n动态负载将在更高级的 IoT 研讨会中介绍。\n有关详细文档，请访问：\nhttps://docs.aws.amazon.com/iot/latest/developerguide/iot-remote-command-create-manage.html"
+    },
     "commands_vs_shadow_vs_jobs": {
       "header": "📚 学习要点：Commands vs Device Shadow vs Jobs",
       "content": "AWS IoT 提供三种与设备交互的方式：\n\n🎮 Commands（本功能）：\n• 用途：需要快速响应的即时实时操作\n• 示例：锁定/解锁、喇叭激活、紧急停止\n• 响应时间：秒级\n• 离线行为：设备离线时失败\n\n🔄 Device Shadow：\n• 用途：期望状态同步\n• 示例：温度设置、配置\n• 响应时间：最终一致性\n• 离线行为：设备重新连接时同步\n\n📦 Jobs：\n• 用途：长时间运行的操作、批量更新\n• 示例：固件更新、证书轮换\n• 响应时间：分钟到小时\n• 离线行为：排队并在可用时执行"
