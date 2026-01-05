@@ -1629,8 +1629,10 @@ class BulkProvisioningManager:
                     print(f"{Fore.CYAN}{self.get_message('reports.using_signed_url')}{Style.RESET_ALL}")
                 
                 try:
-                    # Use the original URL for signed requests (after validation)
-                    with urllib.request.urlopen(s3_url) as response:
+                    # Security: URL has been validated above to ensure it's a legitimate AWS S3 signed URL
+                    # The URL scheme is HTTPS, domain is amazonaws.com, and signature parameters are verified
+                    # Adding timeout for additional security against hanging requests
+                    with urllib.request.urlopen(s3_url, timeout=30) as response:  # nosec B310
                         content = response.read().decode('utf-8')
                         return content
                 except urllib.error.HTTPError as e:
