@@ -1552,8 +1552,22 @@ class BulkProvisioningManager:
             import re
             from urllib.parse import urlparse, parse_qs
             
-            # Remove query parameters first (for signed URLs)
-            base_url = s3_url.split('?')[0]
+            # Validate URL format and extract components securely
+            parsed_url = urlparse(s3_url)
+            
+            # Security check: Ensure this is a valid AWS S3 URL
+            if not parsed_url.scheme == 'https':
+                if self.debug_mode:
+                    print(f"{Fore.YELLOW}Security: Only HTTPS URLs are allowed{Style.RESET_ALL}")
+                return None
+            
+            if not parsed_url.netloc.endswith('.amazonaws.com') and not parsed_url.netloc == 's3.amazonaws.com':
+                if self.debug_mode:
+                    print(f"{Fore.YELLOW}Security: Only amazonaws.com domains are allowed{Style.RESET_ALL}")
+                return None
+            
+            # Remove query parameters for pattern matching (security: validate base URL structure)
+            base_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
             
             # Try different S3 URL formats
             patterns = [
@@ -1587,12 +1601,27 @@ class BulkProvisioningManager:
                     print(f"{Fore.YELLOW}     {self.get_message('reports.base_url_info', base_url)}{Style.RESET_ALL}")
                 return None
             
+            # Additional security validation for bucket and key names
+            if not re.match(r'^[a-z0-9.\-]+$', bucket_name) or len(bucket_name) < 3 or len(bucket_name) > 63:
+                if self.debug_mode:
+                    print(f"{Fore.YELLOW}Security: Invalid bucket name format{Style.RESET_ALL}")
+                return None
+            
             if self.debug_mode:
                 print(f"{Fore.CYAN}{self.get_message('reports.downloading_report', bucket_name, key_name)}{Style.RESET_ALL}")
             
-            # For signed URLs, use direct HTTP request instead of S3 API
-            if '?' in s3_url and 'X-Amz-Signature' in s3_url:
-                # This is a signed URL, use it directly
+            # For signed URLs, validate and use direct HTTP request
+            if parsed_url.query and 'X-Amz-Signature' in parsed_url.query:
+                # This is a signed URL - validate query parameters for security
+                query_params = parse_qs(parsed_url.query)
+                
+                # Security check: Ensure required AWS signature parameters are present
+                required_params = ['X-Amz-Algorithm', 'X-Amz-Credential', 'X-Amz-Date', 'X-Amz-Signature']
+                if not all(param in query_params for param in required_params):
+                    if self.debug_mode:
+                        print(f"{Fore.YELLOW}Security: Invalid signed URL format{Style.RESET_ALL}")
+                    return None
+                
                 import urllib.request
                 import urllib.error
                 
@@ -1600,6 +1629,7 @@ class BulkProvisioningManager:
                     print(f"{Fore.CYAN}{self.get_message('reports.using_signed_url')}{Style.RESET_ALL}")
                 
                 try:
+                    # Use the original URL for signed requests (after validation)
                     with urllib.request.urlopen(s3_url) as response:
                         content = response.read().decode('utf-8')
                         return content
@@ -1612,7 +1642,7 @@ class BulkProvisioningManager:
                         print(f"{Fore.YELLOW}{self.get_message('reports.url_error', e.reason)}{Style.RESET_ALL}")
                     return None
             else:
-                # Regular S3 URL, use S3 client
+                # Regular S3 URL, use S3 client (more secure)
                 response = self.safe_api_call(
                     self.s3_client.get_object,
                     "S3 Get Object",
