@@ -2193,8 +2193,9 @@ class IoTCommandsManager:
         print(f"{Fore.GREEN}{self.get_message('results.command_details')}{Style.RESET_ALL}")
         print(f"{Fore.GREEN}{'='*80}{Style.RESET_ALL}")
 
-        # Command ID
-        print(f"\n{Fore.CYAN}{self.get_message('results.command_id_label', execution.command_id)}{Style.RESET_ALL}")
+        # Command ID - extract from command ARN
+        command_name = execution.command_arn.split("/")[-1] if "/" in execution.command_arn else execution.command_arn
+        print(f"\n{Fore.CYAN}{self.get_message('results.command_id_label', command_name)}{Style.RESET_ALL}")
 
         # Target device/group
         target_name = execution.target_arn.split("/")[-1] if "/" in execution.target_arn else execution.target_arn
