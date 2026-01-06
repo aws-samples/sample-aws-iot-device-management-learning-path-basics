@@ -2597,7 +2597,7 @@ class IoTCommandsManager:
 
         print(f"\n{Fore.GREEN}{'='*120}{Style.RESET_ALL}")
 
-    def cancel_command(self, execution_id: str) -> bool:
+    def cancel_command(self, execution_id: str, target_arn: str) -> bool:
         """
         Cancel a pending or executing command.
 
@@ -2611,6 +2611,7 @@ class IoTCommandsManager:
 
         Args:
             execution_id: Unique identifier for the command execution to cancel
+            target_arn: ARN of the target device or thing group
 
         Returns:
             True if cancellation successful, False otherwise
@@ -2623,7 +2624,12 @@ class IoTCommandsManager:
                 print(f"{Fore.RED}{self.get_message('errors.execution_id_required')}{Style.RESET_ALL}")
                 return False
 
+            if not target_arn or not target_arn.strip():
+                print(f"{Fore.RED}{self.get_message('errors.target_arn_required')}{Style.RESET_ALL}")
+                return False
+
             execution_id = execution_id.strip()
+            target_arn = target_arn.strip()
 
             print(f"\n{Fore.CYAN}{self.get_message('status.canceling_command')}{Style.RESET_ALL}")
 
@@ -2631,6 +2637,7 @@ class IoTCommandsManager:
             if self.debug_mode:
                 print(f"{Fore.CYAN}{self.get_message('debug.api_call', 'GetCommandExecution')}{Style.RESET_ALL}")
                 print(f"{Fore.CYAN}[DEBUG] Execution ID: {execution_id}{Style.RESET_ALL}")
+                print(f"{Fore.CYAN}[DEBUG] Target ARN: {target_arn}{Style.RESET_ALL}")
 
             # Retrieve current command execution details
             response = self.safe_api_call(
@@ -2639,6 +2646,7 @@ class IoTCommandsManager:
                 execution_id,
                 debug=self.debug_mode,
                 executionId=execution_id,
+                targetArn=target_arn,
             )
 
             if response is None:
@@ -3421,8 +3429,17 @@ class IoTCommandsManager:
                 print(f"{Fore.YELLOW}{self.get_message('errors.execution_id_required')}{Style.RESET_ALL}")
                 return
 
+            # Get target device/thing name
+            target_name = input(f"\n{self.get_message('prompts.target_device_name')}").strip()
+            if not target_name:
+                print(f"{Fore.YELLOW}{self.get_message('errors.target_name_required')}{Style.RESET_ALL}")
+                return
+
+            # Build target ARN
+            target_arn = f"arn:aws:iot:{self.region}:{self.account_id}:thing/{target_name}"
+
             # Cancel command
-            success = self.cancel_command(execution_id)
+            success = self.cancel_command(execution_id, target_arn)
 
             if success:
                 print(f"\n{Fore.GREEN}{self.get_message('ui.operation_complete')}{Style.RESET_ALL}")
