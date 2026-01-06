@@ -403,6 +403,39 @@ class IoTJobsExplorer:
                 f"{Fore.CYAN}{self.get_message('ui.expires_in', presigned_config.get('expiresInSec', self.get_message('results.na')))}{Style.RESET_ALL}"
             )
 
+        # Show job process details (execution statistics)
+        job_process_details = job.get("jobProcessDetails", {})
+        if job_process_details:
+            print(f"\n{Fore.GREEN}{self.get_message('ui.job_process_details')}{Style.RESET_ALL}")
+            
+            # Get statistics
+            queued = job_process_details.get("numberOfQueuedThings", 0)
+            in_progress = job_process_details.get("numberOfInProgressThings", 0)
+            succeeded = job_process_details.get("numberOfSucceededThings", 0)
+            failed = job_process_details.get("numberOfFailedThings", 0)
+            rejected = job_process_details.get("numberOfRejectedThings", 0)
+            timed_out = job_process_details.get("numberOfTimedOutThings", 0)
+            removed = job_process_details.get("numberOfRemovedThings", 0)
+            canceled = job_process_details.get("numberOfCanceledThings", 0)
+            
+            # Display statistics with color coding
+            if queued > 0:
+                print(f"{Fore.BLUE}{self.get_message('ui.queued_things', queued)}{Style.RESET_ALL}")
+            if in_progress > 0:
+                print(f"{Fore.BLUE}{self.get_message('ui.in_progress_things', in_progress)}{Style.RESET_ALL}")
+            if succeeded > 0:
+                print(f"{Fore.GREEN}{self.get_message('ui.succeeded_things', succeeded)}{Style.RESET_ALL}")
+            if failed > 0:
+                print(f"{Fore.RED}{self.get_message('ui.failed_things', failed)}{Style.RESET_ALL}")
+            if rejected > 0:
+                print(f"{Fore.RED}{self.get_message('ui.rejected_things', rejected)}{Style.RESET_ALL}")
+            if timed_out > 0:
+                print(f"{Fore.RED}{self.get_message('ui.timed_out_things', timed_out)}{Style.RESET_ALL}")
+            if removed > 0:
+                print(f"{Fore.YELLOW}{self.get_message('ui.removed_things', removed)}{Style.RESET_ALL}")
+            if canceled > 0:
+                print(f"{Fore.YELLOW}{self.get_message('ui.canceled_things', canceled)}{Style.RESET_ALL}")
+
         print(f"\n{Fore.CYAN}{self.get_message('learning.job_document_tip')}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{self.get_message('learning.presigned_url_tip')}{Style.RESET_ALL}")
 
