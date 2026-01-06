@@ -14,7 +14,7 @@
   
   "prompts": {
     "debug_mode": "🔧 启用调试模式（显示所有 API 调用和响应）？[y/N]：",
-    "menu_choice": "输入选择 [1-10]：",
+    "menu_choice": "输入选择 [1-9]：",
     "command_name": "📝 输入命令名称：",
     "command_description": "📝 输入命令描述：",
     "select_command": "选择命令 [1-{}]：",
@@ -22,7 +22,6 @@
     "target_group": "👥 输入目标物品组名称：",
     "command_id": "🆔 输入命令 ID：",
     "confirm_delete": "输入 'DELETE' 确认删除：",
-    "confirm_cancel": "输入 'CANCEL' 确认取消：",
     "continue": "是否继续？[Y/n]：",
     "parameter_value": "输入 '{}' 的值：",
     "command_arn_or_name_view": "📝 输入要查看的命令 ARN 或名称：",
@@ -37,8 +36,6 @@
     "filter_end_time": "📅 过滤结束时间（YYYY-MM-DD HH:MM:SS，留空表示全部）：",
     "page_size": "📄 页面大小（1-100，默认 50）：",
     "next_page": "按 Enter 查看下一页，或按 'q' 退出：",
-    "confirm_command_cancel": "⚠️  确定要取消命令 '{}'？\n输入 'CANCEL' 确认：",
-    "execution_id_to_cancel": "🆔 输入要取消的命令执行 ID：",
     "execution_timeout": "⏱️  输入命令执行超时时间（秒）（默认 60）：",
     "timeout_too_low": "⚠️  超时时间必须至少为 1 秒。使用默认值 60 秒。",
     "invalid_timeout": "⚠️  无效的超时值。使用默认值 60 秒。",
@@ -69,8 +66,6 @@
     "status_reason_label": "📝 状态原因：",
     "in_progress_indicator": "⏳ 命令执行中...",
     "listing_history": "📜 正在列出命令历史...",
-    "canceling_command": "⏹️  正在取消命令...",
-    "command_canceled": "✅ 命令取消成功！",
     "validating_target": "🔍 正在验证目标...",
     "target_valid": "✅ 目标有效",
     "publishing_to_mqtt": "📡 正在发布命令到 MQTT 主题...",
@@ -106,7 +101,7 @@
   },
   
   "errors": {
-    "invalid_choice": "❌ 无效选择。请输入 1-10",
+    "invalid_choice": "❌ 无效选择。请输入 1-9",
     "invalid_number": "❌ 请输入有效数字",
     "invalid_selection": "❌ 无效选择",
     "command_name_required": "❌ 命令名称为必填项",
@@ -123,7 +118,6 @@
     "api_error": "❌ {} {} 中出错：{}",
     "general_error": "❌ 错误：{}",
     "deletion_aborted": "❌ 删除已中止 - 未收到确认",
-    "cancellation_aborted": "❌ 取消已中止 - 未收到确认",
     "command_creation_failed": "✗ 创建命令失败",
     "no_arn_returned": "✗ CreateCommand API 未返回 ARN",
     "aws_api_error": "✗ AWS API 错误：{}",
@@ -138,8 +132,6 @@
     "status_retrieval_failed": "❌ 检索命令状态失败",
     "history_retrieval_failed": "❌ 检索命令历史失败",
     "invalid_page_size": "❌ 无效的页面大小。必须在 1 到 100 之间",
-    "command_cancellation_failed": "❌ 取消命令失败",
-    "cannot_cancel_completed": "❌ 无法取消已完成的命令（状态：{}）",
     "execution_id_required": "❌ 执行 ID 为必填项",
     "target_device_required": "❌ 目标设备名称为必填项",
     "validation_error": "❌ 验证错误",
@@ -164,9 +156,7 @@
     "command_not_found": "💡 命令可能已被删除或 ARN 不正确。使用\"列出命令\"查看可用命令。",
     "check_active_commands": "💡 删除前，请确保没有活动命令正在使用此命令。使用\"查看命令历史\"进行检查。",
     "command_execution_not_found": "💡 命令可能已被删除或 ID 不正确。使用\"查看命令历史\"查看可用命令。",
-    "retry_status": "💡 请稍后重试。命令状态可能仍在更新中。",
-    "cannot_cancel_completed": "💡 已完成的命令（SUCCEEDED、FAILED、TIMED_OUT）无法取消。只有处于 CREATED 或 IN_PROGRESS 状态的命令才能取消。",
-    "cancellation_failed": "💡 取消请求失败。命令可能在取消处理之前已完成。"
+    "retry_status": "💡 请稍后重试。命令状态可能仍在更新中。"
   },
   
   "debug": {
@@ -214,9 +204,8 @@
     "execute_command": "5. 执行命令",
     "view_status": "6. 查看命令执行状态",
     "view_history": "7. 查看命令执行历史",
-    "cancel_command": "8. 取消命令执行",
-    "toggle_debug": "9. 启用/禁用调试模式",
-    "exit": "10. 退出",
+    "toggle_debug": "8. 启用/禁用调试模式",
+    "exit": "9. 退出",
     "debug_mode_status": "调试模式：{}",
     "debug_enabled_label": "✅ 已启用",
     "debug_disabled_label": "❌ 已禁用",

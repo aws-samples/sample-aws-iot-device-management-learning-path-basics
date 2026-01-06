@@ -14,7 +14,7 @@
   
   "prompts": {
     "debug_mode": "🔧 Ativar modo de depuração (mostrar todas as chamadas de API e respostas)? [y/N]: ",
-    "menu_choice": "Digite a opção [1-10]: ",
+    "menu_choice": "Digite a opção [1-9]: ",
     "command_name": "📝 Digite o nome do comando: ",
     "command_description": "📝 Digite a descrição do comando: ",
     "select_command": "Selecione o comando [1-{}]: ",
@@ -22,7 +22,6 @@
     "target_group": "👥 Digite o nome do grupo de things de destino: ",
     "command_id": "🆔 Digite o ID do comando: ",
     "confirm_delete": "Digite 'DELETE' para confirmar a exclusão: ",
-    "confirm_cancel": "Digite 'CANCEL' para confirmar o cancelamento: ",
     "continue": "Gostaria de continuar? [Y/n]: ",
     "parameter_value": "Digite o valor para '{}': ",
     "command_arn_or_name_view": "📝 Digite o ARN ou nome do comando para visualizar: ",
@@ -37,8 +36,6 @@
     "filter_end_time": "📅 Filtrar hora de término (AAAA-MM-DD HH:MM:SS, deixe vazio para todos): ",
     "page_size": "📄 Tamanho da página (1-100, padrão 50): ",
     "next_page": "Pressione Enter para a próxima página, ou 'q' para sair: ",
-    "confirm_command_cancel": "⚠️  Tem certeza de que deseja cancelar o comando '{}'?\nDigite 'CANCEL' para confirmar: ",
-    "execution_id_to_cancel": "🆔 Digite o ID de execução do comando para cancelar: ",
     "execution_timeout": "⏱️  Digite o tempo limite de execução do comando em segundos (padrão 60): ",
     "timeout_too_low": "⚠️  O tempo limite deve ser de pelo menos 1 segundo. Usando padrão de 60 segundos.",
     "invalid_timeout": "⚠️  Valor de tempo limite inválido. Usando padrão de 60 segundos.",
@@ -69,8 +66,6 @@
     "status_reason_label": "📝 Motivo do Status:",
     "in_progress_indicator": "⏳ Comando em andamento...",
     "listing_history": "📜 Listando histórico de comandos...",
-    "canceling_command": "⏹️  Cancelando comando...",
-    "command_canceled": "✅ Comando cancelado com sucesso!",
     "validating_target": "🔍 Validando destino...",
     "target_valid": "✅ Destino é válido",
     "publishing_to_mqtt": "📡 Publicando comando no tópico MQTT...",
@@ -106,7 +101,7 @@
   },
   
   "errors": {
-    "invalid_choice": "❌ Opção inválida. Por favor, digite 1-10",
+    "invalid_choice": "❌ Opção inválida. Por favor, digite 1-9",
     "invalid_number": "❌ Por favor, digite um número válido",
     "invalid_selection": "❌ Seleção inválida",
     "command_name_required": "❌ O nome do comando é obrigatório",
@@ -123,7 +118,6 @@
     "api_error": "❌ Erro em {} {}: {}",
     "general_error": "❌ Erro: {}",
     "deletion_aborted": "❌ Exclusão abortada - confirmação não recebida",
-    "cancellation_aborted": "❌ Cancelamento abortado - confirmação não recebida",
     "command_creation_failed": "✗ Falha ao criar comando",
     "no_arn_returned": "✗ Nenhum ARN retornado da API CreateCommand",
     "aws_api_error": "✗ Erro da API AWS: {}",
@@ -138,8 +132,6 @@
     "status_retrieval_failed": "❌ Falha ao recuperar status do comando",
     "history_retrieval_failed": "❌ Falha ao recuperar histórico de comandos",
     "invalid_page_size": "❌ Tamanho de página inválido. Deve estar entre 1 e 100",
-    "command_cancellation_failed": "❌ Falha ao cancelar comando",
-    "cannot_cancel_completed": "❌ Não é possível cancelar um comando concluído (status: {})",
     "execution_id_required": "❌ O ID de execução é obrigatório",
     "target_device_required": "❌ O nome do dispositivo de destino é obrigatório",
     "validation_error": "❌ Erro de Validação",
@@ -164,9 +156,7 @@
     "command_not_found": "💡 O comando pode ter sido excluído ou o ARN está incorreto. Use 'Listar comandos' para ver os comandos disponíveis.",
     "check_active_commands": "💡 Antes de excluir, certifique-se de que nenhum comando ativo está usando este comando. Use 'Ver Histórico de Comandos' para verificar.",
     "command_execution_not_found": "💡 O comando pode ter sido excluído ou o ID está incorreto. Use 'Ver Histórico de Comandos' para ver os comandos disponíveis.",
-    "retry_status": "💡 Tente novamente em alguns momentos. O status do comando ainda pode estar sendo atualizado.",
-    "cannot_cancel_completed": "💡 Comandos que já foram concluídos (SUCCEEDED, FAILED, TIMED_OUT) não podem ser cancelados. Apenas comandos com status CREATED ou IN_PROGRESS podem ser cancelados.",
-    "cancellation_failed": "💡 A solicitação de cancelamento falhou. O comando pode ter sido concluído antes que o cancelamento pudesse ser processado."
+    "retry_status": "💡 Tente novamente em alguns momentos. O status do comando ainda pode estar sendo atualizado."
   },
   
   "debug": {
@@ -214,9 +204,8 @@
     "execute_command": "5. Executar Comando",
     "view_status": "6. Ver Status de Execução do Comando",
     "view_history": "7. Ver Histórico de Execução de Comandos",
-    "cancel_command": "8. Cancelar Execução de Comando",
-    "toggle_debug": "9. Ativar/Desativar Modo de Depuração",
-    "exit": "10. Sair",
+    "toggle_debug": "8. Ativar/Desativar Modo de Depuração",
+    "exit": "9. Sair",
     "debug_mode_status": "Modo de Depuração: {}",
     "debug_enabled_label": "✅ Ativado",
     "debug_disabled_label": "❌ Desativado",

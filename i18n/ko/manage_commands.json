@@ -14,7 +14,7 @@
   
   "prompts": {
     "debug_mode": "🔧 디버그 모드를 활성화하시겠습니까 (모든 API 호출 및 응답 표시)? [y/N]: ",
-    "menu_choice": "선택 입력 [1-10]: ",
+    "menu_choice": "선택 입력 [1-9]: ",
     "command_name": "📝 명령 이름 입력: ",
     "command_description": "📝 명령 설명 입력: ",
     "select_command": "명령 선택 [1-{}]: ",
@@ -22,7 +22,6 @@
     "target_group": "👥 대상 사물 그룹 이름 입력: ",
     "command_id": "🆔 명령 ID 입력: ",
     "confirm_delete": "삭제를 확인하려면 'DELETE'를 입력하세요: ",
-    "confirm_cancel": "취소를 확인하려면 'CANCEL'을 입력하세요: ",
     "continue": "계속하시겠습니까? [Y/n]: ",
     "parameter_value": "'{}'의 값 입력: ",
     "command_arn_or_name_view": "📝 조회할 명령 ARN 또는 이름 입력: ",
@@ -37,8 +36,6 @@
     "filter_end_time": "📅 종료 시간 필터 (YYYY-MM-DD HH:MM:SS, 전체는 비워두세요): ",
     "page_size": "📄 페이지 크기 (1-100, 기본값 50): ",
     "next_page": "다음 페이지는 Enter, 종료는 'q': ",
-    "confirm_command_cancel": "⚠️  명령 '{}'을(를) 취소하시겠습니까?\n확인하려면 'CANCEL'을 입력하세요: ",
-    "execution_id_to_cancel": "🆔 취소할 명령 실행 ID 입력: ",
     "execution_timeout": "⏱️  명령 실행 타임아웃(초) 입력 (기본값 60): ",
     "timeout_too_low": "⚠️  타임아웃은 최소 1초 이상이어야 합니다. 기본값 60초를 사용합니다.",
     "invalid_timeout": "⚠️  잘못된 타임아웃 값입니다. 기본값 60초를 사용합니다.",
@@ -69,8 +66,6 @@
     "status_reason_label": "📝 상태 사유:",
     "in_progress_indicator": "⏳ 명령 진행 중...",
     "listing_history": "📜 명령 이력 조회 중...",
-    "canceling_command": "⏹️  명령 취소 중...",
-    "command_canceled": "✅ 명령이 성공적으로 취소되었습니다!",
     "validating_target": "🔍 대상 검증 중...",
     "target_valid": "✅ 대상이 유효합니다",
     "publishing_to_mqtt": "📡 MQTT 토픽에 명령 게시 중...",
@@ -106,7 +101,7 @@
   },
   
   "errors": {
-    "invalid_choice": "❌ 잘못된 선택입니다. 1-10을 입력하세요",
+    "invalid_choice": "❌ 잘못된 선택입니다. 1-9를 입력하세요",
     "invalid_number": "❌ 유효한 숫자를 입력하세요",
     "invalid_selection": "❌ 잘못된 선택입니다",
     "command_name_required": "❌ 명령 이름이 필요합니다",
@@ -123,7 +118,6 @@
     "api_error": "❌ {} {}에서 오류 발생: {}",
     "general_error": "❌ 오류: {}",
     "deletion_aborted": "❌ 삭제가 중단되었습니다 - 확인을 받지 못했습니다",
-    "cancellation_aborted": "❌ 취소가 중단되었습니다 - 확인을 받지 못했습니다",
     "command_creation_failed": "✗ 명령 생성 실패",
     "no_arn_returned": "✗ CreateCommand API에서 ARN이 반환되지 않았습니다",
     "aws_api_error": "✗ AWS API 오류: {}",
@@ -138,8 +132,6 @@
     "status_retrieval_failed": "❌ 명령 상태 조회 실패",
     "history_retrieval_failed": "❌ 명령 이력 조회 실패",
     "invalid_page_size": "❌ 잘못된 페이지 크기입니다. 1에서 100 사이여야 합니다",
-    "command_cancellation_failed": "❌ 명령 취소 실패",
-    "cannot_cancel_completed": "❌ 완료된 명령은 취소할 수 없습니다 (상태: {})",
     "execution_id_required": "❌ 실행 ID가 필요합니다",
     "target_device_required": "❌ 대상 디바이스 이름이 필요합니다",
     "validation_error": "❌ 검증 오류",
@@ -164,9 +156,7 @@
     "command_not_found": "💡 명령이 삭제되었거나 ARN이 잘못되었을 수 있습니다. '명령 목록'을 사용하여 사용 가능한 명령을 확인하세요.",
     "check_active_commands": "💡 삭제하기 전에 이 명령을 사용하는 활성 명령이 없는지 확인하세요. '명령 이력 보기'를 사용하여 확인하세요.",
     "command_execution_not_found": "💡 명령이 삭제되었거나 ID가 잘못되었을 수 있습니다. '명령 이력 보기'를 사용하여 사용 가능한 명령을 확인하세요.",
-    "retry_status": "💡 잠시 후 다시 시도하세요. 명령 상태가 아직 업데이트 중일 수 있습니다.",
-    "cannot_cancel_completed": "💡 이미 완료된 명령(SUCCEEDED, FAILED, TIMED_OUT)은 취소할 수 없습니다. CREATED 또는 IN_PROGRESS 상태의 명령만 취소할 수 있습니다.",
-    "cancellation_failed": "💡 취소 요청이 실패했습니다. 취소가 처리되기 전에 명령이 완료되었을 수 있습니다."
+    "retry_status": "💡 잠시 후 다시 시도하세요. 명령 상태가 아직 업데이트 중일 수 있습니다."
   },
   
   "debug": {
@@ -214,9 +204,8 @@
     "execute_command": "5. 명령 실행",
     "view_status": "6. 명령 실행 상태 보기",
     "view_history": "7. 명령 실행 이력 보기",
-    "cancel_command": "8. 명령 실행 취소",
-    "toggle_debug": "9. 디버그 모드 활성화/비활성화",
-    "exit": "10. 종료",
+    "toggle_debug": "8. 디버그 모드 활성화/비활성화",
+    "exit": "9. 종료",
     "debug_mode_status": "디버그 모드: {}",
     "debug_enabled_label": "✅ 활성화됨",
     "debug_disabled_label": "❌ 비활성화됨",

@@ -14,7 +14,7 @@
   
   "prompts": {
     "debug_mode": "🔧 デバッグモードを有効にしますか（すべてのAPI呼び出しとレスポンスを表示）？ [y/N]: ",
-    "menu_choice": "選択してください [1-10]: ",
+    "menu_choice": "選択してください [1-9]: ",
     "command_name": "📝 コマンド名を入力してください: ",
     "command_description": "📝 コマンドの説明を入力してください: ",
     "select_command": "コマンドを選択してください [1-{}]: ",
@@ -22,7 +22,6 @@
     "target_group": "👥 ターゲットThingグループ名を入力してください: ",
     "command_id": "🆔 コマンドIDを入力してください: ",
     "confirm_delete": "削除を確認するには 'DELETE' と入力してください: ",
-    "confirm_cancel": "キャンセルを確認するには 'CANCEL' と入力してください: ",
     "continue": "続行しますか？ [Y/n]: ",
     "parameter_value": "'{}' の値を入力してください: ",
     "command_arn_or_name_view": "📝 表示するコマンドのARNまたは名前を入力してください: ",
@@ -37,8 +36,6 @@
     "filter_end_time": "📅 終了時刻でフィルタ（YYYY-MM-DD HH:MM:SS、すべての場合は空白）: ",
     "page_size": "📄 ページサイズ（1-100、デフォルト50）: ",
     "next_page": "次のページはEnterキー、終了は 'q' を押してください: ",
-    "confirm_command_cancel": "⚠️  コマンド '{}' をキャンセルしてもよろしいですか？\n確認するには 'CANCEL' と入力してください: ",
-    "execution_id_to_cancel": "🆔 キャンセルするコマンド実行IDを入力してください: ",
     "execution_timeout": "⏱️  コマンド実行タイムアウトを秒単位で入力してください（デフォルト60）: ",
     "timeout_too_low": "⚠️  タイムアウトは最低1秒必要です。デフォルトの60秒を使用します。",
     "invalid_timeout": "⚠️  無効なタイムアウト値です。デフォルトの60秒を使用します。",
@@ -69,8 +66,6 @@
     "status_reason_label": "📝 ステータス理由:",
     "in_progress_indicator": "⏳ コマンド実行中...",
     "listing_history": "📜 コマンド履歴を一覧表示中...",
-    "canceling_command": "⏹️  コマンドをキャンセル中...",
-    "command_canceled": "✅ コマンドのキャンセルに成功しました！",
     "validating_target": "🔍 ターゲットを検証中...",
     "target_valid": "✅ ターゲットは有効です",
     "publishing_to_mqtt": "📡 MQTTトピックにコマンドを発行中...",
@@ -106,7 +101,7 @@
   },
   
   "errors": {
-    "invalid_choice": "❌ 無効な選択です。1〜10を入力してください",
+    "invalid_choice": "❌ 無効な選択です。1〜9を入力してください",
     "invalid_number": "❌ 有効な数値を入力してください",
     "invalid_selection": "❌ 無効な選択です",
     "command_name_required": "❌ コマンド名は必須です",
@@ -123,7 +118,6 @@
     "api_error": "❌ {} {} のエラー: {}",
     "general_error": "❌ エラー: {}",
     "deletion_aborted": "❌ 削除が中止されました - 確認が受信されませんでした",
-    "cancellation_aborted": "❌ キャンセルが中止されました - 確認が受信されませんでした",
     "command_creation_failed": "✗ コマンドの作成に失敗しました",
     "no_arn_returned": "✗ CreateCommand APIからARNが返されませんでした",
     "aws_api_error": "✗ AWS APIエラー: {}",
@@ -138,8 +132,6 @@
     "status_retrieval_failed": "❌ コマンドステータスの取得に失敗しました",
     "history_retrieval_failed": "❌ コマンド履歴の取得に失敗しました",
     "invalid_page_size": "❌ 無効なページサイズです。1〜100の範囲である必要があります",
-    "command_cancellation_failed": "❌ コマンドのキャンセルに失敗しました",
-    "cannot_cancel_completed": "❌ 完了したコマンドはキャンセルできません（ステータス: {}）",
     "execution_id_required": "❌ 実行IDは必須です",
     "target_device_required": "❌ ターゲットデバイス名は必須です",
     "validation_error": "❌ 検証エラー",
@@ -164,9 +156,7 @@
     "command_not_found": "💡 コマンドが削除されたか、ARNが正しくない可能性があります。'コマンド一覧'を使用して利用可能なコマンドを確認してください。",
     "check_active_commands": "💡 削除する前に、このコマンドを使用しているアクティブなコマンドがないことを確認してください。'コマンド履歴を表示'を使用して確認してください。",
     "command_execution_not_found": "💡 コマンドが削除されたか、IDが正しくない可能性があります。'コマンド履歴を表示'を使用して利用可能なコマンドを確認してください。",
-    "retry_status": "💡 しばらくしてから再試行してください。コマンドステータスがまだ更新中の可能性があります。",
-    "cannot_cancel_completed": "💡 既に完了したコマンド（SUCCEEDED、FAILED、TIMED_OUT）はキャンセルできません。CREATEDまたはIN_PROGRESSステータスのコマンドのみキャンセルできます。",
-    "cancellation_failed": "💡 キャンセルリクエストが失敗しました。キャンセルが処理される前にコマンドが完了した可能性があります。"
+    "retry_status": "💡 しばらくしてから再試行してください。コマンドステータスがまだ更新中の可能性があります。"
   },
   
   "debug": {
@@ -214,9 +204,8 @@
     "execute_command": "5. コマンドを実行",
     "view_status": "6. コマンド実行ステータスを表示",
     "view_history": "7. コマンド実行履歴を表示",
-    "cancel_command": "8. コマンド実行をキャンセル",
-    "toggle_debug": "9. デバッグモードの有効化/無効化",
-    "exit": "10. 終了",
+    "toggle_debug": "8. デバッグモードの有効化/無効化",
+    "exit": "9. 終了",
     "debug_mode_status": "デバッグモード: {}",
     "debug_enabled_label": "✅ 有効",
     "debug_disabled_label": "❌ 無効",

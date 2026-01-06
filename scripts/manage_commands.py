@@ -2597,203 +2597,6 @@ class IoTCommandsManager:
 
         print(f"\n{Fore.GREEN}{'='*120}{Style.RESET_ALL}")
 
-    def cancel_command(self, execution_id: str, target_arn: str) -> bool:
-        """
-        Cancel a pending or executing command.
-
-        This function:
-        1. Prompts for confirmation before cancellation
-        2. Retrieves current command status to verify it can be canceled
-        3. Rejects cancellation for completed commands (SUCCEEDED, FAILED, TIMED_OUT)
-        4. Sends cancellation request to AWS IoT using UpdateCommandExecution API
-        5. Updates command status to CANCELED on success
-        6. Displays failure reason and current state on error
-
-        Args:
-            execution_id: Unique identifier for the command execution to cancel
-            target_arn: ARN of the target device or thing group
-
-        Returns:
-            True if cancellation successful, False otherwise
-
-        Requirements: 7.1, 7.2, 7.3, 7.4, 7.5
-        """
-        try:
-            # Validate input
-            if not execution_id or not execution_id.strip():
-                print(f"{Fore.RED}{self.get_message('errors.execution_id_required')}{Style.RESET_ALL}")
-                return False
-
-            if not target_arn or not target_arn.strip():
-                print(f"{Fore.RED}{self.get_message('errors.target_arn_required')}{Style.RESET_ALL}")
-                return False
-
-            execution_id = execution_id.strip()
-            target_arn = target_arn.strip()
-
-            print(f"\n{Fore.CYAN}{self.get_message('status.canceling_command')}{Style.RESET_ALL}")
-
-            # First, get current command status to verify it can be canceled
-            if self.debug_mode:
-                print(f"{Fore.CYAN}{self.get_message('debug.api_call', 'GetCommandExecution')}{Style.RESET_ALL}")
-                print(f"{Fore.CYAN}[DEBUG] Execution ID: {execution_id}{Style.RESET_ALL}")
-                print(f"{Fore.CYAN}[DEBUG] Target ARN: {target_arn}{Style.RESET_ALL}")
-
-            # Retrieve current command execution details
-            response = self.safe_api_call(
-                self.iot_client.get_command_execution,
-                "GetCommandExecution",
-                execution_id,
-                debug=self.debug_mode,
-                executionId=execution_id,
-                targetArn=target_arn,
-            )
-
-            if response is None:
-                print(f"{Fore.RED}{self.get_message('errors.command_execution_not_found')}{Style.RESET_ALL}")
-                print(f"{Fore.YELLOW}{self.get_message('troubleshooting.command_execution_not_found')}{Style.RESET_ALL}")
-                return False
-
-            # Extract current status
-            current_status = response.get("status", "UNKNOWN")
-            command_arn = response.get("commandArn", "")
-            target_arn = response.get("targetArn", "")
-
-            # Extract command name and target name for display
-            command_name = command_arn.split("/")[-1] if "/" in command_arn else execution_id[:12]
-            target_name = target_arn.split("/")[-1] if "/" in target_arn else "N/A"
-
-            # Check if command is in a state that can be canceled
-            # Only CREATED and IN_PROGRESS commands can be canceled
-            completed_statuses = ["SUCCEEDED", "FAILED", "TIMED_OUT", "CANCELED"]
-
-            if current_status in completed_statuses:
-                print(f"{Fore.RED}{self.get_message('errors.cannot_cancel_completed', current_status)}{Style.RESET_ALL}")
-                print(f"{Fore.YELLOW}{self.get_message('troubleshooting.cannot_cancel_completed')}{Style.RESET_ALL}")
-
-                # Display current command state
-                print(f"\n{Fore.YELLOW}{'─'*80}{Style.RESET_ALL}")
-                print(f"{Fore.CYAN}{self.get_message('results.command_id_label', execution_id)}{Style.RESET_ALL}")
-                print(f"{Fore.CYAN}{self.get_message('results.command_name', command_name)}{Style.RESET_ALL}")
-                print(f"{Fore.CYAN}{self.get_message('results.target_label', target_name)}{Style.RESET_ALL}")
-
-                # Get localized status display
-                try:
-                    status_enum = CommandStatus.from_string(current_status)
-                    status_display = status_enum.get_display_string(self.get_message)
-                except (ValueError, KeyError):
-                    status_display = current_status
-
-                print(f"{Fore.CYAN}{self.get_message('results.status_label', '')}{Fore.RED}{status_display}{Style.RESET_ALL}")
-                print(f"{Fore.YELLOW}{'─'*80}{Style.RESET_ALL}")
-
-                return False
-
-            # Display command information
-            print(f"\n{Fore.YELLOW}{'─'*80}{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{self.get_message('results.command_id_label', execution_id)}{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{self.get_message('results.command_name', command_name)}{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{self.get_message('results.target_label', target_name)}{Style.RESET_ALL}")
-
-            # Get localized status display
-            try:
-                status_enum = CommandStatus.from_string(current_status)
-                status_display = status_enum.get_display_string(self.get_message)
-            except (ValueError, KeyError):
-                status_display = current_status
-
-            print(f"{Fore.CYAN}{self.get_message('results.status_label', '')}{Fore.YELLOW}{status_display}{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}{'─'*80}{Style.RESET_ALL}")
-
-            # Prompt for confirmation
-            print(f"\n{Fore.RED}{self.get_message('prompts.confirm_command_cancel', execution_id)}{Style.RESET_ALL}")
-            confirmation = input().strip()
-
-            if confirmation != "CANCEL":
-                print(f"{Fore.YELLOW}{self.get_message('errors.cancellation_aborted')}{Style.RESET_ALL}")
-                return False
-
-            if self.debug_mode:
-                print(f"\n{Fore.CYAN}{self.get_message('debug.api_call', 'UpdateCommandExecution')}{Style.RESET_ALL}")
-                print(f"{Fore.CYAN}[DEBUG] Execution ID: {execution_id}{Style.RESET_ALL}")
-                print(f"{Fore.CYAN}[DEBUG] New Status: CANCELED{Style.RESET_ALL}")
-
-            # Call AWS IoT UpdateCommandExecution API to cancel the command
-            # Note: The actual API might be CancelCommandExecution or UpdateCommandExecution
-            # depending on AWS IoT Commands implementation. Using UpdateCommandExecution
-            # as it's more common in AWS IoT patterns.
-            cancel_response = self.safe_api_call(
-                self.iot_client.update_command_execution,
-                "UpdateCommandExecution",
-                execution_id,
-                debug=self.debug_mode,
-                executionId=execution_id,
-                status="CANCELED",
-                statusReason="Canceled by user",
-            )
-
-            if cancel_response is None:
-                print(f"{Fore.RED}{self.get_message('errors.command_cancellation_failed')}{Style.RESET_ALL}")
-                print(f"{Fore.YELLOW}{self.get_message('troubleshooting.cancellation_failed')}{Style.RESET_ALL}")
-                return False
-
-            # Display success message
-            print(f"\n{Fore.GREEN}{self.get_message('status.command_canceled')}{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{self.get_message('results.command_id_label', execution_id)}{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{self.get_message('results.command_name', command_name)}{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{self.get_message('results.target_label', target_name)}{Style.RESET_ALL}")
-
-            # Get updated status
-            updated_status = cancel_response.get("status", "CANCELED")
-            try:
-                status_enum = CommandStatus.from_string(updated_status)
-                status_display = status_enum.get_display_string(self.get_message)
-            except (ValueError, KeyError):
-                status_display = updated_status
-
-            print(f"{Fore.CYAN}{self.get_message('results.status_label', '')}{Fore.MAGENTA}{status_display}{Style.RESET_ALL}")
-
-            return True
-
-        except ClientError as e:
-            error_code = e.response["Error"]["Code"]
-            error_message = e.response["Error"]["Message"]
-
-            print(f"{Fore.RED}{self.get_message('errors.aws_api_error', error_code)}{Style.RESET_ALL}")
-            print(f"{Fore.RED}  {error_message}{Style.RESET_ALL}")
-
-            # Provide specific troubleshooting guidance
-            if error_code == "ResourceNotFoundException":
-                print(f"{Fore.YELLOW}{self.get_message('troubleshooting.command_not_found')}{Style.RESET_ALL}")
-            elif error_code == "ConflictException":
-                print(f"{Fore.YELLOW}{self.get_message('troubleshooting.cannot_cancel_completed')}{Style.RESET_ALL}")
-            elif error_code == "InvalidStateTransitionException":
-                print(f"{Fore.YELLOW}{self.get_message('troubleshooting.cannot_cancel_completed')}{Style.RESET_ALL}")
-            elif error_code == "ThrottlingException":
-                print(f"{Fore.YELLOW}{self.get_message('troubleshooting.throttling')}{Style.RESET_ALL}")
-            elif error_code == "UnauthorizedException":
-                print(f"{Fore.YELLOW}{self.get_message('troubleshooting.unauthorized')}{Style.RESET_ALL}")
-            else:
-                print(f"{Fore.YELLOW}{self.get_message('troubleshooting.cancellation_failed')}{Style.RESET_ALL}")
-
-            # Display failure reason and current state
-            if self.debug_mode:
-                print(f"{Fore.CYAN}{self.get_message('debug.full_error')}{Style.RESET_ALL}")
-                print(json.dumps(e.response, indent=2, default=str))
-
-            return False
-
-        except Exception as e:
-            print(f"{Fore.RED}{self.get_message('errors.unexpected_error', str(e))}{Style.RESET_ALL}")
-
-            if self.debug_mode:
-                import traceback
-
-                print(f"{Fore.CYAN}{self.get_message('debug.full_traceback')}{Style.RESET_ALL}")
-                traceback.print_exc()
-
-            return False
-
     def display_menu(self):
         """
         Display the main menu with colored welcome banner and menu options.
@@ -2839,7 +2642,6 @@ class IoTCommandsManager:
         print(f"{Fore.CYAN}{self.get_message('ui.execute_command')}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{self.get_message('ui.view_status')}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{self.get_message('ui.view_history')}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.cancel_command')}{Style.RESET_ALL}")
         print(f"{Fore.MAGENTA}{self.get_message('ui.toggle_debug')}{Style.RESET_ALL}")
         print(f"{Fore.RED}{self.get_message('ui.exit')}{Style.RESET_ALL}")
         print()
@@ -2849,7 +2651,7 @@ class IoTCommandsManager:
         Handle user menu selection and call appropriate function.
 
         Args:
-            choice: User's menu selection (1-10)
+            choice: User's menu selection (1-9)
 
         Returns:
             True to continue menu loop, False to exit
@@ -2881,12 +2683,9 @@ class IoTCommandsManager:
                 # View Command History
                 self._handle_view_history()
             elif choice_num == 8:
-                # Cancel Command
-                self._handle_cancel_command()
-            elif choice_num == 9:
                 # Toggle Debug Mode
                 self._handle_toggle_debug()
-            elif choice_num == 10:
+            elif choice_num == 9:
                 # Exit
                 print(f"\n{Fore.GREEN}{self.get_message('ui.goodbye')}{Style.RESET_ALL}")
                 return False
@@ -3412,39 +3211,6 @@ class IoTCommandsManager:
             # Trigger learning moment: Console Integration
             # Remind about Console Checkpoint
             self.display_learning_moment("console_integration")
-
-        except (KeyboardInterrupt, EOFError):
-            print(f"\n{Fore.YELLOW}{self.get_message('ui.cancelled')}{Style.RESET_ALL}")
-
-    def _handle_cancel_command(self):
-        """Handle menu option 8: Cancel Command"""
-        print(f"\n{Fore.CYAN}{'='*80}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{self.get_message('ui.cancel_command')}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{'='*80}{Style.RESET_ALL}")
-
-        try:
-            # Get execution ID
-            execution_id = input(f"\n{self.get_message('prompts.execution_id_to_cancel')}").strip()
-            if not execution_id:
-                print(f"{Fore.YELLOW}{self.get_message('errors.execution_id_required')}{Style.RESET_ALL}")
-                return
-
-            # Get target device/thing name
-            target_name = input(f"\n{self.get_message('prompts.target_device_name')}").strip()
-            if not target_name:
-                print(f"{Fore.YELLOW}{self.get_message('errors.target_name_required')}{Style.RESET_ALL}")
-                return
-
-            # Build target ARN
-            target_arn = f"arn:aws:iot:{self.region}:{self.account_id}:thing/{target_name}"
-
-            # Cancel command
-            success = self.cancel_command(execution_id, target_arn)
-
-            if success:
-                print(f"\n{Fore.GREEN}{self.get_message('ui.operation_complete')}{Style.RESET_ALL}")
-            else:
-                print(f"\n{Fore.RED}{self.get_message('ui.operation_failed')}{Style.RESET_ALL}")
 
         except (KeyboardInterrupt, EOFError):
             print(f"\n{Fore.YELLOW}{self.get_message('ui.cancelled')}{Style.RESET_ALL}")
