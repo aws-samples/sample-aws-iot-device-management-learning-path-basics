@@ -750,37 +750,31 @@ class IoTJobsExplorer:
             except ValueError:
                 print(f"{Fore.RED}{self.get_message('errors.invalid_number')}{Style.RESET_ALL}")
 
-        # Step 4: Get job details and execution count
+        # Step 4: Get job details with execution statistics from jobProcessDetails
         job_response = self.safe_api_call(
             self.iot_client.describe_job, "Job Detail", selected_job_id, debug=self.debug_mode, jobId=selected_job_id
         )
 
-        if job_response:
-            job = job_response.get("job", {})
-            targets = job.get("targets", [])
+        if not job_response:
+            print(f"{Fore.RED}{self.get_message('errors.failed_job_details')}{Style.RESET_ALL}")
+            return
 
-            print(f"\n{Fore.CYAN}{self.get_message('results.job_details_header')}{Style.RESET_ALL}")
-            print(f"{Fore.WHITE}{self.get_message('statistics.job_id', selected_job_id)}{Style.RESET_ALL}")
-            print(f"{Fore.WHITE}{self.get_message('statistics.status', job_status)}{Style.RESET_ALL}")
-            print(f"{Fore.WHITE}{self.get_message('statistics.targets', len(targets))}{Style.RESET_ALL}")
+        job = job_response.get("job", {})
+        targets = job.get("targets", [])
+        job_process_details = job.get("jobProcessDetails", {})
 
-        # Step 5: Get execution statistics
-        print(f"\n{Fore.BLUE}{self.get_message('status.checking_execution_status_cancel')}{Style.RESET_ALL}")
+        print(f"\n{Fore.CYAN}{self.get_message('results.job_details_header')}{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}{self.get_message('statistics.job_id', selected_job_id)}{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}{self.get_message('statistics.status', job_status)}{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}{self.get_message('statistics.targets', len(targets))}{Style.RESET_ALL}")
 
-        execution_counts = {}
-        for status in ["QUEUED", "IN_PROGRESS", "SUCCEEDED", "FAILED"]:
-            response = self.safe_api_call(
-                self.iot_client.list_job_executions_for_job,
-                "Job Executions Count",
-                f"{selected_job_id} {status}",
-                debug=False,
-                jobId=selected_job_id,
-                status=status,
-                maxResults=1,
-            )
-            if response:
-                # Get total count from pagination
-                execution_counts[status] = len(response.get("executionSummaries", []))
+        # Step 5: Extract execution statistics from jobProcessDetails (no additional API calls needed)
+        execution_counts = {
+            "QUEUED": job_process_details.get("numberOfQueuedThings", 0),
+            "IN_PROGRESS": job_process_details.get("numberOfInProgressThings", 0),
+            "SUCCEEDED": job_process_details.get("numberOfSucceededThings", 0),
+            "FAILED": job_process_details.get("numberOfFailedThings", 0)
+        }
 
         print(f"\n{Fore.YELLOW}{self.get_message('results.impact_analysis_header')}{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{self.get_message('cancel.impact_queued', execution_counts.get('QUEUED', 0))}{Style.RESET_ALL}")
@@ -883,22 +877,29 @@ class IoTJobsExplorer:
             except ValueError:
                 print(f"{Fore.RED}{self.get_message('errors.invalid_number')}{Style.RESET_ALL}")
 
-        # Step 4: Get job execution count
-        print(f"\n{Fore.BLUE}{self.get_message('status.checking_execution_history')}{Style.RESET_ALL}")
+        # Step 4: Get job details with execution count from jobProcessDetails
+        job_response = self.safe_api_call(
+            self.iot_client.describe_job, "Job Detail", selected_job_id, debug=self.debug_mode, jobId=selected_job_id
+        )
 
-        total_executions = 0
-        for status in ["QUEUED", "IN_PROGRESS", "SUCCEEDED", "FAILED", "REJECTED", "REMOVED", "CANCELED"]:
-            response = self.safe_api_call(
-                self.iot_client.list_job_executions_for_job,
-                "Job Executions Count",
-                f"{selected_job_id} {status}",
-                debug=False,
-                jobId=selected_job_id,
-                status=status,
-                maxResults=250,
-            )
-            if response:
-                total_executions += len(response.get("executionSummaries", []))
+        if not job_response:
+            print(f"{Fore.RED}{self.get_message('errors.failed_job_details')}{Style.RESET_ALL}")
+            return
+
+        job = job_response.get("job", {})
+        job_process_details = job.get("jobProcessDetails", {})
+
+        # Calculate total executions from jobProcessDetails (no additional API calls needed)
+        total_executions = (
+            job_process_details.get("numberOfQueuedThings", 0) +
+            job_process_details.get("numberOfInProgressThings", 0) +
+            job_process_details.get("numberOfSucceededThings", 0) +
+            job_process_details.get("numberOfFailedThings", 0) +
+            job_process_details.get("numberOfRejectedThings", 0) +
+            job_process_details.get("numberOfTimedOutThings", 0) +
+            job_process_details.get("numberOfRemovedThings", 0) +
+            job_process_details.get("numberOfCanceledThings", 0)
+        )
 
         # Step 5: Educational pause
         print(f"\n{Fore.YELLOW}{self.get_message('delete.learning_moment_header')}{Style.RESET_ALL}")
