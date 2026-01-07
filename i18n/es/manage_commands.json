@@ -305,8 +305,8 @@
     "in_progress": "En Progreso",
     "succeeded": "Exitoso",
     "failed": "Fallido",
-    "timed_out": "Tiempo Agotado",
-    "canceled": "Cancelado"
+    "rejected": "Rechazado",
+    "timed_out": "Tiempo Agotado"
   },
   
   "learning_moments": {
@@ -328,11 +328,11 @@
     },
     "execution_lifecycle": {
       "header": "📚 MOMENTO DE APRENDIZAJE: Ciclo de Vida de Ejecución de Comandos",
-      "content": "Los comandos pasan por varios estados:\n\n1. CREATED: Comando creado pero aún no enviado\n2. IN_PROGRESS: Comando enviado al dispositivo, esperando respuesta\n3. SUCCEEDED: El dispositivo confirmó la ejecución exitosa\n4. FAILED: El dispositivo reportó falla en la ejecución\n5. TIMED_OUT: No se recibió respuesta dentro del tiempo de espera\n6. CANCELED: Comando cancelado por el usuario\n\nMonitorear estos estados le ayuda a entender el comportamiento del dispositivo y solucionar problemas."
+      "content": "Los comandos pasan por varios estados:\n\n1. CREATED: Comando creado pero aún no enviado\n2. IN_PROGRESS: Comando enviado al dispositivo, esperando respuesta\n3. SUCCEEDED: El dispositivo confirmó la ejecución exitosa\n4. FAILED: El dispositivo reportó falla en la ejecución\n5. REJECTED: El dispositivo rechazó el comando\n6. TIMED_OUT: No se recibió respuesta dentro del tiempo de espera\n\nMonitorear estos estados le ayuda a entender el comportamiento del dispositivo y solucionar problemas."
     },
     "best_practices": {
       "header": "📚 MOMENTO DE APRENDIZAJE: Mejores Prácticas",
-      "content": "Siga estas mejores prácticas para implementaciones en producción:\n\n• Pruebe comandos en un solo dispositivo antes del despliegue en toda la flota\n• Establezca tiempos de espera apropiados basados en el tiempo de ejecución esperado\n• Implemente manejo de errores adecuado en los dispositivos\n• Registre todas las ejecuciones de comandos para pistas de auditoría\n• Use grupos de things para dirigirse a múltiples dispositivos\n• Monitoree las tasas de éxito de comandos e investigue fallas\n• Cancele comandos que estén tomando demasiado tiempo"
+      "content": "Siga estas mejores prácticas para implementaciones en producción:\n\n• Pruebe comandos en un solo dispositivo antes del despliegue en toda la flota\n• Establezca tiempos de espera apropiados basados en el tiempo de ejecución esperado\n• Implemente manejo de errores adecuado en los dispositivos\n• Registre todas las ejecuciones de comandos para pistas de auditoría\n• Use grupos de things para dirigirse a múltiples dispositivos\n• Monitoree las tasas de éxito de comandos e investigue fallas\n• Establezca valores de tiempo de espera apropiados para las ejecuciones de comandos"
     },
     "console_integration": {
       "header": "📚 RECORDATORIO DE PUNTO DE CONTROL DE CONSOLA",

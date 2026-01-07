@@ -305,8 +305,8 @@
     "in_progress": "In Progress",
     "succeeded": "Succeeded",
     "failed": "Failed",
-    "timed_out": "Timed Out",
-    "canceled": "Canceled"
+    "rejected": "Rejected",
+    "timed_out": "Timed Out"
   },
   
   "learning_moments": {
@@ -328,11 +328,11 @@
     },
     "execution_lifecycle": {
       "header": "📚 LEARNING MOMENT: Command Execution Lifecycle",
-      "content": "Commands go through several states:\n\n1. CREATED: Command created but not yet sent\n2. IN_PROGRESS: Command sent to device, awaiting response\n3. SUCCEEDED: Device acknowledged successful execution\n4. FAILED: Device reported execution failure\n5. TIMED_OUT: No response received within timeout\n6. CANCELED: Command canceled by user\n\nMonitoring these states helps you understand device behavior and troubleshoot issues."
+      "content": "Commands go through several states:\n\n1. CREATED: Command created but not yet sent\n2. IN_PROGRESS: Command sent to device, awaiting response\n3. SUCCEEDED: Device acknowledged successful execution\n4. FAILED: Device reported execution failure\n5. REJECTED: Device rejected the command\n6. TIMED_OUT: No response received within timeout\n\nMonitoring these states helps you understand device behavior and troubleshoot issues."
     },
     "best_practices": {
       "header": "📚 LEARNING MOMENT: Best Practices",
-      "content": "Follow these best practices for production deployments:\n\n• Test commands on a single device before fleet-wide deployment\n• Set appropriate timeouts based on expected execution time\n• Implement proper error handling on devices\n• Log all command executions for audit trails\n• Use thing groups for targeting multiple devices\n• Monitor command success rates and investigate failures\n• Cancel commands that are taking too long"
+      "content": "Follow these best practices for production deployments:\n\n• Test commands on a single device before fleet-wide deployment\n• Set appropriate timeouts based on expected execution time\n• Implement proper error handling on devices\n• Log all command executions for audit trails\n• Use thing groups for targeting multiple devices\n• Monitor command success rates and investigate failures\n• Set appropriate timeout values for command executions"
     },
     "console_integration": {
       "header": "📚 CONSOLE CHECKPOINT REMINDER",

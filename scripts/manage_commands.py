@@ -44,15 +44,15 @@ class CommandStatus(Enum):
     Command execution status values.
 
     These statuses track the lifecycle of a command execution from creation
-    through completion or cancellation.
+    through completion.
     """
 
     CREATED = "CREATED"
     IN_PROGRESS = "IN_PROGRESS"
     SUCCEEDED = "SUCCEEDED"
     FAILED = "FAILED"
+    REJECTED = "REJECTED"
     TIMED_OUT = "TIMED_OUT"
-    CANCELED = "CANCELED"
 
     @classmethod
     def from_string(cls, status_str: str) -> "CommandStatus":
@@ -2208,12 +2208,10 @@ class IoTCommandsManager:
         # Color code based on status
         if execution.status in ["SUCCEEDED"]:
             status_color = Fore.GREEN
-        elif execution.status in ["FAILED", "TIMED_OUT"]:
+        elif execution.status in ["FAILED", "REJECTED", "TIMED_OUT"]:
             status_color = Fore.RED
         elif execution.status in ["IN_PROGRESS", "CREATED"]:
             status_color = Fore.YELLOW
-        elif execution.status in ["CANCELED"]:
-            status_color = Fore.MAGENTA
         else:
             status_color = Fore.WHITE
 
@@ -2552,12 +2550,10 @@ class IoTCommandsManager:
             # Color code based on status
             if status in ["SUCCEEDED"]:
                 status_color = Fore.GREEN
-            elif status in ["FAILED", "TIMED_OUT"]:
+            elif status in ["FAILED", "REJECTED", "TIMED_OUT"]:
                 status_color = Fore.RED
             elif status in ["IN_PROGRESS", "CREATED"]:
                 status_color = Fore.YELLOW
-            elif status in ["CANCELED"]:
-                status_color = Fore.MAGENTA
             else:
                 status_color = Fore.WHITE
 
@@ -3293,12 +3289,10 @@ class IoTCommandsManager:
             # Color code status
             if status == "SUCCEEDED":
                 status_color = Fore.GREEN
-            elif status == "FAILED":
+            elif status in ["FAILED", "REJECTED", "TIMED_OUT"]:
                 status_color = Fore.RED
             elif status == "IN_PROGRESS":
                 status_color = Fore.YELLOW
-            elif status == "CANCELED":
-                status_color = Fore.MAGENTA
             else:
                 status_color = Fore.WHITE
 
@@ -3353,16 +3347,13 @@ class IoTCommandsManager:
         if status == "SUCCEEDED":
             status_color = Fore.GREEN
             status_icon = "✅"
-        elif status == "FAILED":
+        elif status in ["FAILED", "REJECTED"]:
             status_color = Fore.RED
             status_icon = "❌"
         elif status == "IN_PROGRESS":
             status_color = Fore.YELLOW
             status_icon = "⏳"
             print(f"{Fore.YELLOW}{self.get_message('results.progress_indicator')}{Style.RESET_ALL}")
-        elif status == "CANCELED":
-            status_color = Fore.MAGENTA
-            status_icon = "⏹️"
         elif status == "TIMED_OUT":
             status_color = Fore.RED
             status_icon = "⏱️"

@@ -305,8 +305,8 @@
     "in_progress": "执行中",
     "succeeded": "成功",
     "failed": "失败",
-    "timed_out": "超时",
-    "canceled": "已取消"
+    "rejected": "已拒绝",
+    "timed_out": "超时"
   },
   
   "learning_moments": {
@@ -328,11 +328,11 @@
     },
     "execution_lifecycle": {
       "header": "📚 学习要点：命令执行生命周期",
-      "content": "命令经历几个状态：\n\n1. CREATED：命令已创建但尚未发送\n2. IN_PROGRESS：命令已发送到设备，等待响应\n3. SUCCEEDED：设备确认执行成功\n4. FAILED：设备报告执行失败\n5. TIMED_OUT：超时时间内未收到响应\n6. CANCELED：用户取消了命令\n\n监控这些状态有助于您了解设备行为并排查问题。"
+      "content": "命令经历几个状态：\n\n1. CREATED：命令已创建但尚未发送\n2. IN_PROGRESS：命令已发送到设备，等待响应\n3. SUCCEEDED：设备确认执行成功\n4. FAILED：设备报告执行失败\n5. REJECTED：设备拒绝了命令\n6. TIMED_OUT：超时时间内未收到响应\n\n监控这些状态有助于您了解设备行为并排查问题。"
     },
     "best_practices": {
       "header": "📚 学习要点：最佳实践",
-      "content": "遵循这些最佳实践进行生产部署：\n\n• 在全车队部署前先在单个设备上测试命令\n• 根据预期执行时间设置适当的超时\n• 在设备上实现适当的错误处理\n• 记录所有命令执行以进行审计跟踪\n• 使用物品组来定位多个设备\n• 监控命令成功率并调查失败\n• 取消执行时间过长的命令"
+      "content": "遵循这些最佳实践进行生产部署：\n\n• 在全车队部署前先在单个设备上测试命令\n• 根据预期执行时间设置适当的超时\n• 在设备上实现适当的错误处理\n• 记录所有命令执行以进行审计跟踪\n• 使用物品组来定位多个设备\n• 监控命令成功率并调查失败\n• 为命令执行设置适当的超时值"
     },
     "console_integration": {
       "header": "📚 控制台检查点提醒",

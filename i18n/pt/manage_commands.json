@@ -305,8 +305,8 @@
     "in_progress": "Em Andamento",
     "succeeded": "Bem-sucedido",
     "failed": "Falhou",
-    "timed_out": "Tempo Esgotado",
-    "canceled": "Cancelado"
+    "rejected": "Rejeitado",
+    "timed_out": "Tempo Esgotado"
   },
   
   "learning_moments": {
@@ -328,11 +328,11 @@
     },
     "execution_lifecycle": {
       "header": "📚 MOMENTO DE APRENDIZADO: Ciclo de Vida da Execução de Comando",
-      "content": "Commands passam por vários estados:\n\n1. CREATED: Comando criado mas ainda não enviado\n2. IN_PROGRESS: Comando enviado ao dispositivo, aguardando resposta\n3. SUCCEEDED: Dispositivo confirmou execução bem-sucedida\n4. FAILED: Dispositivo relatou falha na execução\n5. TIMED_OUT: Nenhuma resposta recebida dentro do tempo limite\n6. CANCELED: Comando cancelado pelo usuário\n\nMonitorar esses estados ajuda você a entender o comportamento do dispositivo e solucionar problemas."
+      "content": "Commands passam por vários estados:\n\n1. CREATED: Comando criado mas ainda não enviado\n2. IN_PROGRESS: Comando enviado ao dispositivo, aguardando resposta\n3. SUCCEEDED: Dispositivo confirmou execução bem-sucedida\n4. FAILED: Dispositivo relatou falha na execução\n5. REJECTED: Dispositivo rejeitou o comando\n6. TIMED_OUT: Nenhuma resposta recebida dentro do tempo limite\n\nMonitorar esses estados ajuda você a entender o comportamento do dispositivo e solucionar problemas."
     },
     "best_practices": {
       "header": "📚 MOMENTO DE APRENDIZADO: Melhores Práticas",
-      "content": "Siga estas melhores práticas para implantações em produção:\n\n• Teste comandos em um único dispositivo antes da implantação em toda a frota\n• Defina tempos limite apropriados com base no tempo de execução esperado\n• Implemente tratamento de erros adequado nos dispositivos\n• Registre todas as execuções de comando para trilhas de auditoria\n• Use grupos de things para direcionar vários dispositivos\n• Monitore taxas de sucesso de comandos e investigue falhas\n• Cancele comandos que estão demorando muito"
+      "content": "Siga estas melhores práticas para implantações em produção:\n\n• Teste comandos em um único dispositivo antes da implantação em toda a frota\n• Defina tempos limite apropriados com base no tempo de execução esperado\n• Implemente tratamento de erros adequado nos dispositivos\n• Registre todas as execuções de comando para trilhas de auditoria\n• Use grupos de things para direcionar vários dispositivos\n• Monitore taxas de sucesso de comandos e investigue falhas\n• Defina valores de tempo limite apropriados para execuções de comando"
     },
     "console_integration": {
       "header": "📚 LEMBRETE DE CHECKPOINT DO CONSOLE",
