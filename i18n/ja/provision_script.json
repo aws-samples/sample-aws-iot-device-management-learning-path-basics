@@ -2,7 +2,6 @@
   "title": "🚀 AWS IoTプロビジョニングスクリプト (Boto3)",
   "separator": "======================================",
   "aws_config": "📍 AWS設定:",
-
   "warnings": {
     "debug_warning": "⚠️  警告: デバッグモードは機密情報（ARN、アカウントID、APIレスポンス）を公開します",
     "tag_failure_thing_type": "⚠️  警告: モノタイプ {} へのタグ適用に失敗しました",
@@ -130,7 +129,12 @@
     "devices_created": "📊 {}個の国で{}台のデバイスを作成しました",
     "execution_time": "⏱️  総実行時間: {:.2f}秒",
     "what_learned": "🎓 学習内容",
-    "next_steps": "🚀 次のステップ: scripts/manage_dynamic_groups.pyを使用して動的モノグループを作成し、scripts/create_job.pyを使用してファームウェア更新を展開してください！"
+    "next_steps": "🚀 次のステップ: scripts/manage_dynamic_groups.pyを使用して動的モノグループを作成し、scripts/create_job.pyを使用してファームウェア更新を展開してください！",
+    "enabling_iot_logging": "📝 AWS IoT Core ログをINFOレベルで有効化中...",
+    "iot_logging_role_exists": "✅ AWS IoT ログロールは既に存在します",
+    "iot_logging_policy_attached": "✅ CloudWatch Logs ポリシーは既にAWS IoT ログロールにアタッチされています",
+    "iot_logging_policy_attached_success": "✅ CloudWatch Logs ポリシーをAWS IoT ログロールにアタッチしました",
+    "iot_logging_enabled": "✅ AWS IoT Core ログをINFOレベルで有効化しました"
   },
   "errors": {
     "invalid_choice": "❌ 無効な選択です。{}を入力してください",
@@ -143,6 +147,8 @@
     "invalid_country_input": "❌ 無効な入力です。番号またはカンマ区切りの国コードを入力してください",
     "failed_create_thing_type": "❌ モノタイプの作成に失敗しました",
     "error_processing_thing_type": "❌ モノタイプ'{}'の処理エラー",
+    "failed_enable_iot_logging": "❌ AWS IoT Core ログの有効化に失敗しました",
+    "failed_enable_iot_logging_max_retries": "❌ AWS IoT Core ログの有効化に失敗しました：最大再試行回数を超えました",
     "failed_fleet_indexing": "❌ AWS IoT Fleet Indexingの有効化に失敗しました",
     "failed_create_bucket": "❌ Amazon S3バケットの作成に失敗しました",
     "failed_upload_package": "❌ パッケージのアップロードに失敗しました",
@@ -200,7 +206,11 @@
     "input_params_package_config": "📥 入力パラメータ: {{'versionUpdateByJobsConfig': {{'enabled': True, 'roleArn': '{}'}}}}",
     "api_call_create_thing": "📤 API呼び出し: create_thing",
     "input_params_shadow": "📥 入力パラメータ: thingName={}, payload={}",
-    "input_params_shadow_package": "📥 入力パラメータ: thingName={}, shadowName=$package, payload={}"
+    "input_params_shadow_package": "📥 入力パラメータ: thingName={}, shadowName=$package, payload={}",
+    "retry_attempt": "🔄 再試行 {}/{} を{}秒後に実行中...",
+    "logging_enabled_success": "ログが正常に有効化されました",
+    "iam_propagation_retry": "⏳ IAM伝播が進行中です。再試行します...（試行 {}/{}）",
+    "error_code": "エラーコード: {}"
   },
   "ui": {
     "default": "デフォルト",
@@ -223,6 +233,7 @@
     "thing_added_to_group": "✅ {}をグループ{}に追加しました"
   },
   "learning": {
+    "learned_iot_logging": "✅ AWS IoT Core ログはSetV2LoggingOptions APIを介して監視とトラブルシューティングを可能にします",
     "learned_thing_types": "✅ AWS IoTモノタイプは、CreateThingType APIを使用してデバイスを整理します",
     "learned_fleet_indexing": "✅ Fleet IndexingはUpdateIndexingConfiguration APIを介してデバイス検索を有効にします",
     "learned_s3_storage": "✅ Amazon S3は、CreateBucketとPutObject APIを使用して安全なファームウェアストレージを提供します",
@@ -233,6 +244,11 @@
     "learned_boto3": "✅ Boto3は、詳細なリクエスト/レスポンス可視性を備えた直接AWS APIアクセスを提供します"
   },
   "learning_moments": {
+    "iot_logging": {
+      "title": "📚 学習ポイント: AWS IoT Core ログ - 監視とトラブルシューティング",
+      "content": "AWS IoT Core ログはSetV2LoggingOptions APIを使用して包括的な監視とトラブルシューティングを有効にします。\nログはデバイス接続イベント、メッセージブローカーアクティビティ、ルールエンジンの実行、API呼び出しをキャプチャします。\nAPIはログレベル（ERROR、WARN、INFO、DEBUG）を設定し、CloudWatch Logs権限を持つIAMロールが必要です。\nINFOレベルは本番環境に適したバランスの取れた可視性を提供し、過度な詳細なしに重要なイベントをキャプチャします。\nログはAmazon CloudWatch Logsに送信され、分析、アラート、長期保存が可能になります。",
+      "next": "SetV2LoggingOptions APIを使用してAWS IoT Core ログをINFOレベルで有効化します"
+    },
     "thing_types": {
       "title": "📚 学習の瞬間: モノタイプ - デバイスカテゴリ",
       "content": "AWS IoTモノタイプは、CreateThingType APIを使用してIoTデバイスのカテゴリを定義するテンプレートです。\n類似デバイスの共通属性と動作を指定するブループリントとして機能します。API\nは、AWS IoT Fleet Indexingクエリとデバイスカテゴリでの一括操作を可能にする検索可能な属性を作成します。\nモノタイプは、デバイスフリートの整理とスケーラブルなAWS IoTデバイス管理を可能にします。",

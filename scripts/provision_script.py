@@ -579,7 +579,7 @@ class IoTProvisioner:
                         print(self.get_message("api_response"))
                         print(json.dumps(response, indent=2, default=str))
 
-                    print(f"{Fore.GREEN}{self.get_message('thing_type_created', thing_type)}{Style.RESET_ALL}")
+                    print(f"{Fore.GREEN}{self.get_message('resources.thing_type_created', thing_type)}{Style.RESET_ALL}")
                     
                     # Apply workshop tags to thing type
                     thing_type_arn = response.get("thingTypeArn")
@@ -967,6 +967,164 @@ class IoTProvisioner:
                 success_count = sum(1 for future in as_completed(futures) if future.result())
 
         print(f"{Fore.CYAN}📊 Packages completed: {success_count}/{len(thing_types)} successful{Style.RESET_ALL}")
+
+    def enable_iot_logging(self):
+        """Enable AWS IoT Core logging at INFO level"""
+        print(f"{Fore.BLUE}{self.get_message('status.enabling_iot_logging')}{Style.RESET_ALL}")
+
+        role_name = f"IoTLoggingRole-{self.region}-{self.account_id[:8]}"
+        trust_policy = {
+            "Version": "2012-10-17",
+            "Statement": [{"Effect": "Allow", "Principal": {"Service": "iot.amazonaws.com"}, "Action": "sts:AssumeRole"}],
+        }
+
+        try:
+            # Check if role exists
+            if self.debug_mode:
+                print(f"{self.get_message('debug.api_call_get_role')}")
+                print(f"{self.get_message('debug.input_params_role', role_name)}")
+
+            response = self.iam_client.get_role(RoleName=role_name)
+            print(f"{Fore.GREEN}{self.get_message('status.iot_logging_role_exists')}{Style.RESET_ALL}")
+            role_arn = response["Role"]["Arn"]
+
+        except ClientError as e:
+            if e.response["Error"]["Code"] == "NoSuchEntity":
+                # Create role
+                response = self.safe_api_call(
+                    self.iam_client.create_role,
+                    "IAM Role",
+                    role_name,
+                    debug=self.debug_mode,
+                    RoleName=role_name,
+                    AssumeRolePolicyDocument=json.dumps(trust_policy),
+                    MaxSessionDuration=3600,  # 1 hour
+                )
+                if not response:
+                    return False
+                
+                role_arn = response.get("Role", {}).get("Arn")
+                
+                # Apply workshop tags to IAM role
+                if role_arn:
+                    tag_success = apply_workshop_tags(
+                        self.iam_client,
+                        role_arn,
+                        "iam-role"
+                    )
+                    if not tag_success:
+                        print(f"{Fore.YELLOW}{self.get_message('warnings.tag_failure_iam_role', role_name)}{Style.RESET_ALL}")
+                        self.tag_failures.append(("iam-role", role_name))
+            else:
+                print(f"{Fore.RED}{self.get_message('errors.error_checking_role')}: {e.response['Error']['Message']}{Style.RESET_ALL}")
+                return False
+
+        # Check and attach CloudWatch Logs policy
+        policy_name = "IoTLoggingPolicy"
+        try:
+            if self.debug_mode:
+                print(f"{self.get_message('debug.api_call_get_role_policy')}")
+                print(f"{self.get_message('debug.input_params_role_policy', role_name, policy_name)}")
+
+            self.iam_client.get_role_policy(RoleName=role_name, PolicyName=policy_name)
+            print(f"{Fore.GREEN}{self.get_message('status.iot_logging_policy_attached')}{Style.RESET_ALL}")
+
+        except ClientError as e:
+            if e.response["Error"]["Code"] == "NoSuchEntity":
+                # Create and attach CloudWatch Logs policy
+                logging_policy = {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents",
+                                "logs:PutMetricFilter",
+                                "logs:PutRetentionPolicy"
+                            ],
+                            "Resource": [
+                                f"arn:aws:logs:*:{self.account_id}:log-group:*:log-stream:*"
+                            ]
+                        }
+                    ]
+                }
+
+                time.sleep(2)  # IAM propagation delay  # nosemgrep: arbitrary-sleep
+
+                if self.debug_mode:
+                    print(f"{self.get_message('debug.api_call_put_role_policy')}")
+                    print(f"{self.get_message('debug.input_parameters')}")
+                    print(
+                        json.dumps(
+                            {"RoleName": role_name, "PolicyName": policy_name, "PolicyDocument": logging_policy}, indent=2
+                        )
+                    )
+
+                response = self.iam_client.put_role_policy(
+                    RoleName=role_name, PolicyName=policy_name, PolicyDocument=json.dumps(logging_policy)
+                )
+
+                if self.debug_mode:
+                    print(f"{self.get_message('debug.api_response')}")
+                    print(json.dumps(response, indent=2, default=str))
+
+                print(f"{Fore.GREEN}{self.get_message('status.iot_logging_policy_attached_success')}{Style.RESET_ALL}")
+                
+                # Additional delay after policy attachment for IAM propagation
+                time.sleep(3)  # IAM propagation delay  # nosemgrep: arbitrary-sleep
+
+        # Enable IoT logging at INFO level with retry logic for IAM propagation
+        max_retries = 5
+        retry_delay = 2
+        
+        for attempt in range(1, max_retries + 1):
+            try:
+                if attempt > 1:
+                    if self.debug_mode:
+                        print(f"{Fore.YELLOW}{self.get_message('debug.retry_attempt', attempt, max_retries, retry_delay)}{Style.RESET_ALL}")
+                    time.sleep(retry_delay)  # IAM propagation delay  # nosemgrep: arbitrary-sleep
+                elif attempt == 1:
+                    # Initial delay before first attempt
+                    time.sleep(2)  # IAM propagation delay  # nosemgrep: arbitrary-sleep
+
+                if self.debug_mode:
+                    print(f"{self.get_message('debug.api_call_name', 'set_v2_logging_options')}")
+                    print(f"{self.get_message('debug.input_parameters')}")
+                    print(json.dumps({"roleArn": role_arn, "defaultLogLevel": "INFO"}, indent=2))
+
+                self.iot_client.set_v2_logging_options(
+                    roleArn=role_arn,
+                    defaultLogLevel="INFO"
+                )
+
+                if self.debug_mode:
+                    print(f"{self.get_message('debug.api_response')}")
+                    print(f"{self.get_message('debug.logging_enabled_success')}")
+
+                print(f"{Fore.GREEN}{self.get_message('status.iot_logging_enabled')}{Style.RESET_ALL}")
+                return True
+
+            except ClientError as e:
+                error_code = e.response['Error']['Code']
+                error_message = e.response['Error']['Message']
+                
+                # Check if it's an IAM propagation error
+                if "unable to assume role" in error_message.lower() and attempt < max_retries:
+                    if self.debug_mode:
+                        print(f"{Fore.YELLOW}{self.get_message('debug.iam_propagation_retry', attempt, max_retries)}{Style.RESET_ALL}")
+                    continue
+                else:
+                    # Either not an IAM error or we've exhausted retries
+                    print(f"{Fore.RED}{self.get_message('errors.failed_enable_iot_logging')}: {error_message}{Style.RESET_ALL}")
+                    if self.debug_mode:
+                        print(f"{Fore.RED}{self.get_message('debug.error_code', error_code)}{Style.RESET_ALL}")
+                    return False
+        
+        # If we get here, all retries failed
+        print(f"{Fore.RED}{self.get_message('errors.failed_enable_iot_logging_max_retries')}{Style.RESET_ALL}")
+        return False
 
     def create_iot_jobs_role(self):
         """Create IAM role for AWS IoT Jobs presigned URLs"""
@@ -1432,20 +1590,24 @@ class IoTProvisioner:
         # Execute provisioning steps with timing
         start_time = time.time()
 
-        # Step 1: Thing Types
+        # Step 1: IoT Logging
+        self.educational_pause("iot_logging")
+        self.enable_iot_logging()
+
+        # Step 2: Thing Types
         self.educational_pause("thing_types", len(thing_types), ', '.join(thing_types))
         self.create_thing_types(thing_types)
 
-        # Step 2: Fleet Indexing
+        # Step 3: Fleet Indexing
         self.educational_pause("fleet_indexing")
         self.enable_fleet_indexing()
 
-        # Step 3: S3 Storage
+        # Step 4: S3 Storage
         self.educational_pause("s3_storage", self.region)
         bucket_name = self.create_s3_bucket()
 
         if bucket_name:
-            # Step 4: Firmware Upload
+            # Step 5: Firmware Upload
             self.educational_pause("firmware_packages", len(thing_types) * len(package_versions), len(thing_types), len(package_versions))
             # Upload firmware packages for each thing type and version
             version_ids = {}
@@ -1465,20 +1627,20 @@ class IoTProvisioner:
                     if version_id:
                         version_ids[key] = version_id
 
-            # Step 5: Software Package Catalog
+            # Step 6: Software Package Catalog
             self.educational_pause("package_catalog", len(thing_types))
             self.create_iot_packages(bucket_name, version_ids, thing_types, package_versions)
 
-        # Step 6: IAM Roles for Jobs
+        # Step 7: IAM Roles for Jobs
         self.educational_pause("iam_roles")
         self.create_iot_jobs_role()
         self.create_package_config_role()
 
-        # Step 7: Package Configuration
+        # Step 8: Package Configuration
         self.educational_pause("package_configuration")
         self.update_package_configurations()
 
-        # Step 8: Device Creation
+        # Step 9: Device Creation
         self.educational_pause("device_creation", len(selected_countries), device_count)
         self.create_things_and_groups(thing_types, package_versions, continent_choice, selected_countries, device_count)
 
@@ -1495,6 +1657,7 @@ class IoTProvisioner:
         print(f"{Fore.CYAN}{self.get_message('status.execution_time', duration)}{Style.RESET_ALL}")
 
         print(f"\n{Fore.YELLOW}{self.get_message('status.what_learned')}:{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{self.get_message('learning.learned_iot_logging')}{Style.RESET_ALL}")
         print(f"{Fore.GREEN}{self.get_message('learning.learned_thing_types')}{Style.RESET_ALL}")
         print(f"{Fore.GREEN}{self.get_message('learning.learned_fleet_indexing')}{Style.RESET_ALL}")
         print(f"{Fore.GREEN}{self.get_message('learning.learned_s3_storage')}{Style.RESET_ALL}")

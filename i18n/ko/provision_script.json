@@ -2,7 +2,6 @@
   "title": "🚀 AWS IoT 프로비저닝 스크립트 (Boto3)",
   "separator": "======================================",
   "aws_config": "📍 AWS 구성:",
-
   "warnings": {
     "debug_warning": "⚠️  경고: 디버그 모드는 민감한 정보(ARN, 계정 ID, API 응답)를 노출합니다",
     "tag_failure_thing_type": "⚠️  경고: 사물 유형 {}에 태그 적용 실패",
@@ -130,7 +129,12 @@
     "devices_created": "📊 {} 국가에 걸쳐 {} 디바이스를 생성했습니다",
     "execution_time": "⏱️  총 실행 시간: {:.2f}초",
     "what_learned": "🎓 학습한 내용",
-    "next_steps": "🚀 다음 단계: scripts/manage_dynamic_groups.py를 사용하여 동적 사물 그룹을 생성하고 scripts/create_job.py를 사용하여 펌웨어 업데이트를 배포하세요!"
+    "next_steps": "🚀 다음 단계: scripts/manage_dynamic_groups.py를 사용하여 동적 사물 그룹을 생성하고 scripts/create_job.py를 사용하여 펌웨어 업데이트를 배포하세요!",
+    "enabling_iot_logging": "📝 AWS IoT Core 로깅을 INFO 수준으로 활성화 중...",
+    "iot_logging_role_exists": "✅ AWS IoT 로깅 역할이 이미 존재합니다",
+    "iot_logging_policy_attached": "✅ CloudWatch Logs 정책이 이미 AWS IoT 로깅 역할에 연결되어 있습니다",
+    "iot_logging_policy_attached_success": "✅ CloudWatch Logs 정책이 AWS IoT 로깅 역할에 연결되었습니다",
+    "iot_logging_enabled": "✅ AWS IoT Core 로깅이 INFO 수준으로 활성화되었습니다"
   },
   "errors": {
     "invalid_choice": "❌ 잘못된 선택입니다. {}를 입력하세요",
@@ -143,6 +147,8 @@
     "invalid_country_input": "❌ 잘못된 입력입니다. 숫자 또는 쉼표로 구분된 국가 코드를 입력하세요",
     "failed_create_thing_type": "❌ 사물 유형 생성에 실패했습니다",
     "error_processing_thing_type": "❌ 사물 유형 '{}' 처리 중 오류",
+    "failed_enable_iot_logging": "❌ AWS IoT Core 로깅 활성화 실패",
+    "failed_enable_iot_logging_max_retries": "❌ AWS IoT Core 로깅 활성화 실패: 최대 재시도 횟수 초과",
     "failed_fleet_indexing": "❌ AWS IoT Fleet Indexing 활성화에 실패했습니다",
     "failed_create_bucket": "❌ Amazon S3 버킷 생성에 실패했습니다",
     "failed_upload_package": "❌ 패키지 업로드에 실패했습니다",
@@ -200,7 +206,11 @@
     "input_params_package_config": "📥 입력 매개변수: {{'versionUpdateByJobsConfig': {{'enabled': True, 'roleArn': '{}'}}}}",
     "api_call_create_thing": "📤 API 호출: create_thing",
     "input_params_shadow": "📥 입력 매개변수: thingName={}, payload={}",
-    "input_params_shadow_package": "📥 입력 매개변수: thingName={}, shadowName=$package, payload={}"
+    "input_params_shadow_package": "📥 입력 매개변수: thingName={}, shadowName=$package, payload={}",
+    "retry_attempt": "🔄 {} 초 후 재시도 {}/{}...",
+    "logging_enabled_success": "로깅이 성공적으로 활성화되었습니다",
+    "iam_propagation_retry": "⏳ IAM 전파가 진행 중입니다. 재시도합니다... (시도 {}/{})",
+    "error_code": "오류 코드: {}"
   },
   "ui": {
     "default": "기본값",
@@ -223,6 +233,7 @@
     "thing_added_to_group": "✅ {}를 그룹 {}에 추가했습니다"
   },
   "learning": {
+    "learned_iot_logging": "✅ AWS IoT Core 로깅은 SetV2LoggingOptions API를 통해 모니터링 및 문제 해결을 가능하게 합니다",
     "learned_thing_types": "✅ AWS IoT 사물 유형은 CreateThingType API를 사용하여 디바이스를 조직합니다",
     "learned_fleet_indexing": "✅ Fleet Indexing은 UpdateIndexingConfiguration API를 통해 디바이스 검색을 가능하게 합니다",
     "learned_s3_storage": "✅ Amazon S3는 CreateBucket 및 PutObject API를 사용하여 안전한 펌웨어 저장을 제공합니다",
@@ -233,6 +244,11 @@
     "learned_boto3": "✅ Boto3는 자세한 요청/응답 가시성과 함께 직접적인 AWS API 액세스를 제공합니다"
   },
   "learning_moments": {
+    "iot_logging": {
+      "title": "📚 학습 포인트: AWS IoT Core 로깅 - 모니터링 및 문제 해결",
+      "content": "AWS IoT Core 로깅은 SetV2LoggingOptions API를 사용하여 포괄적인 모니터링 및 문제 해결을 활성화합니다.\n로깅은 디바이스 연결 이벤트, 메시지 브로커 활동, 규칙 엔진 실행 및 API 호출을 캡처합니다.\nAPI는 로그 수준(ERROR, WARN, INFO, DEBUG)을 구성하며 CloudWatch Logs 권한이 있는 IAM 역할이 필요합니다.\nINFO 수준은 프로덕션 환경에 균형 잡힌 가시성을 제공하여 과도한 세부 정보 없이 중요한 이벤트를 캡처합니다.\n로그는 분석, 경고 및 장기 보존을 위해 Amazon CloudWatch Logs로 전송됩니다.",
+      "next": "SetV2LoggingOptions API를 사용하여 AWS IoT Core 로깅을 INFO 수준으로 활성화합니다"
+    },
     "thing_types": {
       "title": "📚 학습 순간: 사물 유형 - 디바이스 카테고리",
       "content": "AWS IoT 사물 유형은 CreateThingType API를 사용하여 IoT 디바이스 카테고리를 정의하는 템플릿입니다.\n유사한 디바이스에 대한 공통 속성과 동작을 지정하는 청사진 역할을 합니다. API는\nAWS IoT Fleet Indexing 쿼리와 디바이스 카테고리에 대한 대량 작업을 가능하게 하는 검색 가능한 속성을 생성합니다.\n사물 유형은 디바이스 플릿을 조직하고 확장 가능한 AWS IoT Device Management를 가능하게 합니다.",

@@ -2,7 +2,6 @@
   "title": "🚀 Script de Aprovisionamiento de AWS IoT (Boto3)",
   "separator": "======================================",
   "aws_config": "📍 Configuración de AWS:",
-
   "warnings": {
     "debug_warning": "⚠️  ADVERTENCIA: El modo de depuración expone información sensible (ARNs, IDs de cuenta, respuestas de API)",
     "tag_failure_thing_type": "⚠️  Advertencia: Error al aplicar etiquetas al tipo de cosa {}",
@@ -130,7 +129,12 @@
     "devices_created": "📊 Se crearon {} dispositivos a través de {} países",
     "execution_time": "⏱️  Tiempo total de ejecución: {:.2f} segundos",
     "what_learned": "🎓 Lo Que Ha Aprendido",
-    "next_steps": "🚀 Próximos Pasos: ¡Use scripts/manage_dynamic_groups.py para crear Grupos Dinámicos de Objetos y scripts/create_job.py para desplegar actualizaciones de firmware!"
+    "next_steps": "🚀 Próximos Pasos: ¡Use scripts/manage_dynamic_groups.py para crear Grupos Dinámicos de Objetos y scripts/create_job.py para desplegar actualizaciones de firmware!",
+    "enabling_iot_logging": "📝 Habilitando registro de AWS IoT Core en nivel INFO...",
+    "iot_logging_role_exists": "✅ El rol de registro de AWS IoT ya existe",
+    "iot_logging_policy_attached": "✅ La política de CloudWatch Logs ya está adjunta al rol de registro de AWS IoT",
+    "iot_logging_policy_attached_success": "✅ Política de CloudWatch Logs adjunta al rol de registro de AWS IoT",
+    "iot_logging_enabled": "✅ Registro de AWS IoT Core habilitado en nivel INFO"
   },
   "errors": {
     "invalid_choice": "❌ Opción inválida. Por favor ingrese {}",
@@ -143,6 +147,8 @@
     "invalid_country_input": "❌ Entrada inválida. Ingrese un número o códigos de país separados por comas",
     "failed_create_thing_type": "❌ Error al crear Tipo de Objeto",
     "error_processing_thing_type": "❌ Error procesando Tipo de Objeto '{}'",
+    "failed_enable_iot_logging": "❌ Error al habilitar el registro de AWS IoT Core",
+    "failed_enable_iot_logging_max_retries": "❌ Error al habilitar el registro de AWS IoT Core: Se excedió el número máximo de intentos de reintento",
     "failed_fleet_indexing": "❌ Error al habilitar AWS IoT Fleet Indexing",
     "failed_create_bucket": "❌ Error al crear bucket de Amazon S3",
     "failed_upload_package": "❌ Error al subir paquete",
@@ -200,7 +206,11 @@
     "input_params_package_config": "📥 Parámetros de Entrada: {{'versionUpdateByJobsConfig': {{'enabled': True, 'roleArn': '{}'}}}}",
     "api_call_create_thing": "📤 Llamada API: create_thing",
     "input_params_shadow": "📥 Parámetros de Entrada: thingName={}, payload={}",
-    "input_params_shadow_package": "📥 Parámetros de Entrada: thingName={}, shadowName=$package, payload={}"
+    "input_params_shadow_package": "📥 Parámetros de Entrada: thingName={}, shadowName=$package, payload={}",
+    "retry_attempt": "🔄 Intento de reintento {}/{} después de {} segundos...",
+    "logging_enabled_success": "Registro habilitado exitosamente",
+    "iam_propagation_retry": "⏳ Propagación de IAM en progreso, se reintentará... (intento {}/{})",
+    "error_code": "Código de error: {}"
   },
   "ui": {
     "default": "Predeterminado",
@@ -223,6 +233,7 @@
     "thing_added_to_group": "✅ Agregado {} al grupo {}"
   },
   "learning": {
+    "learned_iot_logging": "✅ El registro de AWS IoT Core permite monitoreo y solución de problemas mediante la API SetV2LoggingOptions",
     "learned_thing_types": "✅ Los Tipos de Objetos de AWS IoT organizan dispositivos usando la API CreateThingType",
     "learned_fleet_indexing": "✅ Fleet Indexing habilita búsqueda de dispositivos vía API UpdateIndexingConfiguration",
     "learned_s3_storage": "✅ Amazon S3 proporciona almacenamiento seguro de firmware usando APIs CreateBucket y PutObject",
@@ -233,6 +244,11 @@
     "learned_boto3": "✅ Boto3 proporciona acceso directo a API AWS con visibilidad detallada de solicitud/respuesta"
   },
   "learning_moments": {
+    "iot_logging": {
+      "title": "📚 MOMENTO DE APRENDIZAJE: Registro de AWS IoT Core - Monitoreo y Solución de Problemas",
+      "content": "El registro de AWS IoT Core utiliza la API SetV2LoggingOptions para habilitar monitoreo y solución de problemas completos.\nEl registro captura eventos de conectividad de dispositivos, actividad del intermediario de mensajes, ejecución del motor de reglas y llamadas a la API.\nLa API configura niveles de registro (ERROR, WARN, INFO, DEBUG) y requiere un rol de IAM con permisos de CloudWatch Logs.\nEl nivel INFO proporciona visibilidad equilibrada para entornos de producción, capturando eventos importantes sin detalles excesivos.\nLos registros se envían a Amazon CloudWatch Logs para análisis, alertas y retención a largo plazo.",
+      "next": "Habilitaremos el registro de AWS IoT Core en nivel INFO usando la API SetV2LoggingOptions"
+    },
     "thing_types": {
       "title": "📚 MOMENTO DE APRENDIZAJE: Tipos de Objetos - Categorías de Dispositivos",
       "content": "Los Tipos de Objetos de AWS IoT son plantillas que definen categorías de dispositivos IoT usando la API CreateThingType.\nActúan como planos especificando atributos y comportamientos comunes para dispositivos similares. La API\ncrea atributos buscables que habilitan consultas de AWS IoT Fleet Indexing y operaciones masivas en categorías de dispositivos.\nLos Tipos de Objetos ayudan a organizar su flota de dispositivos y habilitan Gestión de Dispositivos de AWS IoT escalable.",

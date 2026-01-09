@@ -38,6 +38,11 @@
     "continent_label": "🌍 Continent",
     "countries_label": "🇦 Countries",
     "device_count_label": "📊 Device count",
+    "enabling_iot_logging": "📝 Enabling AWS IoT Core logging at INFO level...",
+    "iot_logging_role_exists": "✅ AWS IoT logging role already exists",
+    "iot_logging_policy_attached": "✅ CloudWatch Logs policy already attached to AWS IoT logging role",
+    "iot_logging_policy_attached_success": "✅ CloudWatch Logs policy attached to AWS IoT logging role",
+    "iot_logging_enabled": "✅ AWS IoT Core logging enabled at INFO level",
     "processing_thing_type": "📋 Processing Thing Type {}/{}",
     "checking_deprecation": "🔍 Thing Type exists, checking deprecation status...",
     "thing_type_deprecated": "📊 Thing Type '{}' deprecated: {}",
@@ -128,6 +133,8 @@
     "invalid_country_input": "❌ Invalid input. Enter a number or comma-separated country codes",
     "failed_create_thing_type": "❌ Failed to create Thing Type",
     "error_processing_thing_type": "❌ Error processing Thing Type '{}'",
+    "failed_enable_iot_logging": "❌ Failed to enable AWS IoT Core logging",
+    "failed_enable_iot_logging_max_retries": "❌ Failed to enable AWS IoT Core logging: Maximum retry attempts exceeded",
     "failed_fleet_indexing": "❌ Failed to enable AWS IoT Fleet Indexing",
     "failed_create_bucket": "❌ Failed to create Amazon S3 bucket",
     "failed_upload_package": "❌ Failed to upload package",
@@ -190,7 +197,11 @@
     "input_params_package_config": "📥 Input Parameters: {{'versionUpdateByJobsConfig': {{'enabled': True, 'roleArn': '{}'}}}}",
     "api_call_create_thing": "📤 API Call: create_thing",
     "input_params_shadow": "📥 Input Parameters: thingName={}, payload={}",
-    "input_params_shadow_package": "📥 Input Parameters: thingName={}, shadowName=$package, payload={}"
+    "input_params_shadow_package": "📥 Input Parameters: thingName={}, shadowName=$package, payload={}",
+    "retry_attempt": "🔄 Retry attempt {}/{} after {} seconds...",
+    "logging_enabled_success": "Logging enabled successfully",
+    "iam_propagation_retry": "⏳ IAM propagation in progress, will retry... (attempt {}/{})",
+    "error_code": "Error code: {}"
   },
   "ui": {
     "default": "Default",
@@ -213,6 +224,7 @@
     "thing_added_to_group": "✅ Added {} to group {}"
   },
   "learning": {
+    "learned_iot_logging": "✅ AWS IoT Core logging enables monitoring and troubleshooting via SetV2LoggingOptions API",
     "learned_thing_types": "✅ AWS IoT Thing Types organize devices using CreateThingType API",
     "learned_fleet_indexing": "✅ Fleet Indexing enables device search via UpdateIndexingConfiguration API",
     "learned_s3_storage": "✅ Amazon S3 provides secure firmware storage using CreateBucket and PutObject APIs",
@@ -231,6 +243,11 @@
     "total_without_tags": "Total resources without tags: {}"
   },
   "learning_moments": {
+    "iot_logging": {
+      "title": "📚 LEARNING MOMENT: AWS IoT Core Logging - Monitoring & Troubleshooting",
+      "content": "AWS IoT Core logging uses the SetV2LoggingOptions API to enable comprehensive monitoring and troubleshooting.\nLogging captures device connectivity events, message broker activity, rules engine execution, and API calls.\nThe API configures log levels (ERROR, WARN, INFO, DEBUG) and requires an IAM role with CloudWatch Logs permissions.\nINFO level provides balanced visibility for production environments, capturing important events without excessive detail.\nLogs are sent to Amazon CloudWatch Logs for analysis, alerting, and long-term retention.",
+      "next": "We will enable AWS IoT Core logging at INFO level using SetV2LoggingOptions API"
+    },
     "thing_types": {
       "title": "📚 LEARNING MOMENT: Thing Types - Device Categories",
       "content": "AWS IoT Thing Types are templates that define categories of IoT devices using the CreateThingType API.\nThey act as blueprints specifying common attributes and behaviors for similar devices. The API\ncreates searchable attributes that enable AWS IoT Fleet Indexing queries and bulk operations on device categories.\nThing Types help organize your device fleet and enable scalable AWS IoT Device Management.",
