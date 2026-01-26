@@ -1,0 +1,30 @@
+{
+  "summary": {
+    "header": "Aufräum-Zusammenfassung",
+    "header_dry_run": "Aufräum-Zusammenfassung (TESTLAUF - Keine Ressourcen gelöscht)",
+    "deleted_section": "Ressourcen, die wir aufgeräumt haben:",
+    "skipped_section": "Ressourcen, die wir übersprungen haben:",
+    "failed_section": "Ressourcen, die wir nicht löschen konnten:",
+    "overall_section": "Das ist passiert:",
+    "non_workshop_reason": "Keine Workshop-Ressourcen",
+    "total": "Gesamt",
+    "total_resources_processed": "Ressourcen, die wir uns angeschaut haben",
+    "would_delete": "Würden gelöscht",
+    "successfully_deleted": "Erfolgreich aufgeräumt",
+    "skipped_non_workshop": "Übersprungen (Kein Workshop)",
+    "failed": "Fehlgeschlagen",
+    "execution_time": "Benötigte Zeit"
+  },
+  "skipped": {
+    "header_debug": "{} Ressourcen übersprungen ({} insgesamt):",
+    "count_only": "{} Ressourcen übersprungen: {} (Kein Workshop)"
+  },
+  "identification": {
+    "workshop": "Workshop-Ressource",
+    "non_workshop": "Kein Workshop",
+    "method_tag": "Tag-Übereinstimmung",
+    "method_naming": "Benennungsmuster",
+    "method_association": "Zuordnung",
+    "method_none": "Keine Übereinstimmung"
+  }
+}

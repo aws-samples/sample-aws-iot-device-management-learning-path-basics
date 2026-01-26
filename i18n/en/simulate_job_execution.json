@@ -8,7 +8,7 @@
   "jobs_endpoint_label": "🔗 Jobs Endpoint:",
   
   "warnings": {
-    "debug_warning": "⚠️  WARNING: Debug mode exposes sensitive information (ARNs, account IDs, API responses)"
+    "debug_warning": "⚠️  Heads up: Debug mode will show sensitive information (ARNs, account IDs, API responses)"
   },
   
   "prompts": {
@@ -64,19 +64,19 @@
   },
   
   "errors": {
-    "invalid_job_id": "❌ Invalid job ID",
+    "invalid_job_id": "❌ Hmm, that job ID doesn't look right",
     "invalid_percentage": "❌ Please enter a number between 0 and 100",
     "invalid_number": "❌ Please enter a valid number",
     "no_active_jobs": "❌ No active jobs found",
     "no_pending_executions": "❌ No pending job executions found for job: {}",
-    "failed_list_jobs": "❌ Failed to list active jobs",
-    "failed_job_details": "❌ Failed to get job execution details for {}",
+    "failed_list_jobs": "❌ Couldn't list active jobs",
+    "failed_job_details": "❌ Couldn't get job execution details for {}",
     "no_presigned_url": "❌ No S3 presigned URL found in job document",
-    "download_failed": "❌ Download failed - marking job execution as FAILED",
-    "failed_download": "❌ Failed to download artifact: {}",
-    "empty_file": "❌ Downloaded file is empty or invalid",
+    "download_failed": "❌ Download didn't work - marking job execution as FAILED",
+    "failed_download": "❌ Couldn't download artifact: {}",
+    "empty_file": "❌ Downloaded file appears to be empty or invalid",
     "no_job_document": "❌ No job document found for {}",
-    "parse_error": "❌ Error parsing job document: {}",
+    "parse_error": "❌ Had trouble parsing job document: {}",
     "client_init_error": "❌ Error initializing AWS clients: {}",
     "api_error": "❌ Error in {} {}: {}",
     "general_error": "❌ Error: {}",
@@ -121,8 +121,8 @@
     "iam_role": "  🔐 IAM Role: {}",
     "additional_params": "📄 Additional Job Parameters:",
     "raw_job_document": "📋 Raw Job Document:",
-    "cancelled": "👋 Job simulation cancelled by user. Goodbye!",
-    "cancelled_user": "👋 Simulation cancelled by user",
+    "cancelled": "👋 Job simulation cancelled. See you next time!",
+    "cancelled_user": "👋 Simulation cancelled",
     "created_date": "(Created: {})",
     "status_in_progress": "IN_PROGRESS",
     "status_queued": "QUEUED",

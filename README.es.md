@@ -10,30 +10,33 @@
 | 🇰🇷 한국어 | [README.ko.md](README.ko.md) |
 | 🇧🇷 Português | [README.pt.md](README.pt.md) |
 | 🇨🇳 中文 | [README.zh.md](README.zh.md) |
+| 🇩🇪 Deutsch | [README.de.md](README.de.md) |
+| 🇮🇹 Italiano | [README.it.md](README.it.md) |
+| 🇫🇷 Français | [README.fr.md](README.fr.md) |
 
 ---
 
-Una demostración integral de las capacidades de AWS IoT Device Management que incluye aprovisionamiento de dispositivos, actualizaciones por aire (OTA), gestión de trabajos y operaciones de flota utilizando scripts modernos de Python con integración nativa del AWS SDK (boto3).
+Una demostración completa de las capacidades de AWS IoT Device Management que incluye aprovisionamiento de dispositivos, actualizaciones por aire (OTA), gestión de trabajos y operaciones de flota usando scripts modernos de Python con integración nativa del AWS SDK (boto3).
 
 ## 👥 Audiencia Objetivo
 
 **Audiencia Principal:** Desarrolladores de IoT, arquitectos de soluciones, ingenieros DevOps que trabajan con flotas de dispositivos AWS IoT
 
-**Prerrequisitos:** Conocimiento intermedio de AWS, fundamentos de AWS IoT Core, fundamentos de Python, uso de línea de comandos
+**Prerrequisitos:** Conocimiento intermedio de AWS, fundamentos de AWS IoT Core, fundamentos de Python, y uso de línea de comandos
 
-**Nivel de Aprendizaje:** Nivel asociado con enfoque práctico para la gestión de dispositivos a escala
+**Nivel de Aprendizaje:** Nivel asociado con enfoque práctico para gestionar dispositivos a escala
 
 ## 🎯 Objetivos de Aprendizaje
 
-- **Gestión del Ciclo de Vida de Dispositivos**: Aprovisionar dispositivos IoT con tipos de cosas y atributos apropiados
-- **Organización de Flotas**: Crear grupos de cosas estáticos y dinámicos para la gestión de dispositivos
-- **Actualizaciones OTA**: Implementar actualizaciones de firmware usando AWS IoT Jobs con integración de Amazon S3
-- **Gestión de Paquetes**: Manejar múltiples versiones de firmware con actualizaciones automáticas de shadow
-- **Ejecución de Trabajos**: Simular comportamiento realista de dispositivos durante actualizaciones de firmware
-- **Control de Versiones**: Revertir dispositivos a versiones anteriores de firmware
-- **Comandos Remotos**: Enviar comandos en tiempo real a dispositivos usando AWS IoT Commands
-- **Registro Masivo**: Registrar cientos o miles de dispositivos eficientemente usando aprovisionamiento a escala de manufactura
-- **Limpieza de Recursos**: Gestionar adecuadamente los recursos de AWS para evitar costos innecesarios
+- **Gestión del Ciclo de Vida de Dispositivos**: Aprovisiona dispositivos IoT con tipos de cosas y atributos apropiados
+- **Organización de Flotas**: Crea grupos de cosas estáticos y dinámicos para gestionar dispositivos
+- **Actualizaciones OTA**: Implementa actualizaciones de firmware usando AWS IoT Jobs con integración de Amazon S3
+- **Gestión de Paquetes**: Maneja múltiples versiones de firmware con actualizaciones automáticas de shadow
+- **Ejecución de Trabajos**: Simula comportamiento realista de dispositivos durante actualizaciones de firmware
+- **Control de Versiones**: Revierte dispositivos a versiones anteriores de firmware
+- **Comandos Remotos**: Envía comandos en tiempo real a dispositivos usando AWS IoT Commands
+- **Registro Masivo**: Registra cientos o miles de dispositivos eficientemente usando aprovisionamiento a escala de manufactura
+- **Limpieza de Recursos**: Gestiona adecuadamente los recursos de AWS para evitar costos innecesarios
 
 ## 📋 Prerrequisitos
 
@@ -68,8 +71,8 @@ Una demostración integral de las capacidades de AWS IoT Device Management que i
 **Gestión de Costos:**
 - ✅ El script de limpieza elimina todos los recursos
 - ✅ Recursos de demostración de corta duración
-- ✅ Escala configurable (empezar pequeño)
-- ⚠️ **Ejecutar script de limpieza al terminar**
+- ✅ Escala configurable (puedes empezar pequeño)
+- ⚠️ **Recuerda ejecutar el script de limpieza al terminar**
 
 **📊 Monitorear costos:** [Panel de Facturación de AWS](https://console.aws.amazon.com/billing/)
 
@@ -102,15 +105,15 @@ python scripts/cleanup_script.py          # Limpieza segura con identificación 
 
 | Script | Propósito | Características Clave |
 |--------|---------|-------------|
-| **provision_script.py** | Configuración completa de infraestructura | Crea dispositivos, grupos, paquetes, almacenamiento Amazon S3 |
-| **manage_dynamic_groups.py** | Gestionar grupos dinámicos de dispositivos | Crear, listar, eliminar con validación de Fleet Indexing |
-| **manage_packages.py** | Gestión integral de paquetes | Crear paquetes/versiones, integración Amazon S3, seguimiento de dispositivos con estado de reversión individual |
-| **create_job.py** | Crear trabajos de actualización OTA | Orientación multi-grupo, URLs prefirmadas |
-| **simulate_job_execution.py** | Simular actualizaciones de dispositivos | Descargas reales de Amazon S3, preparación de plan visible, seguimiento de progreso por dispositivo |
-| **explore_jobs.py** | Monitorear y gestionar trabajos | Exploración interactiva de trabajos, cancelación, eliminación y análisis |
-| **manage_commands.py** | Enviar comandos en tiempo real a dispositivos | Gestión de plantillas, ejecución de comandos, monitoreo de estado, seguimiento de historial |
+| **provision_script.py** | Configuración completa de infraestructura | Crea dispositivos, grupos, paquetes y almacenamiento Amazon S3 |
+| **manage_dynamic_groups.py** | Gestiona grupos dinámicos de dispositivos | Crea, lista y elimina con validación de Fleet Indexing |
+| **manage_packages.py** | Gestión completa de paquetes | Crea paquetes/versiones, integración Amazon S3, seguimiento de dispositivos con estado de reversión individual |
+| **create_job.py** | Crea trabajos de actualización OTA | Orientación multi-grupo, URLs prefirmadas |
+| **simulate_job_execution.py** | Simula actualizaciones de dispositivos | Descargas reales de Amazon S3, preparación de plan visible, seguimiento de progreso por dispositivo |
+| **explore_jobs.py** | Monitorea y gestiona trabajos | Exploración interactiva de trabajos, cancelación, eliminación y análisis |
+| **manage_commands.py** | Envía comandos en tiempo real a dispositivos | Gestión de plantillas, ejecución de comandos, monitoreo de estado, seguimiento de historial |
 | **manage_bulk_provisioning.py** | Registro masivo de dispositivos | Aprovisionamiento a escala de manufactura, generación de certificados, monitoreo de tareas |
-| **cleanup_script.py** | Eliminar recursos de AWS | Limpieza selectiva, gestión de costos |
+| **cleanup_script.py** | Elimina recursos de AWS | Limpieza selectiva, gestión de costos |
 
 ## ⚙️ Configuración
 
@@ -123,16 +126,16 @@ export AWS_IOT_LANG=es                    # Establecer idioma predeterminado (en
 **Características de Scripts**:
 - **AWS SDK Nativo**: Usa boto3 para mejor rendimiento y confiabilidad
 - **Soporte Multi-idioma**: Selección interactiva de idioma con respaldo a inglés
-- **Modo Debug**: Muestra todas las llamadas y respuestas de la API de AWS
+- **Modo Debug**: Te muestra todas las llamadas y respuestas de la API de AWS
 - **Procesamiento Paralelo**: Operaciones concurrentes cuando no está en modo debug
 - **Limitación de Velocidad**: Cumplimiento automático de limitación de API de AWS
 - **Seguimiento de Progreso**: Estado de operación en tiempo real
 - **Etiquetado de Recursos**: Etiquetas automáticas de taller para limpieza segura
-- **Nomenclatura Configurable**: Patrones de nomenclatura de dispositivos personalizables
+- **Nomenclatura Configurable**: Puedes personalizar los patrones de nomenclatura de dispositivos
 
 ### Etiquetado de Recursos
 
-Todos los scripts del taller etiquetan automáticamente los recursos creados con `workshop=learning-aws-iot-dm-basics` para identificación segura durante la limpieza. Esto asegura que solo se eliminen los recursos creados por el taller.
+Todos los scripts del taller etiquetan automáticamente los recursos creados con `workshop=learning-aws-iot-dm-basics` para identificación segura durante la limpieza. Esto asegura que solo se eliminen los recursos que creaste en el taller.
 
 **Recursos Etiquetados**:
 - Tipos de Cosas de IoT
@@ -149,7 +152,7 @@ Todos los scripts del taller etiquetan automáticamente los recursos creados con
 
 ### Configuración de Nomenclatura de Dispositivos
 
-Personalice los patrones de nomenclatura de dispositivos con el parámetro `--things-prefix`:
+Puedes personalizar los patrones de nomenclatura de dispositivos con el parámetro `--things-prefix`:
 
 ```bash
 # Nomenclatura predeterminada: Vehicle-VIN-001, Vehicle-VIN-002, etc.
@@ -172,9 +175,9 @@ python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
 Todos los scripts soportan múltiples idiomas con detección automática de idioma y selección interactiva.
 
 **Selección de Idioma**:
-- **Interactiva**: Los scripts solicitan selección de idioma en la primera ejecución
-- **Variable de Entorno**: Establecer `AWS_IOT_LANG=es` para omitir selección de idioma
-- **Respaldo**: Automáticamente vuelve al inglés para traducciones faltantes
+- **Interactiva**: Los scripts te piden que selecciones el idioma en la primera ejecución
+- **Variable de Entorno**: Puedes establecer `AWS_IOT_LANG=es` para omitir la selección de idioma
+- **Respaldo**: Automáticamente vuelve al inglés si faltan traducciones
 
 **Idiomas Soportados**:
 - **Inglés (en)**: Traducciones completas ✅
@@ -240,28 +243,28 @@ python scripts/manage_packages.py         # Gestión de paquetes y versiones
 python scripts/manage_dynamic_groups.py   # Operaciones de grupos dinámicos
 ```
 
-## �*️ Resolución de Problemas
+## 🔧 Resolución de Problemas
 
 **Problemas Comunes**:
-- **Credenciales**: Configurar credenciales de AWS vía `aws configure`, variables de entorno o roles AWS Identity and Access Management (IAM)
-- **Permisos**: Asegurar que el usuario AWS Identity and Access Management (IAM) tenga permisos para AWS IoT, Amazon S3 e AWS Identity and Access Management (IAM)
-- **Límites de Velocidad**: Los scripts manejan automáticamente con limitación inteligente
-- **Red**: Asegurar conectividad a las APIs de AWS
+- **Credenciales**: Configura tus credenciales de AWS vía `aws configure`, variables de entorno o roles AWS Identity and Access Management (IAM)
+- **Permisos**: Asegúrate de que tu usuario AWS Identity and Access Management (IAM) tenga permisos para AWS IoT, Amazon S3 e AWS Identity and Access Management (IAM)
+- **Límites de Velocidad**: Los scripts manejan esto automáticamente con limitación inteligente
+- **Red**: Asegúrate de tener conectividad a las APIs de AWS
 
-**Modo Debug**: Habilitar en cualquier script para resolución detallada de problemas
+**Modo Debug**: Puedes habilitarlo en cualquier script para resolución detallada de problemas
 ```bash
 🔧 Enable debug mode (show all API calls and responses)? [y/N]: y
 ```
 
-> 📖 **Resolución Detallada de Problemas**: Ver [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) para soluciones completas.
+> 📖 **Resolución Detallada de Problemas**: Consulta [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) para soluciones completas.
 
 ## 🧹 Importante: Limpieza de Recursos
 
-**Siempre ejecutar limpieza al terminar para evitar cargos continuos:**
+**Recuerda siempre ejecutar la limpieza al terminar para evitar cargos continuos:**
 ```bash
 python scripts/cleanup_script.py
-# Elegir opción 1: TODOS los recursos
-# Escribir: DELETE
+# Elige la opción 1: TODOS los recursos
+# Escribe: DELETE
 ```
 
 ### Características de Limpieza Segura
@@ -269,8 +272,8 @@ python scripts/cleanup_script.py
 El script de limpieza utiliza múltiples métodos de identificación para asegurar que solo se eliminen los recursos del taller:
 
 1. **Identificación Basada en Etiquetas** (Primaria): Verifica la etiqueta `workshop=learning-aws-iot-dm-basics`
-2. **Coincidencia de Patrones de Nomenclatura** (Secundaria): Coincide con convenciones de nomenclatura conocidas del taller
-3. **Basada en Asociación** (Terciaria): Identifica recursos adjuntos a recursos del taller
+2. **Coincidencia de Patrones de Nomenclatura** (Secundaria): Busca convenciones de nomenclatura conocidas del taller
+3. **Basada en Asociación** (Terciaria): Identifica recursos vinculados a recursos del taller
 
 **Opciones de Limpieza**:
 ```bash
@@ -298,9 +301,9 @@ python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
 
 **Características de Seguridad**:
 - Los recursos que no son del taller se omiten automáticamente
-- El resumen detallado muestra recursos eliminados y omitidos
-- El modo debug muestra el método de identificación para cada recurso
-- El modo de prueba permite vista previa antes de la eliminación real
+- El resumen detallado te muestra los recursos eliminados y omitidos
+- El modo debug te muestra el método de identificación para cada recurso
+- El modo de prueba te permite ver una vista previa antes de la eliminación real
 
 ## 🔧 Guía del Desarrollador: Agregar Nuevos Idiomas
 
@@ -322,17 +325,17 @@ i18n/
 
 **Agregar un Nuevo Idioma**:
 
-1. **Crear Directorio de Idioma**:
+1. **Crea el Directorio de Idioma**:
    ```bash
    mkdir i18n/{language_code}  # ej., i18n/es para español
    ```
 
-2. **Copiar Plantillas en Inglés**:
+2. **Copia las Plantillas en Inglés**:
    ```bash
    cp i18n/en/*.json i18n/{language_code}/
    ```
 
-3. **Traducir Archivos de Mensajes**:
+3. **Traduce los Archivos de Mensajes**:
    Cada archivo JSON contiene mensajes categorizados:
    ```json
    {
@@ -370,14 +373,14 @@ i18n/
    }
    ```
 
-4. **Actualizar Selector de Idioma** (si se agrega nuevo idioma):
-   Agregar su idioma a `i18n/language_selector.py`:
+4. **Actualiza el Selector de Idioma** (si agregas un nuevo idioma):
+   Agrega tu idioma a `i18n/language_selector.py`:
    ```python
    LANGUAGE_SELECTION = {
        "options": [
            "1. English",
            "2. Español (Spanish)",
-           "3. Su Nombre de Idioma",  # Agregar nueva opción
+           "3. Tu Nombre de Idioma",  # Agrega tu nueva opción
            # ... idiomas existentes
        ],
    }
@@ -385,23 +388,23 @@ i18n/
    LANGUAGE_CODES = {
        "1": "en", 
        "2": "es", 
-       "3": "su_codigo",  # Agregar nuevo código de idioma
+       "3": "tu_codigo",  # Agrega tu nuevo código de idioma
        # ... mapeos existentes
    }
    ```
 
-5. **Probar Traducción**:
+5. **Prueba tu Traducción**:
    ```bash
    export AWS_IOT_LANG={language_code}
    python scripts/provision_script.py
    ```
 
 **Pautas de Traducción**:
-- **Preservar Formato**: Mantener emojis, colores y caracteres especiales
-- **Mantener Marcadores**: Conservar marcadores `{}` para contenido dinámico
-- **Términos Técnicos**: Mantener nombres de servicios AWS en inglés
-- **Adaptación Cultural**: Adaptar ejemplos y referencias apropiadamente
-- **Consistencia**: Usar terminología consistente en todos los archivos
+- **Preservar Formato**: Mantén los emojis, colores y caracteres especiales
+- **Mantener Marcadores**: Conserva los marcadores `{}` para contenido dinámico
+- **Términos Técnicos**: Mantén los nombres de servicios AWS en inglés
+- **Adaptación Cultural**: Adapta los ejemplos y referencias apropiadamente
+- **Consistencia**: Usa terminología consistente en todos los archivos
 
 **Patrones de Claves de Mensajes**:
 - `title`: Título principal del script
@@ -416,13 +419,13 @@ i18n/
 - `warnings.*`: Mensajes de advertencia y avisos importantes
 - `explanations.*`: Contexto adicional y texto de ayuda
 
-**Probar Su Traducción**:
+**Prueba tu Traducción**:
 ```bash
-# Probar script específico con su idioma
-export AWS_IOT_LANG=su_codigo_de_idioma
+# Prueba un script específico con tu idioma
+export AWS_IOT_LANG=tu_codigo_de_idioma
 python scripts/manage_packages.py
 
-# Probar comportamiento de respaldo (usar idioma no existente)
+# Prueba el comportamiento de respaldo (usa un idioma que no existe)
 export AWS_IOT_LANG=xx
 python scripts/provision_script.py  # Debería volver al inglés
 ```

@@ -10,41 +10,44 @@
 | 🇰🇷 한국어 | [README.ko.md](README.ko.md) |
 | 🇧🇷 Português | [README.pt.md](README.pt.md) |
 | 🇨🇳 中文 | [README.zh.md](README.zh.md) |
+| 🇩🇪 Deutsch | [README.de.md](README.de.md) |
+| 🇮🇹 Italiano | [README.it.md](README.it.md) |
+| 🇫🇷 Français | [README.fr.md](README.fr.md) |
 
 ---
 
-全面演示 AWS IoT 设备管理功能，包括设备配置、空中下载 (OTA) 更新、作业管理和车队操作，使用现代 Python 脚本与原生 AWS SDK (boto3) 集成。
+这个项目会带你全面了解 AWS IoT 设备管理功能，包括设备配置、空中下载 (OTA) 更新、作业管理和车队操作，使用现代 Python 脚本与原生 AWS SDK (boto3) 集成。
 
 ## 👥 目标受众
 
 **主要受众：** IoT 开发人员、解决方案架构师、使用 AWS IoT 设备车队的 DevOps 工程师
 
-**先决条件：** 中级 AWS 知识、AWS IoT Core 基础知识、Python 基础知识、命令行使用
+**你需要具备：** 中级 AWS 知识、AWS IoT Core 基础知识、Python 基础知识、命令行使用
 
-**学习级别：** 具有大规模设备管理实践方法的助理级别
+**学习级别：** 助理级别，带你实践大规模设备管理
 
 ## 🎯 学习目标
 
-- **设备生命周期管理**：使用适当的事物类型和属性配置 IoT 设备
-- **车队组织**：创建静态和动态事物组进行设备管理
-- **OTA 更新**：使用 AWS IoT Jobs 与 Amazon S3 集成实现固件更新
+- **设备生命周期管理**：学习如何使用适当的事物类型和属性配置 IoT 设备
+- **车队组织**：创建静态和动态事物组来管理你的设备
+- **OTA 更新**：使用 AWS IoT Jobs 与 Amazon S3 集成来实现固件更新
 - **包管理**：处理多个固件版本并自动更新影子
 - **作业执行**：在固件更新期间模拟真实的设备行为
-- **版本控制**：将设备回滚到以前的固件版本
+- **版本控制**：将设备回滚到之前的固件版本
 - **远程命令**：使用 AWS IoT Commands 向设备发送实时命令
 - **批量注册**：使用制造规模配置高效注册数百或数千台设备
-- **资源清理**：正确管理 AWS 资源以避免不必要的成本
+- **资源清理**：妥善管理 AWS 资源，避免不必要的成本
 
-## 📋 先决条件
+## 📋 准备工作
 
 - 具有 AWS IoT、Amazon S3 和 AWS Identity and Access Management (IAM) 权限的 **AWS 账户**
 - 已配置的 **AWS 凭证**（通过 `aws configure`、环境变量或 AWS Identity and Access Management (IAM) 角色）
-- **Python 3.10+** 以及 pip 和 boto3、colorama 和 requests Python 库（检查 requirements.txt 文件）
-- 用于克隆存储库的 **Git**
+- **Python 3.10+** 以及 pip 和 boto3、colorama 和 requests Python 库（可以查看 requirements.txt 文件）
+- 用于克隆代码库的 **Git**
 
 ## 💰 成本分析
 
-**此项目创建真实的 AWS 资源，将产生费用。**
+**注意：此项目会创建真实的 AWS 资源，会产生一些费用。**
 
 | 服务 | 使用情况 | 预估成本 (USD) |
 |---------|-------|---------------------|
@@ -65,11 +68,11 @@
 - 影子更新操作
 - Amazon S3 存储持续时间
 
-**成本管理：**
-- ✅ 清理脚本删除所有资源
-- ✅ 短期演示资源
-- ✅ 可配置规模（从小开始）
-- ⚠️ **完成后运行清理脚本**
+**如何控制成本：**
+- ✅ 清理脚本会删除所有资源
+- ✅ 演示资源只需短期使用
+- ✅ 可配置规模（建议从小规模开始）
+- ⚠️ **完成后记得运行清理脚本**
 
 **📊 监控成本：** [AWS 账单控制台](https://console.aws.amazon.com/billing/)
 
@@ -163,18 +166,18 @@ python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
 ```
 
 **前缀要求**：
-- 仅限字母数字字符、连字符、下划线和冒号
+- 只能使用字母数字字符、连字符、下划线和冒号
 - 最多 20 个字符
-- 序列号自动补零（001-999）
+- 序列号会自动补零（001-999）
 
 ## 🌍 国际化支持
 
-所有脚本都支持多种语言，具有自动语言检测和交互式选择功能。
+所有脚本都支持多种语言，可以自动检测语言或让你交互式选择。
 
-**语言选择**：
-- **交互式**：脚本在首次运行时提示语言选择
-- **环境变量**：设置 `AWS_IOT_LANG=zh` 以跳过语言选择
-- **回退**：对于缺失的翻译自动回退到英语
+**语言选择方式**：
+- **交互式**：脚本首次运行时会提示你选择语言
+- **环境变量**：设置 `AWS_IOT_LANG=zh` 可以跳过语言选择
+- **自动回退**：如果缺少某些翻译，会自动回退到英语
 
 **支持的语言**：
 - **English (en)**：完整翻译 ✅
@@ -244,20 +247,20 @@ python scripts/manage_dynamic_groups.py   # 动态组操作
 
 **常见问题**：
 - **凭证**：通过 `aws configure`、环境变量或 AWS Identity and Access Management (IAM) 角色配置 AWS 凭证
-- **权限**：确保 AWS Identity and Access Management (IAM) 用户具有 AWS IoT、Amazon S3 和 AWS Identity and Access Management (IAM) 权限
-- **速率限制**：脚本通过智能节流自动处理
-- **网络**：确保与 AWS API 的连接
+- **权限**：确保你的 AWS Identity and Access Management (IAM) 用户具有 AWS IoT、Amazon S3 和 AWS Identity and Access Management (IAM) 权限
+- **速率限制**：脚本会通过智能节流自动处理
+- **网络**：确保能够连接到 AWS API
 
-**调试模式**：在任何脚本中启用以进行详细故障排除
+**调试模式**：在任何脚本中启用调试模式，可以看到详细的故障排除信息
 ```bash
 🔧 Enable debug mode (show all API calls and responses)? [y/N]: y
 ```
 
-> 📖 **详细故障排除**：有关全面解决方案，请参阅 [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)。
+> 📖 **详细故障排除**：如需更全面的解决方案，可以参阅 [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)。
 
 ## 🧹 重要：资源清理
 
-**完成后始终运行清理以避免持续费用：**
+**完成后记得运行清理脚本，避免持续产生费用：**
 ```bash
 python scripts/cleanup_script.py
 # 选择选项 1：所有资源
@@ -266,7 +269,7 @@ python scripts/cleanup_script.py
 
 ### 安全清理功能
 
-清理脚本使用多种识别方法来确保仅删除工作坊资源：
+清理脚本使用多种识别方法来确保只删除工作坊资源：
 
 1. **基于标签的识别**（主要）：检查 `workshop=learning-aws-iot-dm-basics` 标签
 2. **命名模式匹配**（次要）：匹配已知的工作坊命名约定
@@ -287,7 +290,7 @@ python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
 python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
 ```
 
-**清理删除的内容**：
+**清理脚本会删除的内容**：
 - 所有 AWS IoT 设备和组（带有工作坊标签或匹配的命名模式）
 - Amazon S3 存储桶和固件文件（已标记）
 - AWS IoT 软件包（已标记）
@@ -298,9 +301,9 @@ python scripts/cleanup_script.py --dry-run --things-prefix "Fleet-Device-"
 
 **安全功能**：
 - 非工作坊资源会自动跳过
-- 详细摘要显示已删除和跳过的资源
-- 调试模式显示每个资源的识别方法
-- 试运行模式允许在实际删除前预览
+- 详细摘要会显示已删除和跳过的资源
+- 调试模式会显示每个资源的识别方法
+- 试运行模式可以让你在实际删除前预览
 
 ## 🔧 开发者指南：添加新语言
 
@@ -399,8 +402,8 @@ i18n/
 **翻译指南**：
 - **保留格式**：保持表情符号、颜色和特殊字符
 - **维护占位符**：保持 `{}` 占位符用于动态内容
-- **技术术语**：保持 AWS 服务名称为英语
-- **文化适应**：适当调整示例和引用
+- **技术术语**：AWS 服务名称保持英语
+- **文化适应**：根据需要调整示例和引用
 - **一致性**：在所有文件中使用一致的术语
 
 **消息键模式**：

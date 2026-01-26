@@ -3,25 +3,18 @@
   "separator": "======================================",
   "aws_config": "📍 AWS 配置：",
   "warnings": {
-    "debug_warning": "⚠️  警告：调试模式会暴露敏感信息（ARN、账户 ID、API 响应）",
-    "tag_failure_thing_type": "⚠️  警告：为物品类型 {} 应用标签失败",
-    "tag_failure_thing_group": "⚠️  警告：为物品组 {} 应用标签失败",
-    "tag_failure_package": "⚠️  警告：为包 {} 应用标签失败",
-    "tag_failure_s3_bucket": "⚠️  警告：为S3存储桶 {} 应用标签失败",
-    "tag_failure_iam_role": "⚠️  警告：为IAM角色 {} 应用标签失败"
-  },
-  "prefix_validation": {
-    "invalid_prefix_error": "错误：无效的物品前缀 '{}'",
-    "prefix_requirements_header": "物品前缀必须：",
-    "prefix_requirement_chars": "  - 仅包含字母数字字符、连字符 (-)、下划线 (_) 或冒号 (:)",
-    "prefix_requirement_length": "  - 不超过20个字符",
-    "prefix_requirement_not_empty": "  - 不为空"
+    "debug_warning": "⚠️  提示：调试模式会显示敏感信息（ARN、账户 ID、API 响应）",
+    "tag_failure_thing_type": "⚠️  提示：无法为物品类型 {} 应用标签",
+    "tag_failure_thing_group": "⚠️  提示：无法为物品组 {} 应用标签",
+    "tag_failure_package": "⚠️  提示：无法为包 {} 应用标签",
+    "tag_failure_s3_bucket": "⚠️  提示：无法为 S3 存储桶 {} 应用标签",
+    "tag_failure_iam_role": "⚠️  提示：无法为 IAM 角色 {} 应用标签"
   },
   "tagging": {
     "summary_title": "⚠️  标签应用摘要",
     "summary_separator": "==================================================",
-    "summary_intro": "以下资源已创建但未能接收工作坊标签：",
-    "summary_fallback": "这些资源将依赖命名约定进行清理识别。",
+    "summary_intro": "这些资源已创建但无法接收工作坊标签：",
+    "summary_fallback": "没关系 - 这些资源将依赖命名约定进行清理识别。",
     "resource_count": "{}：{} 个资源",
     "total_without_tags": "无标签资源总数：{}"
   },
@@ -137,36 +130,41 @@
     "iot_logging_enabled": "✅ AWS IoT Core 日志记录已启用（INFO 级别）"
   },
   "errors": {
-    "invalid_choice": "❌ 无效选择。请输入 {}",
-    "enter_valid_number": "❌ 请输入有效数字",
-    "invalid_version_format": "❌ 无效版本格式：{}",
-    "enter_positive_number": "❌ 请输入正数",
-    "number_between": "❌ 请输入 {} 到 {} 之间的数字",
-    "invalid_country_codes": "❌ 无效国家代码：{}",
-    "provide_country_code": "❌ 请提供至少一个国家代码",
-    "invalid_country_input": "❌ 无效输入。输入数字或逗号分隔的国家代码",
-    "failed_create_thing_type": "❌ 创建设备类型失败",
-    "error_processing_thing_type": "❌ 处理设备类型 '{}' 错误",
-    "failed_enable_iot_logging": "❌ 启用 AWS IoT Core 日志记录失败",
-    "failed_enable_iot_logging_max_retries": "❌ 启用 AWS IoT Core 日志记录失败：超过最大重试次数",
-    "failed_fleet_indexing": "❌ 启用 AWS IoT Fleet Indexing 失败",
-    "failed_create_bucket": "❌ 创建 Amazon S3 存储桶失败",
-    "failed_upload_package": "❌ 上传软件包失败",
-    "failed_upload_package_error": "❌ 上传软件包失败：{}",
-    "error_processing_version": "❌ 处理版本 {} 错误",
-    "error_processing_version_detail": "❌ 处理版本 {} 错误：{}",
-    "error_creating_package": "❌ 创建软件包 {} 错误",
-    "error_creating_package_detail": "❌ 创建软件包 {} 错误：{}",
-    "error_checking_role": "❌ 检查角色错误",
-    "failed_update_package_config": "❌ 更新全局软件包配置失败",
-    "failed_update_package_config_detail": "❌ 更新全局软件包配置失败：{}",
-    "failed_create_device": "❌ 创建设备 {} 失败",
-    "failed_create_device_detail": "❌ 创建设备 {} 失败：{}",
-    "error_initializing": "❌ 初始化 AWS 客户端错误",
-    "cancelled_by_user": "👋 用户取消配置。再见！",
-    "provisioning_failed": "❌ 配置失败，错误",
-    "error_checking_file": "❌ 检查文件错误：{}",
-    "error_message": "❌ 错误：{}"
+    "invalid_choice": "❌ 这个选择看起来不太对。请输入 {}",
+    "enter_valid_number": "❌ 让我们用一个有效的数字再试一次",
+    "invalid_version_format": "❌ 嗯，这个版本格式看起来不太对：{}",
+    "enter_positive_number": "❌ 这里需要一个正数",
+    "number_between": "❌ 让我们选择一个 {} 到 {} 之间的数字",
+    "invalid_country_codes": "❌ 这些国家代码看起来不太对：{}",
+    "provide_country_code": "❌ 我们需要至少一个国家代码",
+    "invalid_country_input": "❌ 这个输入看起来不太对。试试数字或逗号分隔的国家代码",
+    "failed_create_thing_type": "❌ 无法创建设备类型",
+    "error_processing_thing_type": "❌ 处理设备类型 '{}' 时遇到问题",
+    "failed_enable_iot_logging": "❌ 无法启用 AWS IoT Core 日志记录",
+    "failed_enable_iot_logging_max_retries": "❌ 无法启用 AWS IoT Core 日志记录：已达到最大重试次数",
+    "failed_fleet_indexing": "❌ 无法启用 AWS IoT Fleet Indexing",
+    "failed_create_bucket": "❌ 无法创建 Amazon S3 存储桶",
+    "failed_upload_package": "❌ 无法上传软件包",
+    "failed_upload_package_error": "❌ 无法上传软件包：{}",
+    "error_processing_version": "❌ 处理版本 {} 时遇到问题",
+    "error_processing_version_detail": "❌ 处理版本 {} 时遇到问题：{}",
+    "error_creating_package": "❌ 创建软件包 {} 时遇到问题",
+    "error_creating_package_detail": "❌ 创建软件包 {} 时遇到问题：{}",
+    "error_checking_role": "❌ 检查角色时遇到问题",
+    "failed_update_package_config": "❌ 无法更新全局软件包配置",
+    "failed_update_package_config_detail": "❌ 无法更新全局软件包配置：{}",
+    "failed_create_device": "❌ 无法创建设备 {}",
+    "failed_create_device_detail": "❌ 无法创建设备 {}：{}",
+    "error_initializing": "❌ 初始化 AWS 客户端时遇到问题",
+    "cancelled_by_user": "👋 没关系！配置已取消。下次见！",
+    "provisioning_failed": "❌ 配置遇到错误",
+    "error_checking_file": "❌ 检查文件时遇到问题：{}",
+    "error_message": "❌ 哎呀：{}",
+    "invalid_thing_prefix": "嗯，物品前缀 '{}' 看起来不太对",
+    "thing_prefix_requirements": "物品前缀需要：",
+    "thing_prefix_chars": "  - 仅使用字母数字字符、连字符 (-)、下划线 (_) 或冒号 (:)",
+    "thing_prefix_length": "  - 不超过 20 个字符",
+    "thing_prefix_not_empty": "  - 不为空"
   },
   "debug": {
     "debug_operation": "🔍 调试：{}：{}",
@@ -224,7 +222,7 @@
   "resources": {
     "creating_resource": "创建 {}：{}",
     "created_resource": "✅ 已创建 {}：{}",
-    "error_creating_resource": "❌ 创建 {} {} 错误：{}",
+    "error_creating_resource": "❌ 创建 {} {} 时遇到问题：{}",
     "resource_already_exists": "⚠️  {} {} 已存在，跳过",
     "thing_type_created": "✅ 已创建设备类型：{}",
     "creating_thing": "创建设备：{}",
@@ -245,48 +243,48 @@
   },
   "learning_moments": {
     "iot_logging": {
-      "title": "📚 学习要点：AWS IoT Core 日志记录 - 监控和故障排除",
-      "content": "AWS IoT Core 日志记录使用 SetV2LoggingOptions API 启用全面的监控和故障排除。\n日志记录捕获设备连接事件、消息代理活动、规则引擎执行和 API 调用。\nAPI 配置日志级别（ERROR、WARN、INFO、DEBUG）并需要具有 CloudWatch Logs 权限的 IAM 角色。\nINFO 级别为生产环境提供平衡的可见性，捕获重要事件而不会产生过多细节。\n日志发送到 Amazon CloudWatch Logs 进行分析、告警和长期保留。",
+      "title": "📚 学习时刻：AWS IoT Core 日志记录 - 监控和故障排除",
+      "content": "AWS IoT Core 日志记录使用 SetV2LoggingOptions API 来实现全面的监控和故障排除。\n日志记录会捕获设备连接事件、消息代理活动、规则引擎执行和 API 调用。\nAPI 可以配置日志级别（ERROR、WARN、INFO、DEBUG），并需要一个具有 CloudWatch Logs 权限的 IAM 角色。\nINFO 级别为生产环境提供了平衡的可见性，能够捕获重要事件而不会产生过多细节。\n日志会发送到 Amazon CloudWatch Logs 进行分析、告警和长期保留。",
       "next": "我们将使用 SetV2LoggingOptions API 启用 INFO 级别的 AWS IoT Core 日志记录"
     },
     "thing_types": {
       "title": "📚 学习时刻：设备类型 - 设备类别",
-      "content": "AWS IoT 设备类型是使用 CreateThingType API 定义 IoT 设备类别的模板。\n它们充当蓝图，指定类似设备的通用属性和行为。API\n创建可搜索的属性，启用 AWS IoT Fleet Indexing 查询和设备类别的批量操作。\n设备类型帮助组织您的设备车队并启用可扩展的 AWS IoT 设备管理。",
+      "content": "AWS IoT 设备类型是使用 CreateThingType API 定义 IoT 设备类别的模板。\n它们就像蓝图，为类似设备指定通用属性和行为。API\n会创建可搜索的属性，让 AWS IoT Fleet Indexing 能够查询设备类别并进行批量操作。\n设备类型帮助组织您的设备车队，并实现可扩展的 AWS IoT 设备管理。",
       "next": "我们将使用 AWS IoT CreateThingType API 创建 {} 个设备类型：{}"
     },
     "fleet_indexing": {
       "title": "📚 学习时刻：Fleet Indexing - 设备搜索和查询",
-      "content": "AWS IoT Fleet Indexing 使用 UpdateIndexingConfiguration API 启用强大的搜索功能。\n它索引设备注册表数据、连接状态和 AWS IoT 设备影子（包括特殊的\n$package 影子用于固件版本）。API 配置索引模式和影子过滤器\n以启用动态设备组和大规模部署的车队范围查询。",
+      "content": "AWS IoT Fleet Indexing 使用 UpdateIndexingConfiguration API 来实现强大的搜索功能。\n它会索引设备注册表数据、连接状态和 AWS IoT 设备影子（包括用于固件版本的特殊\n$package 影子）。API 可以配置索引模式和影子过滤器，\n让您能够为大规模部署创建动态设备组和进行车队范围的查询。",
       "next": "我们将使用 UpdateIndexingConfiguration API 启用带有 $package 影子支持的 Fleet Indexing"
     },
     "s3_storage": {
       "title": "📚 学习时刻：S3 存储 - 固件分发",
-      "content": "Amazon S3 API（CreateBucket、PutBucketVersioning）提供安全、可扩展的固件存储。\nCreateBucket API 建立存储位置，而 PutBucketVersioning 启用\n不可变固件跟踪。S3 通过 GetObject API 生成的预签名 URL\n与 AWS IoT 作业集成，用于安全、无凭证的固件下载。",
+      "content": "Amazon S3 API（CreateBucket、PutBucketVersioning）提供安全、可扩展的固件存储。\nCreateBucket API 建立存储位置，而 PutBucketVersioning 启用\n不可变的固件跟踪。S3 通过 GetObject API 生成的预签名 URL\n与 AWS IoT 作业集成，实现安全、无需凭证的固件下载。",
       "next": "我们将使用 S3 API 在 {} 中创建带有版本控制的 S3 存储桶"
     },
     "firmware_packages": {
       "title": "📚 学习时刻：固件包 - 版本管理",
-      "content": "S3 PutObject API 将固件包作为具有唯一版本 ID 的 ZIP 文件上传。\n每次上传通过 S3 版本控制生成不可变工件。HeadObject API\n检查现有文件，而 PutObject 创建新版本以进行精确的\n固件生命周期控制和空中更新管理。",
+      "content": "S3 PutObject API 将固件包作为具有唯一版本 ID 的 ZIP 文件上传。\n每次上传都会通过 S3 版本控制生成不可变的工件。HeadObject API\n会检查现有文件，而 PutObject 会创建新版本，实现精确的\n固件生命周期控制和空中更新管理。",
       "next": "我们将上传 {} 个固件包（{} 类型 × {} 版本）"
     },
     "package_catalog": {
       "title": "📚 学习时刻：软件包目录 - 集中管理",
-      "content": "AWS IoT 软件包目录 API（CreatePackage、CreatePackageVersion）提供集中固件管理。\nCreatePackage 建立软件包，而 CreatePackageVersion 将 S3 工件链接到 IoT 软件包。\nUpdatePackageVersion API 发布版本，在作业成功完成时启用自动设备影子更新。\n这种集成创建了完整的固件生命周期管理。",
-      "next": "我们将创建 {} 个 AWS IoT 软件包目录软件包并将所有版本发布到目录"
+      "content": "AWS IoT 软件包目录 API（CreatePackage、CreatePackageVersion）提供集中的固件管理。\nCreatePackage 建立软件包，而 CreatePackageVersion 将 S3 工件链接到 IoT 软件包。\nUpdatePackageVersion API 发布版本，在作业成功完成时实现自动设备影子更新。\n这种集成创建了完整的固件生命周期管理。",
+      "next": "我们将创建 {} 个 AWS IoT 软件包目录软件包，并将所有版本发布到目录"
     },
     "iam_roles": {
       "title": "📚 学习时刻：IAM 角色 - 安全访问控制",
-      "content": "AWS Identity and Access Management API（CreateRole、PutRolePolicy）提供安全服务凭证。\nCreateRole API 建立信任关系，而 PutRolePolicy 授予特定\n权限。IAM 角色使 AWS IoT 能够为 S3 固件下载生成预签名 URL，\n而不向设备暴露 AWS 凭证，确保安全和可扩展的访问控制。",
+      "content": "AWS Identity and Access Management API（CreateRole、PutRolePolicy）提供安全的服务凭证。\nCreateRole API 建立信任关系，而 PutRolePolicy 授予特定\n权限。IAM 角色让 AWS IoT 能够为 S3 固件下载生成预签名 URL，\n而不会向设备暴露 AWS 凭证，确保安全和可扩展的访问控制。",
       "next": "我们将使用 IAM API 创建 IoTJobsRole 和 IoTPackageConfigRole"
     },
     "package_configuration": {
       "title": "📚 学习时刻：软件包配置 - 自动影子更新",
-      "content": "AWS IoT 软件包目录 UpdatePackageConfiguration API 启用自动 AWS IoT 设备影子更新。\n当设备通过 AWS IoT 作业报告成功固件安装时，AWS IoT Core 自动\n使用新固件版本更新设备的 $package 影子。这创建了可靠的\n审计跟踪并确保设备清单反映您车队中的实际固件状态。",
+      "content": "AWS IoT 软件包目录 UpdatePackageConfiguration API 实现自动 AWS IoT 设备影子更新。\n当设备通过 AWS IoT 作业报告成功安装固件时，AWS IoT Core 会自动\n使用新固件版本更新设备的 $package 影子。这创建了可靠的\n审计跟踪，并确保设备清单反映您车队中的实际固件状态。",
       "next": "我们将使用 UpdatePackageConfiguration API 启用全局软件包配置"
     },
     "device_creation": {
       "title": "📚 学习时刻：AWS IoT 设备和设备组 - 设备车队创建",
-      "content": "AWS IoT CreateThing 和 CreateThingGroup API 在云中建立您的设备车队。\nCreateThing 注册具有属性的单个设备，而 CreateThingGroup 提供\n组织结构。AddThingToThingGroup API 创建关系，启用\n批量操作和您的 AWS IoT 设备管理车队中的策略继承。",
+      "content": "AWS IoT CreateThing 和 CreateThingGroup API 在云中建立您的设备车队。\nCreateThing 注册具有属性的单个设备，而 CreateThingGroup 提供\n组织结构。AddThingToThingGroup API 创建关系，让您能够进行\n批量操作，并在 AWS IoT 设备管理车队中实现策略继承。",
       "next": "我们将使用 AWS IoT API 创建 {} 个设备组和 {} 个 AWS IoT 设备"
     }
   }

@@ -6,23 +6,23 @@
     "is_workshop_resource": "是研讨会资源: {0}",
     "identification_method": "识别方法: {0}",
     "skipping_non_workshop": "跳过非研讨会资源: {0}",
-    "proceeding_to_delete": "继续删除研讨会资源: {0}",
-    "deleting_with_dependencies": "使用依赖处理程序删除...",
+    "proceeding_to_delete": "准备删除研讨会资源: {0}",
+    "deleting_with_dependencies": "正在使用依赖处理程序删除...",
     "dependency_handler_result": "依赖处理程序结果: 成功={0}, 已删除项目={1}",
-    "deleting_single_resource": "删除单个资源（无依赖）...",
+    "deleting_single_resource": "正在删除单个资源（无依赖）...",
     "single_resource_result": "单个资源删除结果: 成功={0}",
     "successfully_deleted": "✓ 成功删除: {0}",
-    "failed_to_delete": "✗ 删除失败: {0}",
+    "failed_to_delete": "✗ 无法删除: {0}",
     "completed_processing": "========== 已完成 {0} 处理 ==========",
     "processing_stats": "总计: {0}, 已删除: {1}, 已跳过: {2}, 失败: {3}",
     "rate_limiting": "速率限制: 等待 {0:.3f}秒 用于 {1}"
   },
   "warning": {
-    "unknown_resource_type": "未知资源类型: {0}"
+    "unknown_resource_type": "嗯，我们不认识这个资源类型: {0}"
   },
   "error": {
-    "processing_error": "处理 {0} 时出错: {1}",
-    "aws_api_error": "删除 {0} 时 AWS API 错误: {1}",
-    "unexpected_error": "删除资源时出现意外错误: {0}"
+    "processing_error": "哎呀，处理 {0} 时遇到了问题: {1}",
+    "aws_api_error": "AWS API 在删除 {0} 时遇到了问题: {1}",
+    "unexpected_error": "删除这个资源时发生了意外情况: {0}"
   }
 }

@@ -50,6 +50,9 @@ config
 *.swo
 *~
 
+# Kiro AI Assistant Configuration
+.kiro/
+
 # OS
 .DS_Store
 .DS_Store?

@@ -8,7 +8,7 @@
   "jobs_endpoint_label": "🔗 作业端点：",
   
   "warnings": {
-    "debug_warning": "⚠️  警告：调试模式会暴露敏感信息（ARN、账户 ID、API 响应）"
+    "debug_warning": "⚠️  提醒一下：调试模式会显示敏感信息（ARN、账户 ID、API 响应）"
   },
   
   "prompts": {
@@ -64,21 +64,21 @@
   },
   
   "errors": {
-    "invalid_job_id": "❌ 无效作业 ID",
+    "invalid_job_id": "❌ 嗯，这个作业 ID 看起来不太对",
     "invalid_percentage": "❌ 请输入 0 到 100 之间的数字",
     "invalid_number": "❌ 请输入有效数字",
     "no_active_jobs": "❌ 未找到活动作业",
     "no_pending_executions": "❌ 作业 {} 未找到待处理作业执行",
-    "failed_list_jobs": "❌ 列出活动作业失败",
-    "failed_job_details": "❌ 获取 {} 的作业执行详情失败",
+    "failed_list_jobs": "❌ 无法列出活动作业",
+    "failed_job_details": "❌ 无法获取 {} 的作业执行详情",
     "no_presigned_url": "❌ 作业文档中未找到 S3 预签名 URL",
-    "download_failed": "❌ 下载失败 - 将作业执行标记为失败",
-    "failed_download": "❌ 下载工件失败：{}",
-    "empty_file": "❌ 下载的文件为空或无效",
+    "download_failed": "❌ 下载没有成功 - 将作业执行标记为失败",
+    "failed_download": "❌ 无法下载工件：{}",
+    "empty_file": "❌ 下载的文件似乎是空的或无效",
     "no_job_document": "❌ 未找到 {} 的作业文档",
-    "parse_error": "❌ 解析作业文档错误：{}",
-    "client_init_error": "❌ 初始化 AWS 客户端错误：{}",
-    "api_error": "❌ {} {} 错误：{}",
+    "parse_error": "❌ 解析作业文档时遇到问题：{}",
+    "client_init_error": "❌ 初始化 AWS 客户端时出错：{}",
+    "api_error": "❌ {} {} 出错：{}",
     "general_error": "❌ 错误：{}",
     "cleanup_warning": "⚠️  清理警告：{}"
   },
@@ -121,8 +121,8 @@
     "iam_role": "  🔐 IAM 角色：{}",
     "additional_params": "📄 其他作业参数：",
     "raw_job_document": "📋 原始作业文档：",
-    "cancelled": "👋 用户取消作业模拟。再见！",
-    "cancelled_user": "👋 用户取消模拟",
+    "cancelled": "👋 作业模拟已取消。下次见！",
+    "cancelled_user": "👋 模拟已取消",
     "created_date": "（创建时间：{}）",
     "status_in_progress": "进行中",
     "status_queued": "排队",

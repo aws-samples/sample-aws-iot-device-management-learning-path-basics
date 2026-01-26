@@ -2,7 +2,7 @@
   "title": "📦 AWS IoT Software Package Manager (Boto3)",
   "separator": "============================================",
   "learning_goal": "📚 LEARNING GOAL:",
-  "learning_description": "This script manages AWS IoT Software Package Catalog for firmware distribution. Packages provide\ncentralized version control, Amazon S3 integration for secure firmware storage, and automatic\ndevice shadow updates when jobs complete. You can create packages, add versions with\nAmazon S3 artifacts, and inspect package details for comprehensive firmware lifecycle management.",
+  "learning_description": "This script helps you manage AWS IoT Software Package Catalog for firmware distribution. Packages provide\ncentralized version control, Amazon S3 integration for secure firmware storage, and automatic\ndevice shadow updates when jobs complete. You can create packages, add versions with\nAmazon S3 artifacts, and inspect package details for comprehensive firmware lifecycle management.",
   "region_label": "📍 Region:",
   "account_id_label": "🆔 Account ID:",
   
@@ -56,11 +56,11 @@
   },
   
   "errors": {
-    "invalid_choice": "❌ Invalid choice. Please enter 1-11",
-    "invalid_number": "❌ Please enter a valid number",
-    "package_name_empty": "❌ Package name cannot be empty",
-    "version_empty": "❌ Version cannot be empty",
-    "device_name_empty": "❌ Device name cannot be empty",
+    "invalid_choice": "❌ Invalid choice. Please try entering 1-11",
+    "invalid_number": "❌ Please try entering a valid number",
+    "package_name_empty": "❌ Package name can't be empty",
+    "version_empty": "❌ Version can't be empty",
+    "device_name_empty": "❌ Device name can't be empty",
     "thing_type_required": "❌ Thing Type is required",
     "target_version_required": "❌ Target version is required",
     "invalid_selection": "❌ Invalid selection",
@@ -69,25 +69,25 @@
     "version_exists": "⚠️  Version '{}' already exists for package '{}'",
     "package_not_found": "❌ Package '{}' not found",
     "version_not_found": "❌ Package version '{}' v{} not found",
-    "failed_create_package": "❌ Failed to create package",
-    "failed_create_version": "❌ Failed to create package version",
-    "failed_publish_version": "❌ Failed to publish package version",
-    "failed_list_packages": "❌ Failed to list packages",
-    "failed_get_config": "❌ Failed to get package configuration",
-    "failed_enable_config": "❌ Failed to enable package configuration",
-    "failed_disable_config": "❌ Failed to disable package configuration",
-    "failed_create_bucket": "❌ Failed to create Amazon S3 bucket",
-    "failed_list_buckets": "❌ Failed to list S3 buckets: {}",
+    "failed_create_package": "❌ Couldn't create package",
+    "failed_create_version": "❌ Couldn't create package version",
+    "failed_publish_version": "❌ Couldn't publish package version",
+    "failed_list_packages": "❌ Couldn't list packages",
+    "failed_get_config": "❌ Couldn't get package configuration",
+    "failed_enable_config": "❌ Couldn't enable package configuration",
+    "failed_disable_config": "❌ Couldn't disable package configuration",
+    "failed_create_bucket": "❌ Couldn't create Amazon S3 bucket",
+    "failed_list_buckets": "❌ Couldn't list S3 buckets: {}",
     "failed_check_file": "❌ Error checking file: {}",
-    "failed_get_shadow": "❌ Failed to get $package shadow for device '{}'",
-    "failed_search_devices": "❌ Failed to search for devices",
-    "failed_attach_policy": "❌ Failed to attach package config policy",
+    "failed_get_shadow": "❌ Couldn't get $package shadow for device '{}'",
+    "failed_search_devices": "❌ Couldn't search for devices",
+    "failed_attach_policy": "❌ Couldn't attach package config policy",
     "failed_check_role": "❌ Error checking role: {}",
-    "failed_check_packages": "❌ Failed to check existing packages: {}",
-    "failed_revert": "❌ {}: Failed to revert - {}",
+    "failed_check_packages": "❌ Couldn't check existing packages: {}",
+    "failed_revert": "❌ {}: Couldn't revert - {}",
     "revert_cancelled": "❌ Version revert cancelled",
     "client_init_error": "❌ Error initializing AWS clients: {}",
-    "client_init_failed": "❌ Failed to initialize AWS clients. Please check your credentials and try again.",
+    "client_init_failed": "❌ Couldn't initialize AWS clients. Please check your credentials and try again.",
     "api_error": "❌ Error in {} {}: {}",
     "general_error": "❌ Error: {}",
     "shadow_processing_error": "❌ Error processing shadow data: {}"
@@ -154,7 +154,7 @@
     "no_packages": "📭 No packages found. Create a package first.",
     "no_packages_found": "📭 No packages found",
     "no_versions": "📭 No versions found",
-    "no_reported_versions": "📭 Device '{}' has no reported package versions",
+    "no_reported_versions": "📭 Device '{}' doesn't have any reported package versions",
     "found_packages": "📦 Found {} package(s):",
     "config_enabled": "ENABLED",
     "config_disabled": "DISABLED",
@@ -165,9 +165,9 @@
     "version_tracking": "   • Firmware versions are automatically tracked",
     "inventory_sync": "   • Device inventory stays synchronized",
     "config_inactive": "⚠️  Package configuration is disabled:",
-    "no_job_updates": "   • Job completions will NOT update AWS IoT Device Shadows",
+    "no_job_updates": "   • Job completions won't update AWS IoT Device Shadows",
     "manual_updates": "   • Manual AWS IoT Device Shadow updates required",
-    "inventory_outdated": "   • Device inventory may become outdated",
+    "inventory_outdated": "   • Device inventory might become outdated",
     "what_enables": "📋 What this enables:",
     "auto_shadow_updates": "   • Automatic $package shadow updates on job completion",
     "realtime_tracking": "   • Real-time firmware version tracking",
@@ -182,40 +182,40 @@
     "package_management_description": "AWS IoT Software Package Catalog provides centralized firmware version management with Amazon S3 integration.\nAWS IoT Software Package Catalog packages organize firmware by AWS IoT Thing Type, while versions track different releases with\nimmutable Amazon S3 artifacts. Published versions can be deployed via AWS IoT Jobs with automatic\nAWS IoT Device Shadow updates. This creates a complete firmware lifecycle from development\nthrough deployment with full traceability and rollback capabilities.\n\n🔄 NEXT: Choose an operation to manage your software packages and versions",
     
     "version_creation_title": "Package Version Creation - Firmware Lifecycle Management",
-    "version_creation_description": "Creating a package version involves multiple steps: version validation, Amazon S3 artifact\nupload, version creation with metadata, and publishing for deployment. Each version\nis immutable once published, ensuring firmware integrity and enabling safe rollbacks.\n\n🔄 NEXT: We'll validate the version name and check for conflicts",
+    "version_creation_description": "Creating a package version involves multiple steps: version validation, Amazon S3 artifact\nupload, version creation with metadata, and publishing for deployment. Each version\nis immutable once published, which helps ensure firmware integrity and enables safe rollbacks.\n\n🔄 NEXT: We'll validate the version name and check for conflicts",
     
     "s3_bucket_title": "Amazon S3 Bucket Management - Secure Firmware Storage",
-    "s3_bucket_description": "AWS IoT requires firmware artifacts to be stored in Amazon S3 with proper versioning enabled.\nThe bucket provides secure, durable storage with access control and audit trails.\nVersioning ensures each firmware upload is immutable and traceable.\n\n🔄 NEXT: We'll locate or create an Amazon S3 bucket for firmware storage",
+    "s3_bucket_description": "AWS IoT requires firmware artifacts to be stored in Amazon S3 with proper versioning enabled.\nThe bucket provides secure, durable storage with access control and audit trails.\nVersioning helps ensure each firmware upload is immutable and traceable.\n\n🔄 NEXT: We'll locate or create an Amazon S3 bucket for firmware storage",
     
     "firmware_artifact_title": "Firmware Artifact Creation - Simulated Deployment Package",
-    "firmware_artifact_description": "In production, firmware artifacts are compiled binaries, but for this demo we create\na simulated ZIP package. The artifact includes version metadata and is uploaded to\nAmazon S3 with a unique key for traceability and integrity verification.\n\n🔄 NEXT: We'll create and upload the firmware artifact to Amazon S3",
+    "firmware_artifact_description": "In production, firmware artifacts are compiled binaries, but for this demo we'll create\na simulated ZIP package. The artifact includes version metadata and is uploaded to\nAmazon S3 with a unique key for traceability and integrity verification.\n\n🔄 NEXT: We'll create and upload the firmware artifact to Amazon S3",
     
     "version_registration_title": "Package Version Registration - AWS IoT Integration",
-    "version_registration_description": "Now we register the Amazon S3 artifact with AWS IoT as a package version. This creates\nthe link between the IoT service and the firmware file, enabling job deployments.\nThe version includes metadata like Amazon S3 location and custom attributes.\n\n🔄 NEXT: We'll create the package version with Amazon S3 artifact reference",
+    "version_registration_description": "Now we'll register the Amazon S3 artifact with AWS IoT as a package version. This creates\nthe link between the IoT service and the firmware file, which enables job deployments.\nThe version includes metadata like Amazon S3 location and custom attributes.\n\n🔄 NEXT: We'll create the package version with Amazon S3 artifact reference",
     
     "version_publishing_title": "Version Publishing - Making Firmware Available for Deployment",
     "version_publishing_description": "Publishing makes the version available for AWS IoT Jobs. Only published versions can\nbe deployed to devices. This final step validates the artifact and enables the\nversion for production use with automatic AWS IoT Device Shadow updates.\n\n🔄 NEXT: We'll publish the version for deployment availability",
     
     "package_config_title": "Package Configuration - Jobs to Shadow Integration",
-    "package_config_description": "AWS IoT Software Package Catalog Configuration controls the integration between AWS IoT Jobs and AWS IoT Device Shadows.\nWhen enabled, successful AWS IoT Jobs completions automatically update the device's $package shadow\nwith the new firmware version. This creates an audit trail and ensures AWS IoT Device Management inventory\naccuracy without manual intervention. The configuration requires an AWS Identity and Access Management (IAM) role with permissions\nto read and update AWS IoT Device Shadows.\n\n🔄 NEXT: We'll check the current package configuration status",
+    "package_config_description": "AWS IoT Software Package Catalog Configuration controls the integration between AWS IoT Jobs and AWS IoT Device Shadows.\nWhen enabled, successful AWS IoT Jobs completions automatically update the device's $package shadow\nwith the new firmware version. This creates an audit trail and helps ensure AWS IoT Device Management inventory\naccuracy without manual intervention. The configuration requires an AWS Identity and Access Management (IAM) role with permissions\nto read and update AWS IoT Device Shadows.\n\n🔄 NEXT: We'll check the current package configuration status",
     
     "enable_config_title": "Enabling Package Configuration - Automated Shadow Updates",
     "enable_config_description": "Enabling AWS IoT Software Package Catalog configuration requires an AWS Identity and Access Management (IAM) role that allows AWS IoT Core to update AWS IoT Device\nShadows. The IoTPackageConfigRole grants permissions to read and write $package shadows\nfor all AWS IoT Things. Once enabled, successful AWS IoT Jobs completions will automatically update the\nAWS IoT Thing's firmware version in its AWS IoT Device Shadow, creating a reliable audit trail.\n\n🔄 NEXT: We'll create the IAM role and enable the configuration",
     
     "disable_config_title": "Disabling Package Configuration - Manual Shadow Management",
-    "disable_config_description": "Disabling AWS IoT Software Package Catalog configuration stops automatic AWS IoT Device Shadow updates when AWS IoT Jobs complete.\nYou'll need to manually update AWS IoT Device Shadows to track firmware versions. This might be\nuseful for testing scenarios or when you want full control over AWS IoT Device Shadow updates. The AWS Identity and Access Management (IAM)\nrole remains available for future re-enabling.\n\n🔄 NEXT: We'll disable automatic shadow updates",
+    "disable_config_description": "Disabling AWS IoT Software Package Catalog configuration stops automatic AWS IoT Device Shadow updates when AWS IoT Jobs complete.\nYou'll need to manually update AWS IoT Device Shadows to track firmware versions. This might be\nhelpful for testing scenarios or when you want full control over AWS IoT Device Shadow updates. The AWS Identity and Access Management (IAM)\nrole remains available for future re-enabling.\n\n🔄 NEXT: We'll disable automatic shadow updates",
     
     "device_version_title": "Device Package Version Tracking - $package Shadow Inspection",
-    "device_version_description": "Each AWS IoT Thing maintains a $package shadow that tracks its current firmware version.\nThis AWS IoT Device Shadow is automatically updated when AWS IoT Jobs complete (if AWS IoT Software Package Catalog configuration\nis enabled) or can be manually updated. The AWS IoT Device Shadow contains the package name and\nversion for each AWS IoT Thing Type, providing accurate AWS IoT Device Management inventory information.\n\n🔄 NEXT: We'll retrieve the $package shadow for a specific device",
+    "device_version_description": "Each AWS IoT Thing maintains a $package shadow that tracks its current firmware version.\nThis AWS IoT Device Shadow is automatically updated when AWS IoT Jobs complete (if AWS IoT Software Package Catalog configuration\nis enabled) or can be manually updated. The AWS IoT Device Shadow contains the package name and\nversion for each AWS IoT Thing Type, which provides accurate AWS IoT Device Management inventory information.\n\n🔄 NEXT: We'll retrieve the $package shadow for a specific device",
     
     "version_rollback_title": "Version Rollback - Fleet-wide Firmware Management",
-    "version_rollback_description": "Version rollback uses AWS IoT Fleet Indexing to find AWS IoT Things with specific firmware versions\nand updates their $package AWS IoT Device Shadows to reflect the rollback. This maintains accurate\nAWS IoT Device Management inventory without requiring actual firmware downloads. It's useful for quickly\nmarking AWS IoT Things as reverted in your management system before deploying older firmware.\n\n🔄 NEXT: We'll search for devices and update their package shadows"
+    "version_rollback_description": "Version rollback uses AWS IoT Fleet Indexing to find AWS IoT Things with specific firmware versions\nand updates their $package AWS IoT Device Shadows to reflect the rollback. This helps maintain accurate\nAWS IoT Device Management inventory without requiring actual firmware downloads. It's helpful for quickly\nmarking AWS IoT Things as reverted in your management system before deploying older firmware.\n\n🔄 NEXT: We'll search for devices and update their package shadows"
   },
   
   "explanations": {
     "device_shadow_meaning": "💡 This could mean:",
     "device_not_exist": "   • Device doesn't exist",
-    "no_package_shadow": "   • Device has no $package shadow",
-    "no_firmware_deployed": "   • No firmware has been deployed to this device"
+    "no_package_shadow": "   • Device doesn't have a $package shadow",
+    "no_firmware_deployed": "   • No firmware has been deployed to this device yet"
   }
 }

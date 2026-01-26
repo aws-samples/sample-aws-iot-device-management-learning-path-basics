@@ -1,6 +1,6 @@
 # Guía de Solución de Problemas
 
-Esta guía cubre problemas de configuración del entorno. Para problemas específicos de scripts, habilite el modo de depuración al ejecutar scripts - proporcionan mensajes de error contextuales y orientación.
+Esta guía te ayuda a resolver problemas de configuración del entorno. Si encuentras problemas específicos con los scripts, prueba habilitar el modo de depuración al ejecutarlos - te dará mensajes de error útiles y orientación en el camino.
 
 ## Configuración del Entorno
 
@@ -11,20 +11,20 @@ Esta guía cubre problemas de configuración del entorno. Para problemas especí
 NoCredentialsError: Unable to locate credentials
 ```
 
-**Solución**:
+**Aquí te mostramos cómo solucionarlo**:
 ```bash
 # Configurar credenciales de AWS
 aws configure
-# Ingrese: Access Key ID, Secret Access Key, Región, Formato de salida
+# Ingresa: Access Key ID, Secret Access Key, Región, Formato de salida
 
 # Verificar configuración
 aws sts get-caller-identity
 ```
 
-**Métodos alternativos**:
+**También puedes probar estos métodos alternativos**:
 - Variables de entorno: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
 - Archivo de credenciales de AWS: `~/.aws/credentials`
-- Roles IAM (para ejecución en EC2/Lambda)
+- Roles IAM (si estás ejecutando en EC2 o Lambda)
 
 ---
 
@@ -32,7 +32,7 @@ aws sts get-caller-identity
 
 #### Problema: "Region not configured" o "You must specify a region"
 
-**Solución**:
+**Aquí te mostramos cómo solucionarlo**:
 ```bash
 # Establecer región en AWS CLI
 aws configure set region us-east-1
@@ -44,7 +44,7 @@ export AWS_DEFAULT_REGION=us-east-1
 aws configure get region
 ```
 
-**Regiones soportadas**: Cualquier región de AWS con disponibilidad del servicio IoT Core
+**Funciona con estas regiones**: Cualquier región de AWS donde IoT Core esté disponible
 
 ---
 
@@ -55,7 +55,7 @@ aws configure get region
 ModuleNotFoundError: No module named 'colorama'
 ```
 
-**Solución**:
+**Aquí te mostramos cómo solucionarlo**:
 ```bash
 # Instalar todas las dependencias
 pip install -r requirements.txt
@@ -64,7 +64,7 @@ pip install -r requirements.txt
 pip install boto3>=1.40.27 colorama>=0.4.4 requests>=2.25.1
 ```
 
-**Verificar instalación**:
+**Puedes verificar tu instalación así**:
 ```bash
 python -c "import boto3, colorama, requests; print('Todas las dependencias instaladas')"
 ```
@@ -78,9 +78,9 @@ python -c "import boto3, colorama, requests; print('Todas las dependencias insta
 AccessDeniedException: User is not authorized to perform: iot:CreateThing
 ```
 
-**Solución**: Asegúrese de que su usuario/rol IAM de AWS tenga los permisos requeridos:
+**Aquí te mostramos cómo solucionarlo**: Asegúrate de que tu usuario o rol IAM de AWS tenga los permisos necesarios:
 
-**Acciones IAM Requeridas**:
+**Lo que necesitarás - Acciones IAM**:
 ```json
 {
     "Version": "2012-10-17",
@@ -110,7 +110,7 @@ AccessDeniedException: User is not authorized to perform: iot:CreateThing
 }
 ```
 
-**Nota**: Para entornos de producción, siga el principio de privilegio mínimo y restrinja los recursos apropiadamente.
+**Nota rápida**: Para entornos de producción, es buena idea seguir el principio de privilegio mínimo y restringir los recursos según sea necesario.
 
 ---
 
@@ -118,42 +118,42 @@ AccessDeniedException: User is not authorized to perform: iot:CreateThing
 
 ### Problemas Específicos de Scripts
 
-Si encuentra problemas al ejecutar scripts:
+Si encuentras problemas al ejecutar scripts, aquí hay algunos consejos útiles:
 
-1. **Habilite el modo de depuración** - Muestra llamadas y respuestas detalladas de API
+1. **Habilita el modo de depuración** - Te mostrará llamadas y respuestas detalladas de API
    ```
    🔧 Enable debug mode? [y/N]: y
    ```
 
-2. **Lea los mensajes de error** - Los scripts proporcionan orientación contextual
+2. **Lee los mensajes de error** - Los scripts proporcionan orientación contextual útil
 
-3. **Revise las pausas educativas** - Explican conceptos y requisitos
+3. **Revisa las pausas educativas** - Explican conceptos y requisitos a medida que avanzas
 
-4. **Verifique los prerequisitos** - La mayoría de los scripts requieren ejecutar `provision_script.py` primero
+4. **Verifica los prerequisitos** - La mayoría de los scripts necesitan que ejecutes `provision_script.py` primero
 
-### Flujo de Trabajo Común
+### Aquí hay un flujo de trabajo típico
 
 ```bash
-# 1. Configurar entorno (una vez)
+# 1. Configurar entorno (solo una vez)
 aws configure
 export AWS_DEFAULT_REGION=us-east-1
 pip install -r requirements.txt
 
-# 2. Crear infraestructura (ejecutar primero)
+# 2. Crear infraestructura (ejecuta esto primero)
 python scripts/provision_script.py
 
-# 3. Ejecutar otros scripts según sea necesario
+# 3. Ejecutar otros scripts según los necesites
 python scripts/manage_packages.py
 python scripts/create_job.py
 # etc.
 
-# 4. Limpiar cuando termine
+# 4. Limpiar cuando termines
 python scripts/cleanup_script.py
 ```
 
-### Recursos Adicionales
+### Más recursos útiles
 
-- **README.md** - Descripción general del proyecto e inicio rápido
-- **Mensajes i18n de scripts** - Orientación localizada en su idioma
-- **Pausas educativas** - Aprendizaje contextual durante la ejecución de scripts
+- **README.md** - Descripción general del proyecto y guía de inicio rápido
+- **Mensajes i18n de scripts** - Orientación útil en tu idioma
+- **Pausas educativas** - Aprende mientras avanzas durante la ejecución de scripts
 - **Documentación de AWS IoT** - https://docs.aws.amazon.com/es_es/iot/

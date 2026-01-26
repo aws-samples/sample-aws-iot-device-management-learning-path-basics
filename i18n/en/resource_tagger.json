@@ -1,24 +1,24 @@
 {
   "tagging": {
     "success": "✅ Tags applied successfully to {}",
-    "failed": "⚠️  Failed to apply tags to {}: {}",
-    "warning_continue": "⚠️  Tagging failed for {}, continuing with resource creation",
-    "invalid_schema": "⚠️  Invalid tag schema for {}",
-    "unsupported_type": "⚠️  Unsupported resource type for tagging: {}"
+    "failed": "⚠️  Couldn't apply tags to {}: {}",
+    "warning_continue": "⚠️  Tagging didn't work for {}, but we'll continue with resource creation",
+    "invalid_schema": "⚠️  The tag schema for {} doesn't look right",
+    "unsupported_type": "⚠️  This resource type doesn't support tagging yet: {}"
   },
   "debug": {
-    "applying_tags": "🔧 Applying workshop tags to {} (type: {})",
+    "applying_tags": "🔧 Adding workshop tags to {} (type: {})",
     "tags_applied": "✅ Tags applied: {}",
-    "tag_count": "📊 Applied {} tags to {}",
+    "tag_count": "📊 Added {} tags to {}",
     "using_api": "🔧 Using {} API for tagging",
-    "tag_validation": "🔍 Validating tag schema...",
-    "tag_validation_passed": "✅ Tag schema validation passed",
-    "tag_validation_failed": "❌ Tag schema validation failed"
+    "tag_validation": "🔍 Checking tag schema...",
+    "tag_validation_passed": "✅ Tag schema looks good",
+    "tag_validation_failed": "❌ Tag schema validation didn't pass"
   },
   "summary": {
     "resources_without_tags": "📊 Resources created without tags: {}",
-    "tag_failures": "⚠️  Tag Application Failures",
+    "tag_failures": "⚠️  Tag Application Issues",
     "total_failures": "Total resources without tags: {}",
-    "relying_on_naming": "ℹ️  These resources will be identified by naming conventions during cleanup"
+    "relying_on_naming": "ℹ️  Don't worry - these resources will be identified by naming conventions during cleanup"
   }
 }

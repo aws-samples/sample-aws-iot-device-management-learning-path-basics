@@ -1,24 +1,24 @@
 {
   "tagging": {
-    "success": "✅ Etiquetas aplicadas exitosamente a {}",
-    "failed": "⚠️  Error al aplicar etiquetas a {}: {}",
-    "warning_continue": "⚠️  Falló el etiquetado para {}, continuando con la creación del recurso",
-    "invalid_schema": "⚠️  Esquema de etiquetas inválido para {}",
-    "unsupported_type": "⚠️  Tipo de recurso no compatible para etiquetado: {}"
+    "success": "✅ Etiquetas aplicadas con éxito a {}",
+    "failed": "⚠️  No pudimos aplicar etiquetas a {}: {}",
+    "warning_continue": "⚠️  El etiquetado no funcionó para {}, pero continuaremos con la creación del recurso",
+    "invalid_schema": "⚠️  El esquema de etiquetas para {} no se ve bien",
+    "unsupported_type": "⚠️  Este tipo de recurso aún no admite etiquetado: {}"
   },
   "debug": {
-    "applying_tags": "🔧 Aplicando etiquetas del taller a {} (tipo: {})",
+    "applying_tags": "🔧 Agregando etiquetas del taller a {} (tipo: {})",
     "tags_applied": "✅ Etiquetas aplicadas: {}",
-    "tag_count": "📊 Se aplicaron {} etiquetas a {}",
+    "tag_count": "📊 Agregamos {} etiquetas a {}",
     "using_api": "🔧 Usando API {} para etiquetado",
-    "tag_validation": "🔍 Validando esquema de etiquetas...",
-    "tag_validation_passed": "✅ Validación de esquema de etiquetas exitosa",
-    "tag_validation_failed": "❌ Validación de esquema de etiquetas fallida"
+    "tag_validation": "🔍 Verificando esquema de etiquetas...",
+    "tag_validation_passed": "✅ El esquema de etiquetas se ve bien",
+    "tag_validation_failed": "❌ La validación del esquema de etiquetas no pasó"
   },
   "summary": {
     "resources_without_tags": "📊 Recursos creados sin etiquetas: {}",
-    "tag_failures": "⚠️  Fallos en la Aplicación de Etiquetas",
+    "tag_failures": "⚠️  Problemas con la Aplicación de Etiquetas",
     "total_failures": "Total de recursos sin etiquetas: {}",
-    "relying_on_naming": "ℹ️  Estos recursos serán identificados por convenciones de nomenclatura durante la limpieza"
+    "relying_on_naming": "ℹ️  No te preocupes - estos recursos serán identificados por convenciones de nomenclatura durante la limpieza"
   }
 }

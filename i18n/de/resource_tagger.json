@@ -1,0 +1,24 @@
+{
+  "tagging": {
+    "success": "✅ Tags erfolgreich auf {} angewendet",
+    "failed": "⚠️  Tags konnten nicht auf {} angewendet werden: {}",
+    "warning_continue": "⚠️  Tagging hat bei {} nicht funktioniert, aber wir machen mit der Ressourcenerstellung weiter",
+    "invalid_schema": "⚠️  Das Tag-Schema für {} sieht nicht richtig aus",
+    "unsupported_type": "⚠️  Dieser Ressourcentyp unterstützt noch kein Tagging: {}"
+  },
+  "debug": {
+    "applying_tags": "🔧 Füge Workshop-Tags zu {} hinzu (Typ: {})",
+    "tags_applied": "✅ Tags angewendet: {}",
+    "tag_count": "📊 {} Tags zu {} hinzugefügt",
+    "using_api": "🔧 Verwende {} API für Tagging",
+    "tag_validation": "🔍 Prüfe Tag-Schema...",
+    "tag_validation_passed": "✅ Tag-Schema sieht gut aus",
+    "tag_validation_failed": "❌ Tag-Schema-Validierung ist fehlgeschlagen"
+  },
+  "summary": {
+    "resources_without_tags": "📊 Ressourcen ohne Tags erstellt: {}",
+    "tag_failures": "⚠️  Probleme bei der Tag-Anwendung",
+    "total_failures": "Ressourcen ohne Tags insgesamt: {}",
+    "relying_on_naming": "ℹ️  Keine Sorge - diese Ressourcen werden beim Aufräumen über Namenskonventionen identifiziert"
+  }
+}

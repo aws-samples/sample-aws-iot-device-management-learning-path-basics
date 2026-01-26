@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-This guide covers environment setup issues. For script-specific problems, enable debug mode when running scripts - they provide contextual error messages and guidance.
+This guide helps you work through environment setup issues. If you run into script-specific problems, try enabling debug mode when running scripts - it'll give you helpful error messages and guidance along the way.
 
 ## Environment Setup
 
@@ -11,7 +11,7 @@ This guide covers environment setup issues. For script-specific problems, enable
 NoCredentialsError: Unable to locate credentials
 ```
 
-**Solution**:
+**Here's how to fix it**:
 ```bash
 # Configure AWS credentials
 aws configure
@@ -21,10 +21,10 @@ aws configure
 aws sts get-caller-identity
 ```
 
-**Alternative methods**:
+**You can also try these alternative methods**:
 - Environment variables: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
 - AWS credentials file: `~/.aws/credentials`
-- IAM roles (for EC2/Lambda execution)
+- IAM roles (if you're running on EC2 or Lambda)
 
 ---
 
@@ -32,7 +32,7 @@ aws sts get-caller-identity
 
 #### Problem: "Region not configured" or "You must specify a region"
 
-**Solution**:
+**Here's how to fix it**:
 ```bash
 # Set region in AWS CLI
 aws configure set region us-east-1
@@ -44,7 +44,7 @@ export AWS_DEFAULT_REGION=us-east-1
 aws configure get region
 ```
 
-**Supported regions**: Any AWS region with IoT Core service availability
+**Works with these regions**: Any AWS region where IoT Core is available
 
 ---
 
@@ -55,7 +55,7 @@ aws configure get region
 ModuleNotFoundError: No module named 'colorama'
 ```
 
-**Solution**:
+**Here's how to fix it**:
 ```bash
 # Install all dependencies
 pip install -r requirements.txt
@@ -64,7 +64,7 @@ pip install -r requirements.txt
 pip install boto3>=1.40.27 colorama>=0.4.4 requests>=2.25.1
 ```
 
-**Verify installation**:
+**You can check your installation like this**:
 ```bash
 python -c "import boto3, colorama, requests; print('All dependencies installed')"
 ```
@@ -78,9 +78,9 @@ python -c "import boto3, colorama, requests; print('All dependencies installed')
 AccessDeniedException: User is not authorized to perform: iot:CreateThing
 ```
 
-**Solution**: Ensure your AWS IAM user/role has the required permissions:
+**Here's how to fix it**: Make sure your AWS IAM user or role has the permissions it needs:
 
-**Required IAM Actions**:
+**What you'll need - IAM Actions**:
 ```json
 {
     "Version": "2012-10-17",
@@ -110,7 +110,7 @@ AccessDeniedException: User is not authorized to perform: iot:CreateThing
 }
 ```
 
-**Note**: For production environments, follow the principle of least privilege and restrict resources appropriately.
+**Quick note**: For production environments, it's a good idea to follow the principle of least privilege and restrict resources as needed.
 
 ---
 
@@ -118,42 +118,42 @@ AccessDeniedException: User is not authorized to perform: iot:CreateThing
 
 ### Script-Specific Issues
 
-If you encounter issues while running scripts:
+If you run into issues while running scripts, here are some helpful tips:
 
-1. **Enable debug mode** - Shows detailed API calls and responses
+1. **Enable debug mode** - It'll show you detailed API calls and responses
    ```
    🔧 Enable debug mode? [y/N]: y
    ```
 
-2. **Read error messages** - Scripts provide contextual guidance
+2. **Read error messages** - The scripts provide helpful contextual guidance
 
-3. **Check educational pauses** - They explain concepts and requirements
+3. **Check educational pauses** - They explain concepts and requirements as you go
 
-4. **Verify prerequisites** - Most scripts require `provision_script.py` to run first
+4. **Check prerequisites** - Most scripts need `provision_script.py` to run first
 
-### Common Workflow
+### Here's a typical workflow
 
 ```bash
-# 1. Set up environment (one-time)
+# 1. Set up your environment (just once)
 aws configure
 export AWS_DEFAULT_REGION=us-east-1
 pip install -r requirements.txt
 
-# 2. Create infrastructure (run first)
+# 2. Create your infrastructure (run this first)
 python scripts/provision_script.py
 
-# 3. Run other scripts as needed
+# 3. Run other scripts as you need them
 python scripts/manage_packages.py
 python scripts/create_job.py
 # etc.
 
-# 4. Clean up when done
+# 4. Clean up when you're done
 python scripts/cleanup_script.py
 ```
 
-### Additional Resources
+### More helpful resources
 
-- **README.md** - Project overview and quick start
-- **Script i18n messages** - Localized guidance in your language
-- **Educational pauses** - Contextual learning during script execution
+- **README.md** - Project overview and quick start guide
+- **Script i18n messages** - Helpful guidance in your language
+- **Educational pauses** - Learn as you go during script execution
 - **AWS IoT Documentation** - https://docs.aws.amazon.com/iot/

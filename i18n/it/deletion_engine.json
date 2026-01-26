@@ -1,0 +1,28 @@
+{
+  "debug": {
+    "processing_resources": "========== Elaboro {0} risorse {1} ==========",
+    "processing_item": "--- Elaboro {0}/{1}: {2} ---",
+    "resource_name": "Risorsa: {0}",
+    "is_workshop_resource": "È Risorsa Workshop: {0}",
+    "identification_method": "Metodo di Identificazione: {0}",
+    "skipping_non_workshop": "Salto risorsa non-workshop: {0}",
+    "proceeding_to_delete": "Mi preparo a eliminare la risorsa workshop: {0}",
+    "deleting_with_dependencies": "Elimino con gestore dipendenze...",
+    "dependency_handler_result": "Risultato gestore dipendenze: successo={0}, elementi_eliminati={1}",
+    "deleting_single_resource": "Elimino singola risorsa (nessuna dipendenza)...",
+    "single_resource_result": "Risultato eliminazione singola risorsa: successo={0}",
+    "successfully_deleted": "✓ Eliminata con successo: {0}",
+    "failed_to_delete": "✗ Non sono riuscito a eliminare: {0}",
+    "completed_processing": "========== Elaborazione {0} completata ==========",
+    "processing_stats": "Totale: {0}, Eliminate: {1}, Saltate: {2}, Fallite: {3}",
+    "rate_limiting": "Limitazione velocità: aspetto {0:.3f}s per {1}"
+  },
+  "warning": {
+    "unknown_resource_type": "Hmm, non riconosco questo tipo di risorsa: {0}"
+  },
+  "error": {
+    "processing_error": "Oops, ho riscontrato un problema elaborando {0}: {1}",
+    "aws_api_error": "L'API AWS ha avuto problemi eliminando {0}: {1}",
+    "unexpected_error": "È successo qualcosa di inaspettato eliminando questa risorsa: {0}"
+  }
+}

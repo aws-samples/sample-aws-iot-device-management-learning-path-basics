@@ -1,0 +1,150 @@
+{
+  "title": "🤖 Simulatore di Esecuzione Job AWS IoT (Boto3)",
+  "separator": "===========================================",
+  "learning_goal": "📚 OBIETTIVO DI APPRENDIMENTO:",
+  "learning_description": "Questo script simula il comportamento realistico di un dispositivo durante l'esecuzione di un Job IoT.\nGestisce sia job OTA (con download di firmware da Amazon S3) che job personalizzati (senza download).\nI dispositivi elaborano i documenti dei job, scaricano gli artefatti quando necessario e riportano\nlo stato di successo/fallimento ad AWS IoT in base a tassi di successo configurabili.",
+  "region_label": "📍 Regione:",
+  "account_id_label": "🆔 ID Account:",
+  "jobs_endpoint_label": "🔗 Endpoint Jobs:",
+  
+  "warnings": {
+    "debug_warning": "⚠️  Attenzione: La modalità debug mostrerà informazioni sensibili (ARN, ID account, risposte API)"
+  },
+  
+  "prompts": {
+    "verbose_mode": "🔧 Vuoi abilitare la modalità verbose (mostra input/output delle query dei job)? [y/N]: ",
+    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API AWS e le risposte)? [y/N]: ",
+    "enter_job_id": "📝 Inserisci l'ID del Job da simulare:",
+    "execution_scope": "🎯 Vuoi elaborare TUTTE le esecuzioni o specificare un numero? [ALL/numero]:",
+    "success_percentage": "📈 Inserisci la percentuale di successo (0-100):",
+    "proceed_simulation": "🚀 Pronto per simulare le esecuzioni dei job. Procediamo? [Y/n]: ",
+    "press_enter": "Premi Invio per continuare..."
+  },
+  
+  "status": {
+    "verbose_enabled": "✅ Modalità verbose abilitata",
+    "debug_enabled": "✅ Modalità debug abilitata",
+    "clients_initialized": "🔍 DEBUG: Configurazione client:",
+    "iot_service": "   Servizio IoT: {}",
+    "jobs_endpoint": "   Endpoint Jobs: {}",
+    "scanning_jobs": "🔍 Scansione dei job IoT attivi in corso...",
+    "getting_executions": "📊 Recupero delle esecuzioni del job: {}",
+    "checking_statuses": "🔧 Controllo degli stati di esecuzione in parallelo...",
+    "checking_sequential": "🔧 Controllo degli stati di esecuzione in sequenza (modalità debug)...",
+    "checking_status": "📊 Controllo di {} esecuzioni...",
+    "total_executions": "📊 Totale esecuzioni trovate: {}",
+    "found_executions": "📊 Trovate {} esecuzioni di job in attesa",
+    "plan_prepared": "✅ Piano di esecuzione preparato!",
+    "processing_executions": "🚀 Elaborazione di {} esecuzioni di job in parallelo (150 TPS)...",
+    "simulation_completed": "🎉 Simulazione di esecuzione job completata!",
+    "processed_summary": "📊 Elaborate {} esecuzioni: {} riuscite, {} fallite",
+    "execution_time": "⏱️  Tempo totale di esecuzione: {:.2f} secondi",
+    "cleanup_completed": "✅ Pulizia completata",
+    "preparing_plan": "📋 Preparazione del piano di esecuzione - scansione dispositivi e assegnazione successo/fallimento...",
+    "plan_assignment": "📋 [{}/{}] {} -> {}",
+    "progress_update": "📊 Progresso: {}/{} esecuzioni elaborate, {} riuscite, {} fallite",
+    "processing_execution": "🔧 Elaborazione esecuzione {}/{} per thing: {}",
+    "job_succeeded": "✅ {}: Esecuzione job RIUSCITA",
+    "job_failed": "❌ {}: Esecuzione job FALLITA",
+    "updating_succeeded": "✅ Aggiornamento esecuzione job a RIUSCITA",
+    "updating_failed": "❌ Aggiornamento esecuzione job a FALLITA",
+    "downloading_firmware": "⬇️  {}: Download firmware da Amazon S3 in corso...",
+    "extracting_url": "⬇️  Estrazione URL pre-firmato S3 dal documento del job...",
+    "found_url": "🔗 Trovato URL pre-firmato S3",
+    "downloading_artifact": "📥 Download artefatto da Amazon S3 in corso...",
+    "downloaded_firmware": "📦 {}: Scaricato {} firmware",
+    "artifact_downloaded": "📦 Artefatto scaricato: {} ({})",
+    "artifact_cleanup": "🗑️  Artefatto pulito",
+    "processing_custom": "⚙️  {}: Elaborazione operazione job personalizzata...",
+    "custom_completed": "✅ {}: Operazione personalizzata completata",
+    "job_details_retrieved": "📤 Output - Dettagli esecuzione job recuperati",
+    "job_document_retrieved": "📄 Documento job recuperato",
+    "getting_job_details": "📥 Input - Recupero dettagli esecuzione job per {}",
+    "cleaning_temp": "🧹 Pulizia file temporanei in corso..."
+  },
+  
+  "errors": {
+    "invalid_job_id": "❌ Hmm, quell'ID del job non sembra corretto",
+    "invalid_percentage": "❌ Per favore inserisci un numero tra 0 e 100",
+    "invalid_number": "❌ Per favore inserisci un numero valido",
+    "no_active_jobs": "❌ Nessun job attivo trovato",
+    "no_pending_executions": "❌ Nessuna esecuzione di job in attesa trovata per il job: {}",
+    "failed_list_jobs": "❌ Non è stato possibile elencare i job attivi",
+    "failed_job_details": "❌ Non è stato possibile ottenere i dettagli dell'esecuzione del job per {}",
+    "no_presigned_url": "❌ Nessun URL pre-firmato S3 trovato nel documento del job",
+    "download_failed": "❌ Il download non ha funzionato - contrassegno l'esecuzione del job come FALLITA",
+    "failed_download": "❌ Non è stato possibile scaricare l'artefatto: {}",
+    "empty_file": "❌ Il file scaricato sembra essere vuoto o non valido",
+    "no_job_document": "❌ Nessun documento job trovato per {}",
+    "parse_error": "❌ Ho avuto problemi nell'analisi del documento del job: {}",
+    "client_init_error": "❌ Errore nell'inizializzazione dei client AWS: {}",
+    "api_error": "❌ Errore in {} {}: {}",
+    "general_error": "❌ Errore: {}",
+    "cleanup_warning": "⚠️  Avviso di pulizia: {}"
+  },
+  
+  "debug": {
+    "debug_operation": "🔍 DEBUG: {}: {}",
+    "api_call": "📤 Chiamata API: {}",
+    "input_params": "📥 Parametri di Input:",
+    "api_response": "📤 Risposta API:",
+    "resource_not_found": "📝 Risorsa non trovata: {}",
+    "full_error": "🔍 DEBUG: Risposta di errore completa:",
+    "full_traceback": "🔍 DEBUG: Traceback completo:",
+    "job_document": "📋 DEBUG - Documento job: {}",
+    "found_package": "🔧 DEBUG - Trovato URL pre-firmato nel pacchetto: {}",
+    "presigned_url": "🔗 DEBUG - URL pre-firmato: {}",
+    "download_path": "🔧 DEBUG - Download in: {}",
+    "http_status": "🔧 DEBUG - Stato risposta HTTP: {}"
+  },
+  
+  "ui": {
+    "active_jobs": "📋 Job Attivi:",
+    "no_active_jobs": "Nessun job attivo trovato",
+    "execution_plan": "🎯 Riepilogo Piano di Esecuzione:",
+    "success_label": "✅ Successo: {} esecuzioni",
+    "failure_label": "❌ Fallimento: {} esecuzioni",
+    "total_label": "📊 Totale: {} esecuzioni",
+    "job_document_title": "📋 DOCUMENTO JOB - Istruzioni Aggiornamento OTA",
+    "separator_line": "==================================================",
+    "ota_config": "🚀 Configurazione OTA:",
+    "firmware_packages": "  📦 Pacchetti Firmware:",
+    "package_label": "    • Pacchetto: {}",
+    "version_label": "      Versione: {}",
+    "artifact_details": "      📁 Dettagli Artefatto:",
+    "s3_bucket": "        Bucket Amazon S3: {}",
+    "s3_key": "        Chiave Amazon S3: {}",
+    "version_id": "        ID Versione: {}",
+    "presigned_url_available": "        🔗 URL Pre-firmato: Disponibile (scade tra 1 ora)",
+    "file_id": "        ID File: {}",
+    "stream_name": "  🌊 Nome Stream: {}",
+    "iam_role": "  🔐 Ruolo IAM: {}",
+    "additional_params": "📄 Parametri Job Aggiuntivi:",
+    "raw_job_document": "📋 Documento Job Grezzo:",
+    "cancelled": "👋 Simulazione job annullata. Ci vediamo la prossima volta!",
+    "cancelled_user": "👋 Simulazione annullata",
+    "created_date": "(Creato: {})",
+    "status_in_progress": "IN_PROGRESS",
+    "status_queued": "QUEUED",
+    "executions_found": "📋 {} Esecuzioni Job: {}",
+    "no_executions": "  ℹ️  Nessuna esecuzione {} trovata",
+    "success_status": "SUCCESS",
+    "failure_status": "FAILURE"
+  },
+  
+  "results": {
+    "no_active_jobs_found": "Nessun job attivo trovato",
+    "found_executions": "📊 Trovate {} esecuzioni di job in attesa"
+  },
+  
+  "learning": {
+    "job_discovery_title": "Scoperta Job - Ricerca Distribuzioni Attive",
+    "job_discovery_description": "Faremo una scansione per trovare i Job IoT attivi che hanno esecuzioni in attesa. I job con stato\nIN_PROGRESS contengono esecuzioni di dispositivi che sono in QUEUED (in attesa di iniziare) o\nIN_PROGRESS (attualmente in elaborazione). Questa simulazione agirà come quei dispositivi,\nscaricando il firmware e riportando lo stato di successo o fallimento.\n\n🔄 PROSSIMO: Faremo una scansione dei job attivi e delle loro esecuzioni in attesa",
+    
+    "execution_discovery_title": "Scoperta Esecuzioni - Ricerca Attività Dispositivi in Attesa",
+    "execution_discovery_description": "Ora scopriremo tutte le esecuzioni di job in attesa per il job selezionato. Ogni esecuzione\nrappresenta un dispositivo specifico che deve ricevere l'aggiornamento del firmware. Le esecuzioni\npossono essere in stato QUEUED (non iniziato) o IN_PROGRESS (il dispositivo sta elaborando).\n\n🔄 PROSSIMO: Troveremo tutte le esecuzioni in attesa per il job '{}'",
+    
+    "execution_simulation_title": "Simulazione Esecuzione - Processo di Aggiornamento Firmware del Dispositivo",
+    "execution_simulation_description": "Ora simuleremo il processo completo di esecuzione del job del dispositivo. Per ogni dispositivo:\n1. Ottieni i dettagli dell'esecuzione del job e il documento del job da AWS IoT\n2. Controlla se il job richiede il download da Amazon S3 (OTA) o è un'operazione personalizzata\n3. Per job OTA: Scarica il firmware da Amazon S3 ed elabora\n4. Per job personalizzati: Simula l'elaborazione dell'operazione\n5. Riporta lo stato SUCCESS o FAILED ad AWS IoT\n\n🔄 PROSSIMO: Elaboreremo {} esecuzioni con un tasso di successo del {}%\nLa simulazione rileverà automaticamente il tipo di job e lo gestirà di conseguenza."
+  }
+}

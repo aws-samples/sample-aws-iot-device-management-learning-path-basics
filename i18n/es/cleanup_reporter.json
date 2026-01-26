@@ -1,27 +1,27 @@
 {
   "summary": {
-    "header": "Resumen de Limpieza",
-    "header_dry_run": "Resumen de Limpieza (SIMULACIÓN - No se Eliminaron Recursos)",
-    "deleted_section": "Recursos Eliminados:",
-    "skipped_section": "Recursos Omitidos:",
-    "failed_section": "Eliminaciones Fallidas:",
-    "overall_section": "Resumen General:",
-    "non_workshop_reason": "recursos no del taller",
+    "header": "Resumen de la Limpieza",
+    "header_dry_run": "Resumen de la Limpieza (SIMULACIÓN - No se Eliminaron Recursos)",
+    "deleted_section": "Recursos que Limpiamos:",
+    "skipped_section": "Recursos que Omitimos:",
+    "failed_section": "Recursos que No Pudimos Eliminar:",
+    "overall_section": "Esto es lo que Pasó:",
+    "non_workshop_reason": "recursos que no son del taller",
     "total": "Total",
-    "total_resources_processed": "Total de Recursos Procesados",
+    "total_resources_processed": "Total de Recursos que Revisamos",
     "would_delete": "Se Eliminarían",
-    "successfully_deleted": "Eliminados Exitosamente",
-    "skipped_non_workshop": "Omitidos (No del Taller)",
+    "successfully_deleted": "Limpiados Exitosamente",
+    "skipped_non_workshop": "Omitidos (No son del Taller)",
     "failed": "Fallidos",
-    "execution_time": "Tiempo de Ejecución"
+    "execution_time": "Tiempo que Tomó"
   },
   "skipped": {
-    "header_debug": "Recursos {} Omitidos ({} total):",
-    "count_only": "Recursos {} omitidos: {} (no del taller)"
+    "header_debug": "Recursos {} Omitidos ({} en total):",
+    "count_only": "Recursos {} omitidos: {} (no son del taller)"
   },
   "identification": {
     "workshop": "Recurso del Taller",
-    "non_workshop": "No del Taller",
+    "non_workshop": "No es del Taller",
     "method_tag": "Coincidencia de Etiqueta",
     "method_naming": "Patrón de Nomenclatura",
     "method_association": "Asociación",

@@ -1,7 +1,7 @@
 import os
 
 LANGUAGE_SELECTION = {
-    "header": "🌍 Language Selection / Selección de Idioma / 言語選択 / 语言选择 / Seleção de Idioma / 언어 선택",
+    "header": "🌍 Language Selection / Selección de Idioma / 言語選択 / 语言选择 / Seleção de Idioma / 언어 선택 / Sprachauswahl / Selezione della Lingua / Sélection de la Langue",
     "options": [
         "1. English",
         "2. Español (Spanish)",
@@ -9,12 +9,15 @@ LANGUAGE_SELECTION = {
         "4. 中文 (Chinese)",
         "5. Português (Portuguese)",
         "6. 한국어 (Korean)",
+        "7. Deutsch (German)",
+        "8. Italiano (Italian)",
+        "9. Français (French)",
     ],
-    "prompt": "Select language (1-6): ",
-    "invalid": "❌ Invalid selection. Please enter 1-6.",
+    "prompt": "Select language (1-9): ",
+    "invalid": "❌ Invalid selection. Please enter 1-9.",
 }
 
-LANGUAGE_CODES = {"1": "en", "2": "es", "3": "ja", "4": "zh", "5": "pt", "6": "ko"}
+LANGUAGE_CODES = {"1": "en", "2": "es", "3": "ja", "4": "zh", "5": "pt", "6": "ko", "7": "de", "8": "it", "9": "fr"}
 
 
 def get_language():
@@ -33,6 +36,12 @@ def get_language():
         return "pt"
     elif env_lang in ["ko", "korean", "한국어", "kr"]:
         return "ko"
+    elif env_lang in ["de", "german", "deutsch"]:
+        return "de"
+    elif env_lang in ["it", "italian", "italiano"]:
+        return "it"
+    elif env_lang in ["fr", "french", "français", "francais"]:
+        return "fr"
 
     # Interactive selection
     print(LANGUAGE_SELECTION["header"])

@@ -1,24 +1,24 @@
 {
   "tagging": {
-    "success": "✅ {}에 태그가 성공적으로 적용되었습니다",
-    "failed": "⚠️  {}에 태그 적용 실패: {}",
-    "warning_continue": "⚠️  {}에 대한 태그 지정이 실패했지만 리소스 생성을 계속합니다",
-    "invalid_schema": "⚠️  {}에 대한 잘못된 태그 스키마",
-    "unsupported_type": "⚠️  태그 지정이 지원되지 않는 리소스 유형: {}"
+    "success": "✅ {}에 태그를 성공적으로 적용했어요",
+    "failed": "⚠️  {}에 태그를 적용할 수 없었어요: {}",
+    "warning_continue": "⚠️  {}에 태그 지정이 안 됐지만, 리소스 생성은 계속할게요",
+    "invalid_schema": "⚠️  {}의 태그 스키마가 올바르지 않아요",
+    "unsupported_type": "⚠️  이 리소스 유형은 아직 태그 지정을 지원하지 않아요: {}"
   },
   "debug": {
-    "applying_tags": "🔧 {}에 워크샵 태그 적용 중 (유형: {})",
+    "applying_tags": "🔧 {}에 워크샵 태그 추가 중 (유형: {})",
     "tags_applied": "✅ 적용된 태그: {}",
-    "tag_count": "📊 {}에 {} 개의 태그를 적용했습니다",
-    "using_api": "🔧 태그 지정을 위해 {} API 사용",
-    "tag_validation": "🔍 태그 스키마 검증 중...",
-    "tag_validation_passed": "✅ 태그 스키마 검증 통과",
-    "tag_validation_failed": "❌ 태그 스키마 검증 실패"
+    "tag_count": "📊 {}에 {} 개의 태그를 추가했어요",
+    "using_api": "🔧 태그 지정을 위해 {} API 사용 중",
+    "tag_validation": "🔍 태그 스키마 확인 중...",
+    "tag_validation_passed": "✅ 태그 스키마가 정상이에요",
+    "tag_validation_failed": "❌ 태그 스키마 검증이 통과하지 못했어요"
   },
   "summary": {
     "resources_without_tags": "📊 태그 없이 생성된 리소스: {}",
-    "tag_failures": "⚠️  태그 적용 실패",
+    "tag_failures": "⚠️  태그 적용 문제",
     "total_failures": "태그 없는 리소스 총계: {}",
-    "relying_on_naming": "ℹ️  이러한 리소스는 정리 중에 명명 규칙으로 식별됩니다"
+    "relying_on_naming": "ℹ️  걱정 마세요 - 이 리소스들은 정리할 때 명명 규칙으로 식별할 수 있어요"
   }
 }

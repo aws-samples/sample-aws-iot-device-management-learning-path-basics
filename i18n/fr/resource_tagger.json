@@ -1,0 +1,24 @@
+{
+  "tagging": {
+    "success": "✅ Tags appliqués avec succès à {}",
+    "failed": "⚠️  Impossible d'appliquer les tags à {} : {}",
+    "warning_continue": "⚠️  Le marquage n'a pas fonctionné pour {}, mais nous continuerons avec la création de la ressource",
+    "invalid_schema": "⚠️  Le schéma de tag pour {} ne semble pas correct",
+    "unsupported_type": "⚠️  Ce type de ressource ne prend pas encore en charge le marquage : {}"
+  },
+  "debug": {
+    "applying_tags": "🔧 Ajout des tags d'atelier à {} (type : {})",
+    "tags_applied": "✅ Tags appliqués : {}",
+    "tag_count": "📊 {} tags ajoutés à {}",
+    "using_api": "🔧 Utilisation de l'API {} pour le marquage",
+    "tag_validation": "🔍 Vérification du schéma de tag...",
+    "tag_validation_passed": "✅ Le schéma de tag semble correct",
+    "tag_validation_failed": "❌ La validation du schéma de tag a échoué"
+  },
+  "summary": {
+    "resources_without_tags": "📊 Ressources créées sans tags : {}",
+    "tag_failures": "⚠️  Problèmes d'application des tags",
+    "total_failures": "Total des ressources sans tags : {}",
+    "relying_on_naming": "ℹ️  Ne vous inquiétez pas - ces ressources seront identifiées par les conventions de nommage lors du nettoyage"
+  }
+}

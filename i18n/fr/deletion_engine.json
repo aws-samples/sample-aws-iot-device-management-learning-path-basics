@@ -1,0 +1,28 @@
+{
+  "debug": {
+    "processing_resources": "========== On traite {0} ressources {1} ==========",
+    "processing_item": "--- On traite {0}/{1} : {2} ---",
+    "resource_name": "Ressource : {0}",
+    "is_workshop_resource": "C'est une Ressource d'Atelier : {0}",
+    "identification_method": "Méthode d'Identification : {0}",
+    "skipping_non_workshop": "On ignore la ressource hors atelier : {0}",
+    "proceeding_to_delete": "On se prépare à supprimer la ressource d'atelier : {0}",
+    "deleting_with_dependencies": "On supprime avec le gestionnaire de dépendances...",
+    "dependency_handler_result": "Résultat du gestionnaire de dépendances : succès={0}, éléments_supprimés={1}",
+    "deleting_single_resource": "On supprime une seule ressource (pas de dépendances)...",
+    "single_resource_result": "Résultat de la suppression de la ressource unique : succès={0}",
+    "successfully_deleted": "✓ Supprimé avec succès : {0}",
+    "failed_to_delete": "✗ On n'a pas pu supprimer : {0}",
+    "completed_processing": "========== Traitement de {0} terminé ==========",
+    "processing_stats": "Total : {0}, Supprimés : {1}, Ignorés : {2}, Échoués : {3}",
+    "rate_limiting": "Limitation du débit : on attend {0:.3f}s pour {1}"
+  },
+  "warning": {
+    "unknown_resource_type": "Hmm, on ne reconnaît pas ce type de ressource : {0}"
+  },
+  "error": {
+    "processing_error": "Oups, on a rencontré un problème en traitant {0} : {1}",
+    "aws_api_error": "L'API AWS a eu du mal à supprimer {0} : {1}",
+    "unexpected_error": "Quelque chose d'inattendu s'est produit en supprimant cette ressource : {0}"
+  }
+}

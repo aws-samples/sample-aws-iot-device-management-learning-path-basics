@@ -8,7 +8,7 @@
   "jobs_endpoint_label": "🔗 Endpoint de Trabalhos:",
   
   "warnings": {
-    "debug_warning": "⚠️  AVISO: O modo debug expõe informações sensíveis (ARNs, IDs de conta, respostas da API)"
+    "debug_warning": "⚠️  Atenção: O modo debug vai mostrar informações sensíveis (ARNs, IDs de conta, respostas da API)"
   },
   
   "prompts": {
@@ -64,19 +64,19 @@
   },
   
   "errors": {
-    "invalid_job_id": "❌ ID do trabalho inválido",
-    "invalid_percentage": "❌ Digite um número entre 0 e 100",
-    "invalid_number": "❌ Digite um número válido",
+    "invalid_job_id": "❌ Hmm, esse ID de trabalho não parece estar certo",
+    "invalid_percentage": "❌ Por favor, digite um número entre 0 e 100",
+    "invalid_number": "❌ Por favor, digite um número válido",
     "no_active_jobs": "❌ Nenhum trabalho ativo encontrado",
     "no_pending_executions": "❌ Nenhuma execução de trabalho pendente encontrada para o trabalho: {}",
-    "failed_list_jobs": "❌ Falha ao listar trabalhos ativos",
-    "failed_job_details": "❌ Falha ao obter detalhes de execução do trabalho para {}",
+    "failed_list_jobs": "❌ Não foi possível listar trabalhos ativos",
+    "failed_job_details": "❌ Não foi possível obter detalhes de execução do trabalho para {}",
     "no_presigned_url": "❌ Nenhuma URL pré-assinada S3 encontrada no documento do trabalho",
-    "download_failed": "❌ Download falhou - marcando execução do trabalho como FAILED",
-    "failed_download": "❌ Falha ao baixar artefato: {}",
-    "empty_file": "❌ Arquivo baixado está vazio ou inválido",
+    "download_failed": "❌ Download não funcionou - marcando execução do trabalho como FAILED",
+    "failed_download": "❌ Não foi possível baixar artefato: {}",
+    "empty_file": "❌ Arquivo baixado parece estar vazio ou inválido",
     "no_job_document": "❌ Nenhum documento de trabalho encontrado para {}",
-    "parse_error": "❌ Erro ao analisar documento do trabalho: {}",
+    "parse_error": "❌ Tivemos problemas ao analisar documento do trabalho: {}",
     "client_init_error": "❌ Erro ao inicializar clientes AWS: {}",
     "api_error": "❌ Erro em {} {}: {}",
     "general_error": "❌ Erro: {}",
@@ -121,7 +121,7 @@
     "iam_role": "  🔐 Função IAM: {}",
     "additional_params": "📄 Parâmetros Adicionais do Trabalho:",
     "raw_job_document": "📋 Documento Bruto do Trabalho:",
-    "cancelled": "👋 Simulação de trabalho cancelada pelo usuário. Tchau!",
+    "cancelled": "👋 Simulação de trabalho cancelada. Até a próxima!",
     "cancelled_user": "👋 Simulação cancelada pelo usuário",
     "created_date": "(Criado: {})",
     "status_in_progress": "IN_PROGRESS",
@@ -145,6 +145,6 @@
     "execution_discovery_description": "Agora vamos descobrir todas as execuções de trabalho pendentes para o trabalho selecionado. Cada execução\nrepresenta um dispositivo específico que precisa receber a atualização de firmware. Execuções\npodem estar com status QUEUED (não iniciadas) ou IN_PROGRESS (dispositivo está processando).\n\n🔄 PRÓXIMO: Vamos encontrar todas as execuções pendentes para o trabalho '{}'",
     
     "execution_simulation_title": "Simulação de Execução - Processo de Atualização de Firmware do Dispositivo",
-    "execution_simulation_description": "Agora vamos simular o processo completo de execução de trabalho do dispositivo. Para cada dispositivo:\n1. Obter detalhes de execução do trabalho e documento do trabalho do AWS IoT\n2. Verificar se o trabalho requer download Amazon S3 (OTA) ou é operação personalizada\n3. Para trabalhos OTA: Baixar firmware do Amazon S3 e processar\n4. Para trabalhos personalizados: Simular processamento da operação\n5. Relatar status SUCCESS ou FAILED de volta ao AWS IoT\n\n🔄 PRÓXIMO: Vamos processar {} execuções com {}% de taxa de sucesso\nA simulação detectará automaticamente o tipo de trabalho e lidará adequadamente."
+    "execution_simulation_description": "Agora vamos simular o processo completo de execução de trabalho do dispositivo. Para cada dispositivo:\n1. Obter detalhes de execução do trabalho e documento do trabalho do AWS IoT\n2. Verificar se o trabalho requer download Amazon S3 (OTA) ou é operação personalizada\n3. Para trabalhos OTA: Baixar firmware do Amazon S3 e processar\n4. Para trabalhos personalizados: Simular processamento da operação\n5. Relatar status SUCCESS ou FAILED de volta ao AWS IoT\n\n🔄 PRÓXIMO: Vamos processar {} execuções com {}% de taxa de sucesso\nA simulação vai detectar automaticamente o tipo de trabalho e lidar adequadamente."
   }
 }

@@ -8,17 +8,17 @@
   "jobs_endpoint_label": "🔗 Endpoint de Trabajos:",
   
   "warnings": {
-    "debug_warning": "⚠️  ADVERTENCIA: El modo de depuración expone información sensible (ARNs, IDs de cuenta, respuestas de API)"
+    "debug_warning": "⚠️  Aviso: El modo de depuración mostrará información sensible (ARNs, IDs de cuenta, respuestas de API)"
   },
   
   "prompts": {
     "verbose_mode": "🔧 ¿Habilitar modo verboso (mostrar entrada/salida de consultas de trabajo)? [y/N]: ",
     "debug_mode": "🔧 ¿Habilitar modo de depuración (mostrar todas las llamadas y respuestas de API AWS)? [y/N]: ",
-    "enter_job_id": "📝 Ingrese el ID de Trabajo a simular:",
+    "enter_job_id": "📝 Ingresa el ID de Trabajo a simular:",
     "execution_scope": "🎯 ¿Procesar TODAS las ejecuciones o especificar un número? [ALL/número]:",
-    "success_percentage": "📈 Ingrese porcentaje de éxito (0-100):",
+    "success_percentage": "📈 Ingresa el porcentaje de éxito (0-100):",
     "proceed_simulation": "🚀 Listo para simular ejecuciones de trabajo. ¿Proceder? [Y/n]: ",
-    "press_enter": "Presione Enter para continuar..."
+    "press_enter": "Presiona Enter para continuar..."
   },
   
   "status": {
@@ -64,19 +64,19 @@
   },
   
   "errors": {
-    "invalid_job_id": "❌ ID de trabajo inválido",
-    "invalid_percentage": "❌ Por favor ingrese un número entre 0 y 100",
-    "invalid_number": "❌ Por favor ingrese un número válido",
+    "invalid_job_id": "❌ Hmm, ese ID de trabajo no se ve bien",
+    "invalid_percentage": "❌ Por favor ingresa un número entre 0 y 100",
+    "invalid_number": "❌ Por favor ingresa un número válido",
     "no_active_jobs": "❌ No se encontraron trabajos activos",
     "no_pending_executions": "❌ No se encontraron ejecuciones de trabajo pendientes para trabajo: {}",
-    "failed_list_jobs": "❌ Error al listar trabajos activos",
-    "failed_job_details": "❌ Error al obtener detalles de ejecución de trabajo para {}",
+    "failed_list_jobs": "❌ No se pudieron listar los trabajos activos",
+    "failed_job_details": "❌ No se pudieron obtener detalles de ejecución de trabajo para {}",
     "no_presigned_url": "❌ No se encontró URL prefirmada de S3 en el documento de trabajo",
-    "download_failed": "❌ Descarga falló - marcando ejecución de trabajo como FAILED",
-    "failed_download": "❌ Error al descargar artefacto: {}",
-    "empty_file": "❌ El archivo descargado está vacío o es inválido",
+    "download_failed": "❌ La descarga no funcionó - marcando ejecución de trabajo como FAILED",
+    "failed_download": "❌ No se pudo descargar el artefacto: {}",
+    "empty_file": "❌ El archivo descargado parece estar vacío o inválido",
     "no_job_document": "❌ No se encontró documento de trabajo para {}",
-    "parse_error": "❌ Error analizando documento de trabajo: {}",
+    "parse_error": "❌ Tuvimos problemas analizando el documento de trabajo: {}",
     "client_init_error": "❌ Error inicializando clientes AWS: {}",
     "api_error": "❌ Error en {} {}: {}",
     "general_error": "❌ Error: {}",
@@ -121,8 +121,8 @@
     "iam_role": "  🔐 Rol IAM: {}",
     "additional_params": "📄 Parámetros Adicionales del Trabajo:",
     "raw_job_document": "📋 Documento de Trabajo Crudo:",
-    "cancelled": "👋 Simulación de trabajo cancelada por el usuario. ¡Adiós!",
-    "cancelled_user": "👋 Simulación cancelada por el usuario",
+    "cancelled": "👋 Simulación de trabajo cancelada. ¡Nos vemos la próxima!",
+    "cancelled_user": "👋 Simulación cancelada",
     "created_date": "(Creado: {})",
     "status_in_progress": "IN_PROGRESS",
     "status_queued": "QUEUED",

@@ -1,24 +1,24 @@
 {
   "tagging": {
     "success": "✅ Tags aplicadas com sucesso a {}",
-    "failed": "⚠️  Falha ao aplicar tags a {}: {}",
-    "warning_continue": "⚠️  Falha na marcação para {}, continuando com a criação do recurso",
-    "invalid_schema": "⚠️  Esquema de tag inválido para {}",
-    "unsupported_type": "⚠️  Tipo de recurso não suportado para marcação: {}"
+    "failed": "⚠️  Não conseguimos aplicar tags a {}: {}",
+    "warning_continue": "⚠️  A marcação não funcionou para {}, mas vamos continuar com a criação do recurso",
+    "invalid_schema": "⚠️  O esquema de tags para {} não parece correto",
+    "unsupported_type": "⚠️  Este tipo de recurso ainda não suporta tags: {}"
   },
   "debug": {
-    "applying_tags": "🔧 Aplicando tags do workshop a {} (tipo: {})",
+    "applying_tags": "🔧 Adicionando tags do workshop a {} (tipo: {})",
     "tags_applied": "✅ Tags aplicadas: {}",
-    "tag_count": "📊 Aplicadas {} tags a {}",
+    "tag_count": "📊 Adicionadas {} tags a {}",
     "using_api": "🔧 Usando API {} para marcação",
-    "tag_validation": "🔍 Validando esquema de tags...",
-    "tag_validation_passed": "✅ Validação do esquema de tags aprovada",
-    "tag_validation_failed": "❌ Validação do esquema de tags falhou"
+    "tag_validation": "🔍 Verificando esquema de tags...",
+    "tag_validation_passed": "✅ O esquema de tags parece bom",
+    "tag_validation_failed": "❌ A validação do esquema de tags não passou"
   },
   "summary": {
     "resources_without_tags": "📊 Recursos criados sem tags: {}",
-    "tag_failures": "⚠️  Falhas na Aplicação de Tags",
+    "tag_failures": "⚠️  Problemas na Aplicação de Tags",
     "total_failures": "Total de recursos sem tags: {}",
-    "relying_on_naming": "ℹ️  Esses recursos serão identificados por convenções de nomenclatura durante a limpeza"
+    "relying_on_naming": "ℹ️  Não se preocupe - esses recursos serão identificados por convenções de nomenclatura durante a limpeza"
   }
 }

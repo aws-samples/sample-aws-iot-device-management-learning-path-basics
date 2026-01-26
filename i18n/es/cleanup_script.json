@@ -7,34 +7,40 @@
   "account_id_label": "🆔 ID de Cuenta:",
   
   "warnings": {
-    "debug_warning": "⚠️  ADVERTENCIA: El modo de depuración expone información sensible (ARNs, IDs de cuenta, respuestas de API)",
-    "deletion_warning": "⚠️  ADVERTENCIA: Esto eliminará permanentemente:",
-    "starting_cleanup": "🚨 Iniciando proceso de limpieza..."
+    "debug_warning": "⚠️  Ojo: El modo de depuración mostrará información sensible (ARNs, IDs de cuenta, respuestas de API)",
+    "deletion_warning": "⚠️  Solo para que sepas: Esto eliminará estos recursos para siempre:",
+    "starting_cleanup": "🚨 Empecemos con el proceso de limpieza...",
+    "dry_run_mode": "🔍 MODO DE PRUEBA - No te preocupes, nada se eliminará realmente",
+    "invalid_prefix": "❌ Hmm, ese prefijo de objeto no se ve bien. Intenta usar caracteres alfanuméricos con guiones, guiones bajos o dos puntos (máximo 20 caracteres)"
   },
   
   "prompts": {
-    "debug_mode": "🔧 ¿Habilitar modo de depuración (mostrar todas las llamadas y respuestas de API)? [y/N]: ",
-    "cleanup_choice": "Ingrese opción [1-3]: ",
-    "confirm_deletion": "Escriba 'DELETE' para confirmar: "
+    "debug_mode": "🔧 ¿Quieres habilitar el modo de depuración (muestra todas las llamadas y respuestas de API)? [y/N]: ",
+    "cleanup_choice": "¿Qué te gustaría hacer? [1-3]: ",
+    "confirm_deletion": "Escribe 'DELETE' si estás seguro: "
   },
   
   "status": {
-    "debug_enabled": "✅ Modo de depuración habilitado",
+    "debug_enabled": "✅ Modo de depuración activado",
+    "dry_run_enabled": "🔍 Modo de prueba activo - no eliminaremos nada realmente",
+    "using_prefix": "🏷️  Usando prefijo de objeto: {}",
     "clients_initialized": "🔍 DEBUG: Configuración del cliente:",
     "iot_service": "   Servicio IoT: {}",
     "data_endpoint": "   Endpoint de Datos: {}",
-    "scanning_things": "🔍 Escaneando Objetos de AWS IoT...",
-    "scanning_groups": "🔍 Escaneando Grupos de Objetos de AWS IoT...",
-    "scanning_types": "🔍 Escaneando Tipos de Objetos de AWS IoT...",
-    "scanning_packages": "🔍 Escaneando Paquetes de Software de AWS IoT...",
-    "scanning_buckets": "🔍 Escaneando buckets de Amazon S3 de firmware IoT en la región actual...",
-    "scanning_jobs": "🔍 Escaneando Trabajos de AWS IoT...",
-    "scanning_commands": "🔍 Escaneando Comandos de IoT...",
-    "found_total_things": "Se encontraron {} objetos totales en la cuenta",
-    "found_total_groups": "Se encontraron {} grupos de objetos totales en la cuenta",
-    "found_total_packages": "Se encontraron {} paquetes totales en la cuenta",
-    "found_total_commands": "Se encontraron {} comandos totales en la cuenta",
-    "found_total_jobs": "Se encontraron {} trabajos totales en la cuenta",
+    "identifying_resources": "🔍 Buscando recursos del taller usando etiquetas, patrones de nombres y asociaciones...",
+    "skipped_non_workshop": "⏭️  Se omitieron {} recursos que no son del taller",
+    "scanning_things": "🔍 Buscando Objetos de AWS IoT...",
+    "scanning_groups": "🔍 Buscando Grupos de Objetos de AWS IoT...",
+    "scanning_types": "🔍 Buscando Tipos de Objetos de AWS IoT...",
+    "scanning_packages": "🔍 Buscando Paquetes de Software de AWS IoT...",
+    "scanning_buckets": "🔍 Buscando buckets de Amazon S3 de firmware IoT en tu región actual...",
+    "scanning_jobs": "🔍 Buscando Trabajos de AWS IoT...",
+    "scanning_commands": "🔍 Buscando Comandos de IoT...",
+    "found_total_things": "Se encontraron {} objetos totales en tu cuenta",
+    "found_total_groups": "Se encontraron {} grupos de objetos totales en tu cuenta",
+    "found_total_packages": "Se encontraron {} paquetes totales en tu cuenta",
+    "found_total_commands": "Se encontraron {} comandos totales en tu cuenta",
+    "found_total_jobs": "Se encontraron {} trabajos totales en tu cuenta",
     "found_workshop_types": "Se encontraron {} tipos de objetos del taller de {} totales",
     "dry_run_things": "[MODO DE PRUEBA] Eliminaría objetos que coincidan con los criterios del taller",
     "dry_run_groups": "[MODO DE PRUEBA] Eliminaría grupos de objetos que coincidan con los criterios del taller",
@@ -49,7 +55,7 @@
     "filtering_packages": "Filtrando y eliminando paquetes del taller...",
     "filtering_commands": "Filtrando y eliminando comandos del taller...",
     "filtering_jobs": "Filtrando y eliminando trabajos del taller...",
-    "identifying_types": "Identificando tipos de objetos del taller...",
+    "identifying_types": "Buscando tipos de objetos del taller...",
     "no_workshop_types": "No se encontraron tipos de objetos del taller para eliminar",
     "deprecated_types": "Se desaprobaron {} tipos de objetos del taller",
     "processed_things": "Se procesaron {} objetos del taller: {} eliminados, {} fallidos",
@@ -70,7 +76,7 @@
     "deleting_buckets": "🚀 Eliminando buckets de Amazon S3 en paralelo...",
     "deprecating_types": "🚀 Desaprobando Tipos de Objetos de AWS IoT en paralelo...",
     "deleting_types": "🚀 Eliminando Tipos de Objetos de AWS IoT en paralelo...",
-    "processing_sequential": "🔧 Procesando {} secuencialmente (modo de depuración)...",
+    "processing_sequential": "🔧 Procesando {} uno a la vez (modo de depuración)...",
     "processing_parallel": "🔧 Procesando {} en paralelo...",
     "checking_group_type": "🔧 DEBUG - Verificando tipo de grupo: {}",
     "dynamic_group_detected": "🔧 DEBUG - Grupo dinámico detectado con consulta: {}",
@@ -89,8 +95,8 @@
     "deleting_package_roles": "🔍 Eliminando roles de AWS Identity and Access Management (IAM) de configuración del Catálogo de Paquetes de Software de AWS IoT...",
     "disabling_package_config": "📦 Deshabilitando configuración global del Catálogo de Paquetes de Software de AWS IoT...",
     "disabling_fleet_indexing": "🔍 Deshabilitando AWS IoT Fleet Indexing...",
-    "cleanup_completed": "🎉 ¡Limpieza completada exitosamente!",
-    "execution_time": "⏱️  Tiempo total de ejecución: {:.2f} segundos",
+    "cleanup_completed": "🎉 ¡Todo listo! Limpieza completada exitosamente!",
+    "execution_time": "⏱️  Tiempo total: {:.2f} segundos",
     "thing_deleted": "✅ [{}/{}] Eliminado objeto, sombras y principales: {}",
     "group_deleted_dynamic": "✅ [{}/{}] Eliminado grupo dinámico de objetos: {}",
     "group_deleted_static": "✅ [{}/{}] Eliminado grupo estático de objetos: {}",
@@ -107,30 +113,30 @@
   },
   
   "errors": {
-    "invalid_choice": "❌ Opción inválida. Por favor ingrese 1-3",
-    "invalid_number": "❌ Por favor ingrese un número válido",
-    "cleanup_cancelled": "❌ Limpieza cancelada por el usuario",
-    "failed_delete_thing": "❌ Error al eliminar objeto {}",
-    "failed_delete_group_dynamic": "❌ Error al eliminar grupo dinámico de objetos: {}",
-    "failed_delete_group_static": "❌ Error al eliminar grupo estático de objetos: {}",
-    "failed_delete_type": "❌ Error al eliminar tipo de objeto: {}",
-    "failed_delete_package": "❌ Error al eliminar paquete: {}",
-    "failed_delete_bucket": "❌ Error al eliminar bucket de Amazon S3: {}",
-    "failed_delete_job": "❌ Error al eliminar trabajo",
-    "failed_list_buckets": "❌ Error al listar buckets de S3",
-    "type_already_deprecated": "⚠️  El tipo de objeto podría ya estar desaprobado: {}",
-    "iot_role_not_exist": "⚠️  El rol de Trabajos de AWS IoT podría no existir o falló al eliminar",
-    "package_role_not_exist": "⚠️  El rol de configuración del Catálogo de Paquetes de Software de AWS IoT podría no existir o falló al eliminar",
-    "package_config_failed": "⚠️  La configuración del Catálogo de Paquetes de Software de AWS IoT podría ya estar deshabilitada o falló al actualizar",
-    "fleet_indexing_failed": "⚠️  AWS IoT Fleet Indexing podría ya estar deshabilitado o falló al actualizar",
-    "error_deleting_thing": "❌ Error eliminando objeto {}: {}",
-    "error_deleting_group": "❌ Error eliminando grupo de objetos {}: {}",
-    "error_deleting_type": "❌ Error eliminando tipo de objeto {}: {}",
-    "error_deprecating_type": "❌ Error desaprobando tipo de objeto {}: {}",
-    "error_deleting_package": "❌ Error eliminando paquete {}: {}",
-    "error_deleting_job": "❌ Error eliminando trabajo {}: {}",
-    "client_init_error": "❌ Error inicializando clientes AWS: {}",
-    "cleanup_failed": "❌ Limpieza falló con error: {}"
+    "invalid_choice": "❌ Hmm, esa no es una opción válida. Por favor elige 1, 2 o 3",
+    "invalid_number": "❌ Eso no parece un número. Intentemos de nuevo",
+    "cleanup_cancelled": "❌ ¡No hay problema! Limpieza cancelada",
+    "failed_delete_thing": "❌ No se pudo eliminar el objeto {}",
+    "failed_delete_group_dynamic": "❌ No se pudo eliminar el grupo dinámico de objetos: {}",
+    "failed_delete_group_static": "❌ No se pudo eliminar el grupo estático de objetos: {}",
+    "failed_delete_type": "❌ No se pudo eliminar el tipo de objeto: {}",
+    "failed_delete_package": "❌ No se pudo eliminar el paquete: {}",
+    "failed_delete_bucket": "❌ No se pudo eliminar el bucket de Amazon S3: {}",
+    "failed_delete_job": "❌ No se pudo eliminar el trabajo",
+    "failed_list_buckets": "❌ No se pudieron listar los buckets de S3",
+    "type_already_deprecated": "⚠️  Parece que este tipo de objeto ya podría estar desaprobado: {}",
+    "iot_role_not_exist": "⚠️  El rol de Trabajos de AWS IoT podría no existir o no pudimos eliminarlo",
+    "package_role_not_exist": "⚠️  El rol de configuración del Catálogo de Paquetes de Software de AWS IoT podría no existir o no pudimos eliminarlo",
+    "package_config_failed": "⚠️  La configuración del Catálogo de Paquetes de Software de AWS IoT podría ya estar deshabilitada o no pudimos actualizarla",
+    "fleet_indexing_failed": "⚠️  AWS IoT Fleet Indexing podría ya estar deshabilitado o no pudimos actualizarlo",
+    "error_deleting_thing": "❌ Tuvimos un problema eliminando el objeto {}: {}",
+    "error_deleting_group": "❌ Tuvimos un problema eliminando el grupo de objetos {}: {}",
+    "error_deleting_type": "❌ Tuvimos un problema eliminando el tipo de objeto {}: {}",
+    "error_deprecating_type": "❌ Tuvimos un problema desaprobando el tipo de objeto {}: {}",
+    "error_deleting_package": "❌ Tuvimos un problema eliminando el paquete {}: {}",
+    "error_deleting_job": "❌ Tuvimos un problema eliminando el trabajo {}: {}",
+    "client_init_error": "❌ No se pudieron inicializar los clientes AWS: {}",
+    "cleanup_failed": "❌ La limpieza tuvo un problema: {}"
   },
   
   "debug": {
@@ -144,11 +150,11 @@
   },
   
   "ui": {
-    "cleanup_menu": "🎯 Seleccione opción de limpieza:",
+    "cleanup_menu": "🎯 ¿Qué te gustaría limpiar?",
     "all_resources": "1. TODOS los recursos (Objetos de AWS IoT, Grupos de Objetos de AWS IoT, Tipos de Objetos de AWS IoT, paquetes del Catálogo de Paquetes de Software de AWS IoT, Buckets de Amazon S3, Roles de AWS Identity and Access Management (IAM))",
     "things_only": "2. Solo Objetos de AWS IoT",
     "groups_only": "3. Solo Grupos de Objetos de AWS IoT",
-    "cancelled": "👋 Limpieza cancelada por el usuario. ¡Adiós!"
+    "cancelled": "👋 ¡No te preocupes! Limpieza cancelada. ¡Hasta luego!"
   },
   
   "results": {
@@ -165,6 +171,6 @@
     "found_packages": "📊 Se encontraron {} paquetes del Catálogo de Paquetes de Software de AWS IoT para eliminar",
     "found_buckets": "📊 Se encontraron {} buckets para eliminar",
     "found_jobs": "📊 Se encontraron {} Trabajos de AWS IoT para eliminar",
-    "bucket_tip": "💡 Consejo: Si sus buckets están en una región diferente, configure la variable de entorno AWS_DEFAULT_REGION"
+    "bucket_tip": "💡 Consejo: Si tus buckets están en una región diferente, solo configura la variable de entorno AWS_DEFAULT_REGION"
   }
 }

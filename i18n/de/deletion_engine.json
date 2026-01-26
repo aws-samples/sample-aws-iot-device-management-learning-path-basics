@@ -1,0 +1,28 @@
+{
+  "debug": {
+    "processing_resources": "========== Verarbeite {0} {1} Ressourcen ==========",
+    "processing_item": "--- Verarbeite {0}/{1}: {2} ---",
+    "resource_name": "Ressource: {0}",
+    "is_workshop_resource": "Ist Workshop-Ressource: {0}",
+    "identification_method": "Identifikationsmethode: {0}",
+    "skipping_non_workshop": "Überspringe Nicht-Workshop-Ressource: {0}",
+    "proceeding_to_delete": "Bereite Löschung der Workshop-Ressource vor: {0}",
+    "deleting_with_dependencies": "Lösche mit Abhängigkeitsbehandlung...",
+    "dependency_handler_result": "Ergebnis der Abhängigkeitsbehandlung: Erfolg={0}, gelöschte_Elemente={1}",
+    "deleting_single_resource": "Lösche einzelne Ressource (keine Abhängigkeiten)...",
+    "single_resource_result": "Ergebnis der Einzelressourcenlöschung: Erfolg={0}",
+    "successfully_deleted": "✓ Erfolgreich gelöscht: {0}",
+    "failed_to_delete": "✗ Konnte nicht gelöscht werden: {0}",
+    "completed_processing": "========== Verarbeitung von {0} abgeschlossen ==========",
+    "processing_stats": "Gesamt: {0}, Gelöscht: {1}, Übersprungen: {2}, Fehlgeschlagen: {3}",
+    "rate_limiting": "Ratenbegrenzung: warte {0:.3f}s für {1}"
+  },
+  "warning": {
+    "unknown_resource_type": "Hmm, wir kennen diesen Ressourcentyp nicht: {0}"
+  },
+  "error": {
+    "processing_error": "Hoppla, es gab ein Problem beim Verarbeiten von {0}: {1}",
+    "aws_api_error": "Die AWS API hatte Schwierigkeiten beim Löschen von {0}: {1}",
+    "unexpected_error": "Etwas Unerwartetes ist beim Löschen dieser Ressource passiert: {0}"
+  }
+}

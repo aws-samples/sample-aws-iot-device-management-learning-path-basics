@@ -3,25 +3,18 @@
   "separator": "======================================",
   "aws_config": "📍 Configuração AWS:",
   "warnings": {
-    "debug_warning": "⚠️  AVISO: O modo debug expõe informações sensíveis (ARNs, IDs de conta, respostas da API)",
-    "tag_failure_thing_type": "⚠️  Aviso: Falha ao aplicar tags ao tipo de coisa {}",
-    "tag_failure_thing_group": "⚠️  Aviso: Falha ao aplicar tags ao grupo de coisas {}",
-    "tag_failure_package": "⚠️  Aviso: Falha ao aplicar tags ao pacote {}",
-    "tag_failure_s3_bucket": "⚠️  Aviso: Falha ao aplicar tags ao bucket S3 {}",
-    "tag_failure_iam_role": "⚠️  Aviso: Falha ao aplicar tags ao papel IAM {}"
-  },
-  "prefix_validation": {
-    "invalid_prefix_error": "Erro: Prefixo de coisa inválido '{}'",
-    "prefix_requirements_header": "O prefixo de coisa deve:",
-    "prefix_requirement_chars": "  - Conter apenas caracteres alfanuméricos, hífens (-), sublinhados (_), ou dois pontos (:)",
-    "prefix_requirement_length": "  - Ter no máximo 20 caracteres",
-    "prefix_requirement_not_empty": "  - Não estar vazio"
+    "debug_warning": "⚠️  Atenção: O modo debug vai mostrar informações sensíveis (ARNs, IDs de conta, respostas da API)",
+    "tag_failure_thing_type": "⚠️  Atenção: Não conseguimos aplicar tags ao tipo de coisa {}",
+    "tag_failure_thing_group": "⚠️  Atenção: Não conseguimos aplicar tags ao grupo de coisas {}",
+    "tag_failure_package": "⚠️  Atenção: Não conseguimos aplicar tags ao pacote {}",
+    "tag_failure_s3_bucket": "⚠️  Atenção: Não conseguimos aplicar tags ao bucket S3 {}",
+    "tag_failure_iam_role": "⚠️  Atenção: Não conseguimos aplicar tags ao papel IAM {}"
   },
   "tagging": {
     "summary_title": "⚠️  Resumo de Aplicação de Tags",
     "summary_separator": "==================================================",
-    "summary_intro": "Os seguintes recursos foram criados mas falharam ao receber tags do workshop:",
-    "summary_fallback": "Estes recursos dependerão das convenções de nomenclatura para identificação de limpeza.",
+    "summary_intro": "Estes recursos foram criados mas não conseguiram receber tags do workshop:",
+    "summary_fallback": "Sem problemas - estes recursos vão usar as convenções de nomenclatura para identificação na limpeza.",
     "resource_count": "{}: {} recurso(s)",
     "total_without_tags": "Total de recursos sem tags: {}"
   },
@@ -137,36 +130,41 @@
     "iot_logging_enabled": "✅ Registro do AWS IoT Core habilitado no nível INFO"
   },
   "errors": {
-    "invalid_choice": "❌ Opção inválida. Digite {}",
-    "enter_valid_number": "❌ Digite um número válido",
-    "invalid_version_format": "❌ Formato de versão inválido: {}",
-    "enter_positive_number": "❌ Digite um número positivo",
-    "number_between": "❌ Digite um número entre {} e {}",
-    "invalid_country_codes": "❌ Códigos de país inválidos: {}",
-    "provide_country_code": "❌ Forneça pelo menos um código de país",
-    "invalid_country_input": "❌ Entrada inválida. Digite um número ou códigos de país separados por vírgula",
-    "failed_create_thing_type": "❌ Falha ao criar Tipo de Coisa",
-    "error_processing_thing_type": "❌ Erro ao processar Tipo de Coisa '{}'",
-    "failed_enable_iot_logging": "❌ Falha ao habilitar o registro do AWS IoT Core",
-    "failed_enable_iot_logging_max_retries": "❌ Falha ao habilitar o registro do AWS IoT Core: Número máximo de tentativas de repetição excedido",
-    "failed_fleet_indexing": "❌ Falha ao habilitar AWS IoT Fleet Indexing",
-    "failed_create_bucket": "❌ Falha ao criar bucket Amazon S3",
-    "failed_upload_package": "❌ Falha ao enviar pacote",
-    "failed_upload_package_error": "❌ Falha ao enviar pacote: {}",
-    "error_processing_version": "❌ Erro ao processar versão {}",
-    "error_processing_version_detail": "❌ Erro ao processar versão {}: {}",
-    "error_creating_package": "❌ Erro ao criar pacote {}",
-    "error_creating_package_detail": "❌ Erro ao criar pacote {}: {}",
-    "error_checking_role": "❌ Erro ao verificar função",
-    "failed_update_package_config": "❌ Falha ao atualizar configuração global do pacote",
-    "failed_update_package_config_detail": "❌ Falha ao atualizar configuração global do pacote: {}",
-    "failed_create_device": "❌ Falha ao criar dispositivo {}",
-    "failed_create_device_detail": "❌ Falha ao criar dispositivo {}: {}",
-    "error_initializing": "❌ Erro ao inicializar clientes AWS",
-    "cancelled_by_user": "👋 Provisionamento cancelado pelo usuário. Tchau!",
-    "provisioning_failed": "❌ Provisionamento falhou com erro",
-    "error_checking_file": "❌ Erro ao verificar arquivo: {}",
-    "error_message": "❌ Erro: {}"
+    "invalid_choice": "❌ Isso não parece certo. Por favor, digite {}",
+    "enter_valid_number": "❌ Vamos tentar de novo com um número válido",
+    "invalid_version_format": "❌ Hmm, esse formato de versão não parece certo: {}",
+    "enter_positive_number": "❌ Vamos precisar de um número positivo aqui",
+    "number_between": "❌ Vamos escolher um número entre {} e {}",
+    "invalid_country_codes": "❌ Esses códigos de país não parecem certos: {}",
+    "provide_country_code": "❌ Vamos precisar de pelo menos um código de país",
+    "invalid_country_input": "❌ Essa entrada não parece certa. Tente um número ou códigos de país separados por vírgula",
+    "failed_create_thing_type": "❌ Não conseguimos criar o Tipo de Coisa",
+    "error_processing_thing_type": "❌ Encontramos um problema ao processar o Tipo de Coisa '{}'",
+    "failed_enable_iot_logging": "❌ Não conseguimos habilitar o registro do AWS IoT Core",
+    "failed_enable_iot_logging_max_retries": "❌ Não conseguimos habilitar o registro do AWS IoT Core: Atingimos o número máximo de tentativas",
+    "failed_fleet_indexing": "❌ Não conseguimos habilitar o AWS IoT Fleet Indexing",
+    "failed_create_bucket": "❌ Não conseguimos criar o bucket Amazon S3",
+    "failed_upload_package": "❌ Não conseguimos enviar o pacote",
+    "failed_upload_package_error": "❌ Não conseguimos enviar o pacote: {}",
+    "error_processing_version": "❌ Encontramos um problema ao processar a versão {}",
+    "error_processing_version_detail": "❌ Encontramos um problema ao processar a versão {}: {}",
+    "error_creating_package": "❌ Encontramos um problema ao criar o pacote {}",
+    "error_creating_package_detail": "❌ Encontramos um problema ao criar o pacote {}: {}",
+    "error_checking_role": "❌ Encontramos um problema ao verificar a função",
+    "failed_update_package_config": "❌ Não conseguimos atualizar a configuração global do pacote",
+    "failed_update_package_config_detail": "❌ Não conseguimos atualizar a configuração global do pacote: {}",
+    "failed_create_device": "❌ Não conseguimos criar o dispositivo {}",
+    "failed_create_device_detail": "❌ Não conseguimos criar o dispositivo {}: {}",
+    "error_initializing": "❌ Encontramos um problema ao inicializar os clientes AWS",
+    "cancelled_by_user": "👋 Sem problemas! Provisionamento cancelado. Até a próxima!",
+    "provisioning_failed": "❌ O provisionamento encontrou um erro",
+    "error_checking_file": "❌ Encontramos um problema ao verificar o arquivo: {}",
+    "error_message": "❌ Ops: {}",
+    "invalid_thing_prefix": "Hmm, esse prefixo de coisa '{}' não parece certo",
+    "thing_prefix_requirements": "O prefixo de coisa precisa:",
+    "thing_prefix_chars": "  - Usar apenas caracteres alfanuméricos, hífens (-), sublinhados (_), ou dois pontos (:)",
+    "thing_prefix_length": "  - Ter no máximo 20 caracteres",
+    "thing_prefix_not_empty": "  - Não estar vazio"
   },
   "debug": {
     "debug_operation": "🔍 DEBUG: {}: {}",
@@ -224,7 +222,7 @@
   "resources": {
     "creating_resource": "Criando {}: {}",
     "created_resource": "✅ Criado {}: {}",
-    "error_creating_resource": "❌ Erro ao criar {} {}: {}",
+    "error_creating_resource": "❌ Encontramos um problema ao criar {} {}: {}",
     "resource_already_exists": "⚠️  {} {} já existe, pulando",
     "thing_type_created": "✅ Tipo de Coisa criado: {}",
     "creating_thing": "Criando Coisa: {}",
@@ -233,61 +231,61 @@
     "thing_added_to_group": "✅ {} adicionado ao grupo {}"
   },
   "learning": {
-    "learned_iot_logging": "✅ O registro do AWS IoT Core permite monitoramento e solução de problemas via API SetV2LoggingOptions",
-    "learned_thing_types": "✅ Tipos de Coisas AWS IoT organizam dispositivos usando API CreateThingType",
-    "learned_fleet_indexing": "✅ Fleet Indexing habilita busca de dispositivos via API UpdateIndexingConfiguration",
-    "learned_s3_storage": "✅ Amazon S3 fornece armazenamento seguro de firmware usando APIs CreateBucket e PutObject",
-    "learned_package_catalog": "✅ Catálogo de Pacotes de Software AWS IoT centraliza firmware usando APIs CreatePackage",
-    "learned_iam_roles": "✅ Funções IAM habilitam acesso seguro através de APIs CreateRole e PutRolePolicy",
-    "learned_package_config": "✅ Configuração de Pacote automatiza atualizações de sombra via API UpdatePackageConfiguration",
-    "learned_device_creation": "✅ Criação de frota de dispositivos usa APIs CreateThing e CreateThingGroup",
+    "learned_iot_logging": "✅ O registro do AWS IoT Core permite monitoramento e solução de problemas através da API SetV2LoggingOptions",
+    "learned_thing_types": "✅ Tipos de Coisas AWS IoT organizam dispositivos usando a API CreateThingType",
+    "learned_fleet_indexing": "✅ Fleet Indexing habilita busca de dispositivos através da API UpdateIndexingConfiguration",
+    "learned_s3_storage": "✅ Amazon S3 fornece armazenamento seguro de firmware usando as APIs CreateBucket e PutObject",
+    "learned_package_catalog": "✅ Catálogo de Pacotes de Software AWS IoT centraliza firmware usando as APIs CreatePackage",
+    "learned_iam_roles": "✅ Funções IAM habilitam acesso seguro através das APIs CreateRole e PutRolePolicy",
+    "learned_package_config": "✅ Configuração de Pacote automatiza atualizações de sombra através da API UpdatePackageConfiguration",
+    "learned_device_creation": "✅ Criação de frota de dispositivos usa as APIs CreateThing e CreateThingGroup",
     "learned_boto3": "✅ Boto3 fornece acesso direto à API AWS com visibilidade detalhada de solicitação/resposta"
   },
   "learning_moments": {
     "iot_logging": {
       "title": "📚 MOMENTO DE APRENDIZADO: Registro do AWS IoT Core - Monitoramento e Solução de Problemas",
       "content": "O registro do AWS IoT Core usa a API SetV2LoggingOptions para habilitar monitoramento e solução de problemas abrangentes.\nO registro captura eventos de conectividade de dispositivos, atividade do intermediário de mensagens, execução do mecanismo de regras e chamadas de API.\nA API configura níveis de registro (ERROR, WARN, INFO, DEBUG) e requer uma função do IAM com permissões do CloudWatch Logs.\nO nível INFO fornece visibilidade equilibrada para ambientes de produção, capturando eventos importantes sem detalhes excessivos.\nOs registros são enviados para o Amazon CloudWatch Logs para análise, alertas e retenção de longo prazo.",
-      "next": "Habilitaremos o registro do AWS IoT Core no nível INFO usando a API SetV2LoggingOptions"
+      "next": "Vamos habilitar o registro do AWS IoT Core no nível INFO usando a API SetV2LoggingOptions"
     },
     "thing_types": {
       "title": "📚 MOMENTO DE APRENDIZADO: Tipos de Coisas - Categorias de Dispositivos",
-      "content": "Tipos de Coisas AWS IoT são templates que definem categorias de dispositivos IoT usando a API CreateThingType.\nEles agem como blueprints especificando atributos e comportamentos comuns para dispositivos similares. A API\ncria atributos pesquisáveis que habilitam consultas AWS IoT Fleet Indexing e operações em massa em categorias de dispositivos.\nTipos de Coisas ajudam a organizar sua frota de dispositivos e habilitam Gerenciamento de Dispositivos AWS IoT escalável.",
-      "next": "Vamos criar {} Tipos de Coisas usando a API AWS IoT CreateThingType: {}"
+      "content": "Tipos de Coisas AWS IoT são templates que definem categorias de dispositivos IoT usando a API CreateThingType.\nEles agem como blueprints especificando atributos e comportamentos comuns para dispositivos similares. A API\ncria atributos pesquisáveis que habilitam consultas AWS IoT Fleet Indexing e operações em massa em categorias de dispositivos.\nTipos de Coisas ajudam a organizar sua frota de dispositivos e habilitam o Gerenciamento de Dispositivos AWS IoT escalável.",
+      "next": "Vamos criar {} Tipos de Coisas usando a API CreateThingType do AWS IoT: {}"
     },
     "fleet_indexing": {
       "title": "📚 MOMENTO DE APRENDIZADO: Fleet Indexing - Busca e Consulta de Dispositivos",
       "content": "AWS IoT Fleet Indexing usa a API UpdateIndexingConfiguration para habilitar capacidades poderosas de busca.\nEle indexa dados do registro de dispositivos, status de conectividade e Sombras de Dispositivos AWS IoT (incluindo a\nsombra especial $package para versões de firmware). A API configura modos de indexação e filtros de sombra\npara habilitar Grupos Dinâmicos de Coisas e consultas em toda a frota para implantações em larga escala.",
-      "next": "Vamos habilitar Fleet Indexing com suporte à sombra $package usando a API UpdateIndexingConfiguration"
+      "next": "Vamos habilitar o Fleet Indexing com suporte à sombra $package usando a API UpdateIndexingConfiguration"
     },
     "s3_storage": {
       "title": "📚 MOMENTO DE APRENDIZADO: Armazenamento S3 - Distribuição de Firmware",
-      "content": "APIs Amazon S3 (CreateBucket, PutBucketVersioning) fornecem armazenamento seguro e escalável de firmware.\nA API CreateBucket estabelece o local de armazenamento enquanto PutBucketVersioning habilita\nrastreamento imutável de firmware. S3 integra com Trabalhos AWS IoT através de URLs pré-assinadas\ngeradas via API GetObject para downloads seguros de firmware sem credenciais.",
-      "next": "Vamos criar um bucket S3 em {} com versionamento usando APIs S3"
+      "content": "APIs Amazon S3 (CreateBucket, PutBucketVersioning) fornecem armazenamento seguro e escalável de firmware.\nA API CreateBucket estabelece o local de armazenamento enquanto PutBucketVersioning habilita\nrastreamento imutável de firmware. S3 integra com Trabalhos AWS IoT através de URLs pré-assinadas\ngeradas através da API GetObject para downloads seguros de firmware sem credenciais.",
+      "next": "Vamos criar um bucket S3 em {} com versionamento usando as APIs S3"
     },
     "firmware_packages": {
       "title": "📚 MOMENTO DE APRENDIZADO: Pacotes de Firmware - Gerenciamento de Versão",
-      "content": "A API S3 PutObject envia pacotes de firmware como arquivos ZIP com IDs de versão únicos.\nCada envio gera artefatos imutáveis através do versionamento S3. A API HeadObject\nverifica arquivos existentes enquanto PutObject cria novas versões para controle\npreciso do ciclo de vida do firmware e gerenciamento de atualizações over-the-air.",
+      "content": "A API PutObject do S3 envia pacotes de firmware como arquivos ZIP com IDs de versão únicos.\nCada envio gera artefatos imutáveis através do versionamento S3. A API HeadObject\nverifica arquivos existentes enquanto PutObject cria novas versões para controle\npreciso do ciclo de vida do firmware e gerenciamento de atualizações over-the-air.",
       "next": "Vamos enviar {} pacotes de firmware ({} tipos × {} versões)"
     },
     "package_catalog": {
       "title": "📚 MOMENTO DE APRENDIZADO: Catálogo de Pacotes de Software - Gerenciamento Centralizado",
-      "content": "APIs do Catálogo de Pacotes de Software AWS IoT (CreatePackage, CreatePackageVersion) fornecem gerenciamento centralizado de firmware.\nCreatePackage estabelece o pacote enquanto CreatePackageVersion vincula artefatos S3 a pacotes IoT.\nA API UpdatePackageVersion publica versões, habilitando atualizações automáticas de sombra de dispositivo\nquando trabalhos são concluídos com sucesso. Esta integração cria gerenciamento completo do ciclo de vida do firmware.",
+      "content": "APIs do Catálogo de Pacotes de Software AWS IoT (CreatePackage, CreatePackageVersion) fornecem gerenciamento centralizado de firmware.\nCreatePackage estabelece o pacote enquanto CreatePackageVersion vincula artefatos S3 a pacotes IoT.\nA API UpdatePackageVersion publica versões, habilitando atualizações automáticas de sombra de dispositivo\nquando trabalhos são concluídos com sucesso. Esta integração cria um gerenciamento completo do ciclo de vida do firmware.",
       "next": "Vamos criar {} pacotes do Catálogo de Pacotes de Software AWS IoT e publicar todas as versões no catálogo"
     },
     "iam_roles": {
       "title": "📚 MOMENTO DE APRENDIZADO: Funções IAM - Controle de Acesso Seguro",
-      "content": "APIs AWS Identity and Access Management (CreateRole, PutRolePolicy) fornecem credenciais seguras de serviço.\nA API CreateRole estabelece relacionamentos de confiança enquanto PutRolePolicy concede\npermissões específicas. Funções IAM habilitam AWS IoT a gerar URLs pré-assinadas para downloads de firmware S3\nsem expor credenciais AWS aos dispositivos, garantindo controle de acesso seguro e escalável.",
-      "next": "Vamos criar IoTJobsRole e IoTPackageConfigRole usando APIs IAM"
+      "content": "APIs AWS Identity and Access Management (CreateRole, PutRolePolicy) fornecem credenciais seguras de serviço.\nA API CreateRole estabelece relacionamentos de confiança enquanto PutRolePolicy concede\npermissões específicas. Funções IAM habilitam o AWS IoT a gerar URLs pré-assinadas para downloads de firmware S3\nsem expor credenciais AWS aos dispositivos, garantindo controle de acesso seguro e escalável.",
+      "next": "Vamos criar IoTJobsRole e IoTPackageConfigRole usando as APIs IAM"
     },
     "package_configuration": {
       "title": "📚 MOMENTO DE APRENDIZADO: Configuração de Pacote - Atualizações Automáticas de Sombra",
-      "content": "A API UpdatePackageConfiguration do Catálogo de Pacotes de Software AWS IoT habilita atualizações automáticas de Sombra de Dispositivo AWS IoT.\nQuando dispositivos relatam instalação bem-sucedida de firmware via Trabalhos AWS IoT, AWS IoT Core automaticamente\natualiza a sombra $package do dispositivo com a nova versão do firmware. Isso cria uma trilha de auditoria confiável\ne garante que o inventário do dispositivo reflita o estado real do firmware em sua frota.",
-      "next": "Vamos habilitar configuração global de pacote usando a API UpdatePackageConfiguration"
+      "content": "A API UpdatePackageConfiguration do Catálogo de Pacotes de Software AWS IoT habilita atualizações automáticas de Sombra de Dispositivo AWS IoT.\nQuando dispositivos relatam instalação bem-sucedida de firmware através dos Trabalhos AWS IoT, o AWS IoT Core automaticamente\natualiza a sombra $package do dispositivo com a nova versão do firmware. Isso cria uma trilha de auditoria confiável\ne garante que o inventário do dispositivo reflita o estado real do firmware em sua frota.",
+      "next": "Vamos habilitar a configuração global de pacote usando a API UpdatePackageConfiguration"
     },
     "device_creation": {
       "title": "📚 MOMENTO DE APRENDIZADO: Coisas AWS IoT e Grupos de Coisas - Criação de Frota de Dispositivos",
-      "content": "APIs AWS IoT CreateThing e CreateThingGroup estabelecem sua frota de dispositivos na nuvem.\nCreateThing registra dispositivos individuais com atributos enquanto CreateThingGroup fornece\nestrutura organizacional. A API AddThingToThingGroup cria relacionamentos habilitando\noperações em massa e herança de política em sua frota de Gerenciamento de Dispositivos AWS IoT.",
-      "next": "Vamos criar {} Grupos de Coisas e {} Coisas AWS IoT usando APIs AWS IoT"
+      "content": "APIs CreateThing e CreateThingGroup do AWS IoT estabelecem sua frota de dispositivos na nuvem.\nCreateThing registra dispositivos individuais com atributos enquanto CreateThingGroup fornece\nestrutura organizacional. A API AddThingToThingGroup cria relacionamentos habilitando\noperações em massa e herança de política em sua frota de Gerenciamento de Dispositivos AWS IoT.",
+      "next": "Vamos criar {} Grupos de Coisas e {} Coisas AWS IoT usando as APIs AWS IoT"
     }
   }
 }

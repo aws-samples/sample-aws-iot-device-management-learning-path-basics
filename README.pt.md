@@ -10,6 +10,9 @@
 | 🇰🇷 한국어 | [README.ko.md](README.ko.md) |
 | 🇧🇷 Português | [README.pt.md](README.pt.md) |
 | 🇨🇳 中文 | [README.zh.md](README.zh.md) |
+| 🇩🇪 Deutsch | [README.de.md](README.de.md) |
+| 🇮🇹 Italiano | [README.it.md](README.it.md) |
+| 🇫🇷 Français | [README.fr.md](README.fr.md) |
 
 ---
 
@@ -39,7 +42,7 @@ Uma demonstração abrangente das capacidades do AWS IoT Device Management inclu
 
 - **Conta AWS** com permissões para AWS IoT, Amazon S3 e AWS Identity and Access Management (IAM)
 - **Credenciais AWS** configuradas (via `aws configure`, variáveis de ambiente ou roles AWS Identity and Access Management (IAM))
-- **Python 3.10+** com pip e bibliotecas Python boto3, colorama e requests (verifique o arquivo requirements.txt)
+- **Python 3.10+** com pip e bibliotecas Python boto3, colorama e requests (dá uma olhada no arquivo requirements.txt)
 - **Git** para clonar o repositório
 
 ## 💰 Análise de Custos
@@ -68,8 +71,8 @@ Uma demonstração abrangente das capacidades do AWS IoT Device Management inclu
 **Gerenciamento de Custos:**
 - ✅ Script de limpeza remove todos os recursos
 - ✅ Recursos de demonstração de curta duração
-- ✅ Escala configurável (comece pequeno)
-- ⚠️ **Execute o script de limpeza quando terminar**
+- ✅ Escala configurável (você pode começar pequeno)
+- ⚠️ **Lembre-se de executar o script de limpeza quando terminar**
 
 **📊 Monitore custos:** [AWS Billing Dashboard](https://console.aws.amazon.com/billing/)
 
@@ -163,7 +166,7 @@ python scripts/cleanup_script.py --things-prefix "Fleet-Device-"
 ```
 
 **Requisitos do Prefixo**:
-- Apenas caracteres alfanuméricos, hífens, sublinhados e dois pontos
+- Use apenas caracteres alfanuméricos, hífens, sublinhados e dois pontos
 - Máximo de 20 caracteres
 - Números sequenciais são preenchidos automaticamente com zeros (001-999)
 
@@ -243,21 +246,21 @@ python scripts/manage_dynamic_groups.py   # Operações de grupos dinâmicos
 ## 🛠️ Solução de Problemas
 
 **Problemas Comuns**:
-- **Credenciais**: Configure credenciais AWS via `aws configure`, variáveis de ambiente ou roles AWS Identity and Access Management (IAM)
-- **Permissões**: Certifique-se de que o usuário AWS Identity and Access Management (IAM) tem permissões para AWS IoT, Amazon S3 e AWS Identity and Access Management (IAM)
-- **Limites de Taxa**: Scripts lidam automaticamente com throttling inteligente
-- **Rede**: Certifique-se da conectividade com APIs AWS
+- **Credenciais**: Configure suas credenciais AWS via `aws configure`, variáveis de ambiente ou roles AWS Identity and Access Management (IAM)
+- **Permissões**: Verifique se o usuário AWS Identity and Access Management (IAM) tem permissões para AWS IoT, Amazon S3 e AWS Identity and Access Management (IAM)
+- **Limites de Taxa**: Os scripts lidam automaticamente com throttling inteligente
+- **Rede**: Verifique se você tem conectividade com as APIs AWS
 
-**Modo Debug**: Habilite em qualquer script para solução detalhada de problemas
+**Modo Debug**: Você pode habilitar em qualquer script para solução detalhada de problemas
 ```bash
 🔧 Enable debug mode (show all API calls and responses)? [y/N]: y
 ```
 
-> 📖 **Solução Detalhada de Problemas**: Veja [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) para soluções abrangentes.
+> 📖 **Solução Detalhada de Problemas**: Dá uma olhada em [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) para soluções abrangentes.
 
 ## 🧹 Importante: Limpeza de Recursos
 
-**Sempre execute a limpeza quando terminar para evitar cobranças contínuas:**
+**Lembre-se sempre de executar a limpeza quando terminar para evitar cobranças contínuas:**
 ```bash
 python scripts/cleanup_script.py
 # Escolha opção 1: TODOS os recursos
@@ -397,11 +400,11 @@ i18n/
    ```
 
 **Diretrizes de Tradução**:
-- **Preservar Formatação**: Manter emojis, cores e caracteres especiais
-- **Manter Placeholders**: Manter placeholders `{}` para conteúdo dinâmico
-- **Termos Técnicos**: Manter nomes de serviços AWS em inglês
-- **Adaptação Cultural**: Adaptar exemplos e referências adequadamente
-- **Consistência**: Usar terminologia consistente em todos os arquivos
+- **Preservar Formatação**: Mantenha emojis, cores e caracteres especiais
+- **Manter Placeholders**: Mantenha placeholders `{}` para conteúdo dinâmico
+- **Termos Técnicos**: Mantenha nomes de serviços AWS em inglês
+- **Adaptação Cultural**: Adapte exemplos e referências adequadamente
+- **Consistência**: Use terminologia consistente em todos os arquivos
 
 **Padrões de Chaves de Mensagem**:
 - `title`: Título principal do script

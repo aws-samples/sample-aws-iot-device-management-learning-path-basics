@@ -2,7 +2,7 @@
   "title": "📦 Gerenciador de Pacotes de Software AWS IoT (Boto3)",
   "separator": "============================================",
   "learning_goal": "📚 OBJETIVO DE APRENDIZADO:",
-  "learning_description": "Este script gerencia o Catálogo de Pacotes de Software AWS IoT para distribuição de firmware. Pacotes fornecem\ncontrole de versão centralizado, integração Amazon S3 para armazenamento seguro de firmware e\natualizações automáticas de sombra de dispositivo quando trabalhos são concluídos. Você pode criar pacotes, adicionar versões com\nartefatos Amazon S3 e inspecionar detalhes de pacotes para gerenciamento abrangente do ciclo de vida do firmware.",
+  "learning_description": "Este script ajuda você a gerenciar o Catálogo de Pacotes de Software AWS IoT para distribuição de firmware. Pacotes fornecem\ncontrole de versão centralizado, integração Amazon S3 para armazenamento seguro de firmware e\natualizações automáticas de sombra de dispositivo quando trabalhos são concluídos. Você pode criar pacotes, adicionar versões com\nartefatos Amazon S3 e inspecionar detalhes de pacotes para gerenciamento abrangente do ciclo de vida do firmware.",
   "region_label": "📍 Região:",
   "account_id_label": "🆔 ID da Conta:",
   
@@ -56,8 +56,8 @@
   },
   
   "errors": {
-    "invalid_choice": "❌ Opção inválida. Digite 1-11",
-    "invalid_number": "❌ Digite um número válido",
+    "invalid_choice": "❌ Opção inválida. Tente digitar 1-11",
+    "invalid_number": "❌ Tente digitar um número válido",
     "package_name_empty": "❌ Nome do pacote não pode estar vazio",
     "version_empty": "❌ Versão não pode estar vazia",
     "device_name_empty": "❌ Nome do dispositivo não pode estar vazio",
@@ -69,25 +69,25 @@
     "version_exists": "⚠️  Versão '{}' já existe para o pacote '{}'",
     "package_not_found": "❌ Pacote '{}' não encontrado",
     "version_not_found": "❌ Versão do pacote '{}' v{} não encontrada",
-    "failed_create_package": "❌ Falha ao criar pacote",
-    "failed_create_version": "❌ Falha ao criar versão do pacote",
-    "failed_publish_version": "❌ Falha ao publicar versão do pacote",
-    "failed_list_packages": "❌ Falha ao listar pacotes",
-    "failed_get_config": "❌ Falha ao obter configuração do pacote",
-    "failed_enable_config": "❌ Falha ao habilitar configuração do pacote",
-    "failed_disable_config": "❌ Falha ao desabilitar configuração do pacote",
-    "failed_create_bucket": "❌ Falha ao criar bucket Amazon S3",
-    "failed_list_buckets": "❌ Falha ao listar buckets S3: {}",
+    "failed_create_package": "❌ Não foi possível criar pacote",
+    "failed_create_version": "❌ Não foi possível criar versão do pacote",
+    "failed_publish_version": "❌ Não foi possível publicar versão do pacote",
+    "failed_list_packages": "❌ Não foi possível listar pacotes",
+    "failed_get_config": "❌ Não foi possível obter configuração do pacote",
+    "failed_enable_config": "❌ Não foi possível habilitar configuração do pacote",
+    "failed_disable_config": "❌ Não foi possível desabilitar configuração do pacote",
+    "failed_create_bucket": "❌ Não foi possível criar bucket Amazon S3",
+    "failed_list_buckets": "❌ Não foi possível listar buckets S3: {}",
     "failed_check_file": "❌ Erro ao verificar arquivo: {}",
-    "failed_get_shadow": "❌ Falha ao obter sombra $package para o dispositivo '{}'",
-    "failed_search_devices": "❌ Falha ao buscar dispositivos",
-    "failed_attach_policy": "❌ Falha ao anexar política de configuração do pacote",
+    "failed_get_shadow": "❌ Não foi possível obter sombra $package para o dispositivo '{}'",
+    "failed_search_devices": "❌ Não foi possível buscar dispositivos",
+    "failed_attach_policy": "❌ Não foi possível anexar política de configuração do pacote",
     "failed_check_role": "❌ Erro ao verificar função: {}",
-    "failed_check_packages": "❌ Falha ao verificar pacotes existentes: {}",
-    "failed_revert": "❌ {}: Falha ao reverter - {}",
+    "failed_check_packages": "❌ Não foi possível verificar pacotes existentes: {}",
+    "failed_revert": "❌ {}: Não foi possível reverter - {}",
     "revert_cancelled": "❌ Reversão de versão cancelada",
     "client_init_error": "❌ Erro ao inicializar clientes AWS: {}",
-    "client_init_failed": "❌ Falha ao inicializar clientes AWS. Verifique suas credenciais e tente novamente.",
+    "client_init_failed": "❌ Não foi possível inicializar clientes AWS. Verifique suas credenciais e tente novamente.",
     "api_error": "❌ Erro em {} {}: {}",
     "general_error": "❌ Erro: {}",
     "shadow_processing_error": "❌ Erro ao processar dados da sombra: {}"
@@ -161,11 +161,11 @@
     "config_status": "📊 Status da Configuração: {}",
     "iam_role_arn": "🔗 ARN da Função IAM: {}",
     "config_active": "✅ Configuração do pacote está ativa:",
-    "job_updates": "   • Conclusões de trabalho atualizarão sombras $package do dispositivo",
+    "job_updates": "   • Conclusões de trabalho vão atualizar sombras $package do dispositivo",
     "version_tracking": "   • Versões de firmware são rastreadas automaticamente",
     "inventory_sync": "   • Inventário do dispositivo permanece sincronizado",
     "config_inactive": "⚠️  Configuração do pacote está desabilitada:",
-    "no_job_updates": "   • Conclusões de trabalho NÃO atualizarão Sombras de Dispositivos AWS IoT",
+    "no_job_updates": "   • Conclusões de trabalho não vão atualizar Sombras de Dispositivos AWS IoT",
     "manual_updates": "   • Atualizações manuais de Sombra de Dispositivo AWS IoT necessárias",
     "inventory_outdated": "   • Inventário do dispositivo pode ficar desatualizado",
     "what_enables": "📋 O que isso habilita:",
@@ -182,34 +182,34 @@
     "package_management_description": "O Catálogo de Pacotes de Software AWS IoT fornece gerenciamento centralizado de versão de firmware com integração Amazon S3.\nPacotes do Catálogo de Pacotes de Software AWS IoT organizam firmware por Tipo de Coisa AWS IoT, enquanto versões rastreiam diferentes lançamentos com\nartefatos Amazon S3 imutáveis. Versões publicadas podem ser implantadas via Trabalhos AWS IoT com\natualizações automáticas de Sombra de Dispositivo AWS IoT. Isso cria um ciclo de vida completo de firmware desde desenvolvimento\naté implantação com rastreabilidade completa e capacidades de rollback.\n\n🔄 PRÓXIMO: Escolha uma operação para gerenciar seus pacotes de software e versões",
     
     "version_creation_title": "Criação de Versão do Pacote - Gerenciamento do Ciclo de Vida do Firmware",
-    "version_creation_description": "Criar uma versão do pacote envolve múltiplas etapas: validação da versão, envio de artefato\nAmazon S3, criação da versão com metadados e publicação para implantação. Cada versão\né imutável uma vez publicada, garantindo integridade do firmware e habilitando rollbacks seguros.\n\n🔄 PRÓXIMO: Vamos validar o nome da versão e verificar conflitos",
+    "version_creation_description": "Criar uma versão do pacote envolve múltiplas etapas: validação da versão, envio de artefato\nAmazon S3, criação da versão com metadados e publicação para implantação. Cada versão\né imutável uma vez publicada, o que ajuda a garantir integridade do firmware e habilita rollbacks seguros.\n\n🔄 PRÓXIMO: Vamos validar o nome da versão e verificar conflitos",
     
     "s3_bucket_title": "Gerenciamento de Bucket Amazon S3 - Armazenamento Seguro de Firmware",
-    "s3_bucket_description": "AWS IoT requer que artefatos de firmware sejam armazenados no Amazon S3 com versionamento adequado habilitado.\nO bucket fornece armazenamento seguro e durável com controle de acesso e trilhas de auditoria.\nVersionamento garante que cada envio de firmware seja imutável e rastreável.\n\n🔄 PRÓXIMO: Vamos localizar ou criar um bucket Amazon S3 para armazenamento de firmware",
+    "s3_bucket_description": "AWS IoT requer que artefatos de firmware sejam armazenados no Amazon S3 com versionamento adequado habilitado.\nO bucket fornece armazenamento seguro e durável com controle de acesso e trilhas de auditoria.\nVersionamento ajuda a garantir que cada envio de firmware seja imutável e rastreável.\n\n🔄 PRÓXIMO: Vamos localizar ou criar um bucket Amazon S3 para armazenamento de firmware",
     
     "firmware_artifact_title": "Criação de Artefato de Firmware - Pacote de Implantação Simulado",
-    "firmware_artifact_description": "Na produção, artefatos de firmware são binários compilados, mas para esta demonstração criamos\num pacote ZIP simulado. O artefato inclui metadados de versão e é enviado para\nAmazon S3 com uma chave única para rastreabilidade e verificação de integridade.\n\n🔄 PRÓXIMO: Vamos criar e enviar o artefato de firmware para Amazon S3",
+    "firmware_artifact_description": "Na produção, artefatos de firmware são binários compilados, mas para esta demonstração vamos criar\num pacote ZIP simulado. O artefato inclui metadados de versão e é enviado para\nAmazon S3 com uma chave única para rastreabilidade e verificação de integridade.\n\n🔄 PRÓXIMO: Vamos criar e enviar o artefato de firmware para Amazon S3",
     
     "version_registration_title": "Registro de Versão do Pacote - Integração AWS IoT",
-    "version_registration_description": "Agora registramos o artefato Amazon S3 com AWS IoT como uma versão do pacote. Isso cria\na ligação entre o serviço IoT e o arquivo de firmware, habilitando implantações de trabalho.\nA versão inclui metadados como localização Amazon S3 e atributos personalizados.\n\n🔄 PRÓXIMO: Vamos criar a versão do pacote com referência do artefato Amazon S3",
+    "version_registration_description": "Agora vamos registrar o artefato Amazon S3 com AWS IoT como uma versão do pacote. Isso cria\na ligação entre o serviço IoT e o arquivo de firmware, o que habilita implantações de trabalho.\nA versão inclui metadados como localização Amazon S3 e atributos personalizados.\n\n🔄 PRÓXIMO: Vamos criar a versão do pacote com referência do artefato Amazon S3",
     
     "version_publishing_title": "Publicação de Versão - Tornando Firmware Disponível para Implantação",
     "version_publishing_description": "Publicar torna a versão disponível para Trabalhos AWS IoT. Apenas versões publicadas podem\nser implantadas em dispositivos. Esta etapa final valida o artefato e habilita a\nversão para uso em produção com atualizações automáticas de Sombra de Dispositivo AWS IoT.\n\n🔄 PRÓXIMO: Vamos publicar a versão para disponibilidade de implantação",
     
     "package_config_title": "Configuração do Pacote - Integração de Trabalhos para Sombra",
-    "package_config_description": "A Configuração do Catálogo de Pacotes de Software AWS IoT controla a integração entre Trabalhos AWS IoT e Sombras de Dispositivos AWS IoT.\nQuando habilitada, conclusões bem-sucedidas de Trabalhos AWS IoT atualizam automaticamente a sombra $package do dispositivo\ncom a nova versão do firmware. Isso cria uma trilha de auditoria e garante precisão do inventário de Gerenciamento de Dispositivos AWS IoT\nsem intervenção manual. A configuração requer uma função AWS Identity and Access Management (IAM) com permissões\npara ler e atualizar Sombras de Dispositivos AWS IoT.\n\n🔄 PRÓXIMO: Vamos verificar o status atual da configuração do pacote",
+    "package_config_description": "A Configuração do Catálogo de Pacotes de Software AWS IoT controla a integração entre Trabalhos AWS IoT e Sombras de Dispositivos AWS IoT.\nQuando habilitada, conclusões bem-sucedidas de Trabalhos AWS IoT atualizam automaticamente a sombra $package do dispositivo\ncom a nova versão do firmware. Isso cria uma trilha de auditoria e ajuda a garantir precisão do inventário de Gerenciamento de Dispositivos AWS IoT\nsem intervenção manual. A configuração requer uma função AWS Identity and Access Management (IAM) com permissões\npara ler e atualizar Sombras de Dispositivos AWS IoT.\n\n🔄 PRÓXIMO: Vamos verificar o status atual da configuração do pacote",
     
     "enable_config_title": "Habilitando Configuração do Pacote - Atualizações Automáticas de Sombra",
-    "enable_config_description": "Habilitar a configuração do Catálogo de Pacotes de Software AWS IoT requer uma função AWS Identity and Access Management (IAM) que permite ao AWS IoT Core atualizar\nSombras de Dispositivos. A IoTPackageConfigRole concede permissões para ler e escrever sombras $package\npara todas as Coisas AWS IoT. Uma vez habilitada, conclusões bem-sucedidas de Trabalhos AWS IoT atualizarão automaticamente a\nversão do firmware da Coisa AWS IoT em sua Sombra de Dispositivo AWS IoT, criando uma trilha de auditoria confiável.\n\n🔄 PRÓXIMO: Vamos criar a função IAM e habilitar a configuração",
+    "enable_config_description": "Habilitar a configuração do Catálogo de Pacotes de Software AWS IoT requer uma função AWS Identity and Access Management (IAM) que permite ao AWS IoT Core atualizar\nSombras de Dispositivos. A IoTPackageConfigRole concede permissões para ler e escrever sombras $package\npara todas as Coisas AWS IoT. Uma vez habilitada, conclusões bem-sucedidas de Trabalhos AWS IoT vão atualizar automaticamente a\nversão do firmware da Coisa AWS IoT em sua Sombra de Dispositivo AWS IoT, criando uma trilha de auditoria confiável.\n\n🔄 PRÓXIMO: Vamos criar a função IAM e habilitar a configuração",
     
     "disable_config_title": "Desabilitando Configuração do Pacote - Gerenciamento Manual de Sombra",
-    "disable_config_description": "Desabilitar a configuração do Catálogo de Pacotes de Software AWS IoT para atualizações automáticas de Sombra de Dispositivo AWS IoT quando Trabalhos AWS IoT são concluídos.\nVocê precisará atualizar manualmente Sombras de Dispositivos AWS IoT para rastrear versões de firmware. Isso pode ser\nútil para cenários de teste ou quando você quer controle total sobre atualizações de Sombra de Dispositivo AWS IoT. A função AWS Identity and Access Management (IAM)\npermanece disponível para reabilitação futura.\n\n🔄 PRÓXIMO: Vamos desabilitar atualizações automáticas de sombra",
+    "disable_config_description": "Desabilitar a configuração do Catálogo de Pacotes de Software AWS IoT para atualizações automáticas de Sombra de Dispositivo AWS IoT quando Trabalhos AWS IoT são concluídos.\nVocê vai precisar atualizar manualmente Sombras de Dispositivos AWS IoT para rastrear versões de firmware. Isso pode ser\nútil para cenários de teste ou quando você quer controle total sobre atualizações de Sombra de Dispositivo AWS IoT. A função AWS Identity and Access Management (IAM)\npermanece disponível para reabilitação futura.\n\n🔄 PRÓXIMO: Vamos desabilitar atualizações automáticas de sombra",
     
     "device_version_title": "Rastreamento de Versão do Pacote do Dispositivo - Inspeção de Sombra $package",
-    "device_version_description": "Cada Coisa AWS IoT mantém uma sombra $package que rastreia sua versão atual de firmware.\nEsta Sombra de Dispositivo AWS IoT é automaticamente atualizada quando Trabalhos AWS IoT são concluídos (se a configuração do Catálogo de Pacotes de Software AWS IoT\nestá habilitada) ou pode ser atualizada manualmente. A Sombra de Dispositivo AWS IoT contém o nome do pacote e\nversão para cada Tipo de Coisa AWS IoT, fornecendo informações precisas de inventário de Gerenciamento de Dispositivos AWS IoT.\n\n🔄 PRÓXIMO: Vamos recuperar a sombra $package para um dispositivo específico",
+    "device_version_description": "Cada Coisa AWS IoT mantém uma sombra $package que rastreia sua versão atual de firmware.\nEsta Sombra de Dispositivo AWS IoT é automaticamente atualizada quando Trabalhos AWS IoT são concluídos (se a configuração do Catálogo de Pacotes de Software AWS IoT\nestá habilitada) ou pode ser atualizada manualmente. A Sombra de Dispositivo AWS IoT contém o nome do pacote e\nversão para cada Tipo de Coisa AWS IoT, o que fornece informações precisas de inventário de Gerenciamento de Dispositivos AWS IoT.\n\n🔄 PRÓXIMO: Vamos recuperar a sombra $package para um dispositivo específico",
     
     "version_rollback_title": "Rollback de Versão - Gerenciamento de Firmware em Toda a Frota",
-    "version_rollback_description": "Rollback de versão usa AWS IoT Fleet Indexing para encontrar Coisas AWS IoT com versões específicas de firmware\ne atualiza suas Sombras de Dispositivos AWS IoT $package para refletir o rollback. Isso mantém inventário preciso\nde Gerenciamento de Dispositivos AWS IoT sem exigir downloads reais de firmware. É útil para rapidamente\nmarcar Coisas AWS IoT como revertidas em seu sistema de gerenciamento antes de implantar firmware mais antigo.\n\n🔄 PRÓXIMO: Vamos buscar dispositivos e atualizar suas sombras de pacote"
+    "version_rollback_description": "Rollback de versão usa AWS IoT Fleet Indexing para encontrar Coisas AWS IoT com versões específicas de firmware\ne atualiza suas Sombras de Dispositivos AWS IoT $package para refletir o rollback. Isso ajuda a manter inventário preciso\nde Gerenciamento de Dispositivos AWS IoT sem exigir downloads reais de firmware. É útil para rapidamente\nmarcar Coisas AWS IoT como revertidas em seu sistema de gerenciamento antes de implantar firmware mais antigo.\n\n🔄 PRÓXIMO: Vamos buscar dispositivos e atualizar suas sombras de pacote"
   },
   
   "explanations": {

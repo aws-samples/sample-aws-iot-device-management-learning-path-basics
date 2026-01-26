@@ -2,18 +2,18 @@
   "summary": {
     "header": "Cleanup Summary",
     "header_dry_run": "Cleanup Summary (DRY RUN - No Resources Deleted)",
-    "deleted_section": "Deleted Resources:",
-    "skipped_section": "Skipped Resources:",
-    "failed_section": "Failed Deletions:",
-    "overall_section": "Overall Summary:",
+    "deleted_section": "Resources We Cleaned Up:",
+    "skipped_section": "Resources We Skipped:",
+    "failed_section": "Resources We Couldn't Delete:",
+    "overall_section": "Here's What Happened:",
     "non_workshop_reason": "non-workshop resources",
     "total": "Total",
-    "total_resources_processed": "Total Resources Processed",
+    "total_resources_processed": "Total Resources We Looked At",
     "would_delete": "Would Delete",
-    "successfully_deleted": "Successfully Deleted",
+    "successfully_deleted": "Successfully Cleaned Up",
     "skipped_non_workshop": "Skipped (Non-Workshop)",
     "failed": "Failed",
-    "execution_time": "Execution Time"
+    "execution_time": "Time It Took"
   },
   "skipped": {
     "header_debug": "Skipped {} Resources ({} total):",

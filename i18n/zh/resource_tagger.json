@@ -1,24 +1,24 @@
 {
   "tagging": {
-    "success": "✅ 成功将标签应用于 {}",
-    "failed": "⚠️  将标签应用于 {} 失败: {}",
-    "warning_continue": "⚠️  {} 的标记失败，继续创建资源",
-    "invalid_schema": "⚠️  {} 的标签架构无效",
-    "unsupported_type": "⚠️  不支持标记的资源类型: {}"
+    "success": "✅ 标签已成功应用到 {}",
+    "failed": "⚠️  无法将标签应用到 {}: {}",
+    "warning_continue": "⚠️  {} 的标记没有成功，但我们会继续创建资源",
+    "invalid_schema": "⚠️  {} 的标签架构看起来不太对",
+    "unsupported_type": "⚠️  这种资源类型暂时还不支持标记: {}"
   },
   "debug": {
-    "applying_tags": "🔧 正在将研讨会标签应用于 {} (类型: {})",
+    "applying_tags": "🔧 正在为 {} 添加研讨会标签（类型: {}）",
     "tags_applied": "✅ 已应用标签: {}",
-    "tag_count": "📊 已将 {} 个标签应用于 {}",
+    "tag_count": "📊 已为 {} 添加了 {} 个标签",
     "using_api": "🔧 使用 {} API 进行标记",
-    "tag_validation": "🔍 正在验证标签架构...",
-    "tag_validation_passed": "✅ 标签架构验证通过",
-    "tag_validation_failed": "❌ 标签架构验证失败"
+    "tag_validation": "🔍 正在检查标签架构...",
+    "tag_validation_passed": "✅ 标签架构看起来不错",
+    "tag_validation_failed": "❌ 标签架构验证没有通过"
   },
   "summary": {
     "resources_without_tags": "📊 创建的无标签资源: {}",
-    "tag_failures": "⚠️  标签应用失败",
+    "tag_failures": "⚠️  标签应用问题",
     "total_failures": "无标签资源总数: {}",
-    "relying_on_naming": "ℹ️  这些资源将在清理期间通过命名约定进行识别"
+    "relying_on_naming": "ℹ️  别担心 - 这些资源会在清理时通过命名约定来识别"
   }
 }
