@@ -1,6 +1,6 @@
 # AWS IoT Device Management - Percorso di Apprendimento - Fondamenti
 
-## 🌍 Lingue Disponibili | Available Languages | Idiomas Disponibles | 利用可能な言語 | 사용 가능한 언어 | Idiomas Disponíveis | 可用语言
+## 🌍 Lingue Disponibili
 
 | Lingua | README |
 |----------|---------|
