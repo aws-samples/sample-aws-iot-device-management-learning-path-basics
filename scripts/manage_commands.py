@@ -733,9 +733,9 @@ class IoTCommandsManager:
             identity = self.sts_client.get_caller_identity()
             self.account_id = identity["Account"]
 
-            # Get the IoT data endpoint for this account/region
-            # IoT Data Plane services require account-specific endpoints
-            endpoint_response = self.iot_client.describe_endpoint(endpointType="iot:Jobs")
+            # Get the IoT Data-ATS endpoint for this account/region
+            # IoT Jobs and Commands APIs now use Data-ATS endpoints
+            endpoint_response = self.iot_client.describe_endpoint(endpointType="iot:Data-ATS")
             iot_endpoint = endpoint_response["endpointAddress"]
 
             # Create IoT Jobs Data client with the custom endpoint

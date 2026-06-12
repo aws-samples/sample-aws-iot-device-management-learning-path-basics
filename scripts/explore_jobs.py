@@ -127,8 +127,8 @@ class IoTJobsExplorer:
             identity = self.sts_client.get_caller_identity()
             self.account_id = identity["Account"]
 
-            # Get IoT Jobs endpoint
-            endpoint_response = self.iot_client.describe_endpoint(endpointType="iot:Jobs")
+            # Get IoT Data-ATS endpoint (used for Jobs and Commands APIs)
+            endpoint_response = self.iot_client.describe_endpoint(endpointType="iot:Data-ATS")
             self.jobs_endpoint = endpoint_response["endpointAddress"]
 
             # Initialize IoT Jobs Data client with endpoint
