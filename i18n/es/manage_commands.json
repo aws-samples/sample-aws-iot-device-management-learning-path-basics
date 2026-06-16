@@ -13,7 +13,7 @@
   },
   
   "prompts": {
-    "debug_mode": "🔧 ¿Quieres habilitar el modo de depuración (muestra todas las llamadas y respuestas de API)? [y/N]: ",
+    "debug_mode": "🔧 ¿Quieres habilitar el modo de depuración (muestra todas las llamadas y respuestas de API)? [s/N]: ",
     "menu_choice": "¿Qué te gustaría hacer? [1-9]: ",
     "command_name": "📝 ¿Cómo deberíamos llamar a este comando? ",
     "command_description": "📝 ¿Cómo describirías este comando? ",
@@ -22,7 +22,7 @@
     "target_group": "👥 ¿Qué grupo de things deberíamos usar como destino? ",
     "command_id": "🆔 ¿Cuál es el ID del comando? ",
     "confirm_delete": "Escribe 'DELETE' para confirmar: ",
-    "continue": "¿Quieres continuar? [Y/n]: ",
+    "continue": "¿Quieres continuar? [S/n]: ",
     "parameter_value": "¿Qué valor deberíamos usar para '{}'? ",
     "command_arn_or_name_view": "📝 ¿Qué comando te gustaría ver (ARN o nombre)? ",
     "command_arn_or_name_delete": "📝 ¿Qué comando te gustaría eliminar (ARN o nombre)? ",

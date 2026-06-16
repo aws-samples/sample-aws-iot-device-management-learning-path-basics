@@ -19,7 +19,7 @@
     "total_without_tags": "Total de recursos sin etiquetas: {}"
   },
   "prompts": {
-    "debug_mode": "🔧 ¿Habilitar modo de depuración (mostrar todas las llamadas y respuestas de API)? [y/N]: ",
+    "debug_mode": "🔧 ¿Habilitar modo de depuración (mostrar todas las llamadas y respuestas de API)? [s/N]: ",
     "thing_types": "📝 Ingresa Tipos de Objetos (separados por comas, ej., SedanVehicle,SUVVehicle,TruckVehicle):",
     "package_versions": "📝 Ingresa versiones de paquete (separadas por comas, ej., 1.0.0,1.1.0,2.0.0):",
     "device_count": "📊 Ingresa número de dispositivos a crear [{}]: ",

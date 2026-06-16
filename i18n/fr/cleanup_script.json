@@ -15,7 +15,7 @@
   },
   
   "prompts": {
-    "debug_mode": "🔧 Tu veux activer le mode debug (affiche tous les appels API et les réponses) ? [y/N] : ",
+    "debug_mode": "🔧 Tu veux activer le mode debug (affiche tous les appels API et les réponses) ? [o/N] : ",
     "cleanup_choice": "Qu'est-ce que tu veux faire ? [1-3] : ",
     "confirm_deletion": "Tape 'DELETE' si tu es sûr : "
   },

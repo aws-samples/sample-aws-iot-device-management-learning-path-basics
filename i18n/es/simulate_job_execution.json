@@ -12,12 +12,12 @@
   },
   
   "prompts": {
-    "verbose_mode": "🔧 ¿Habilitar modo verboso (mostrar entrada/salida de consultas de trabajo)? [y/N]: ",
-    "debug_mode": "🔧 ¿Habilitar modo de depuración (mostrar todas las llamadas y respuestas de API AWS)? [y/N]: ",
+    "verbose_mode": "🔧 ¿Habilitar modo verboso (mostrar entrada/salida de consultas de trabajo)? [s/N]: ",
+    "debug_mode": "🔧 ¿Habilitar modo de depuración (mostrar todas las llamadas y respuestas de API AWS)? [s/N]: ",
     "enter_job_id": "📝 Ingresa el ID de Trabajo a simular:",
     "execution_scope": "🎯 ¿Procesar TODAS las ejecuciones o especificar un número? [ALL/número]:",
     "success_percentage": "📈 Ingresa el porcentaje de éxito (0-100):",
-    "proceed_simulation": "🚀 Listo para simular ejecuciones de trabajo. ¿Proceder? [Y/n]: ",
+    "proceed_simulation": "🚀 Listo para simular ejecuciones de trabajo. ¿Proceder? [S/n]: ",
     "press_enter": "Presiona Enter para continuar..."
   },
   

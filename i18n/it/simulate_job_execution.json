@@ -12,12 +12,12 @@
   },
   
   "prompts": {
-    "verbose_mode": "🔧 Vuoi abilitare la modalità verbose (mostra input/output delle query dei job)? [y/N]: ",
-    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API AWS e le risposte)? [y/N]: ",
+    "verbose_mode": "🔧 Vuoi abilitare la modalità verbose (mostra input/output delle query dei job)? [s/N]: ",
+    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API AWS e le risposte)? [s/N]: ",
     "enter_job_id": "📝 Inserisci l'ID del Job da simulare:",
     "execution_scope": "🎯 Vuoi elaborare TUTTE le esecuzioni o specificare un numero? [ALL/numero]:",
     "success_percentage": "📈 Inserisci la percentuale di successo (0-100):",
-    "proceed_simulation": "🚀 Pronto per simulare le esecuzioni dei job. Procediamo? [Y/n]: ",
+    "proceed_simulation": "🚀 Pronto per simulare le esecuzioni dei job. Procediamo? [S/n]: ",
     "press_enter": "Premi Invio per continuare..."
   },
   

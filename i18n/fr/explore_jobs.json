@@ -12,7 +12,7 @@
   },
   
   "prompts": {
-    "debug_mode": "🔧 Tu veux activer le mode debug (affiche tous les appels API et les réponses) ? [y/N] : ",
+    "debug_mode": "🔧 Tu veux activer le mode debug (affiche tous les appels API et les réponses) ? [o/N] : ",
     "exploration_choice": "Entre ton choix [1-7] : ",
     "choose_option": "Choisis une option [1-2] : ",
     "select_job": "Sélectionne la tâche [1-{}] : ",
@@ -20,7 +20,7 @@
     "enter_job_id_explore": "📝 Entre l'ID de la Tâche à explorer : ",
     "enter_job_id_executions": "📝 Entre l'ID de la Tâche pour explorer les exécutions : ",
     "enter_thing_name": "Entre le Nom de l'Appareil/Objet : ",
-    "continue_exploration": "Tu veux explorer davantage ? [Y/n] : ",
+    "continue_exploration": "Tu veux explorer davantage ? [O/n] : ",
     "select_job_to_cancel": "Sélectionne la tâche à annuler [1-{}] : ",
     "confirm_cancel": "Tape 'CANCEL' pour confirmer l'annulation : ",
     "cancel_reason": "Entre la raison de l'annulation (optionnel) : ",

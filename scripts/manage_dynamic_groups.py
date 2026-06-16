@@ -17,6 +17,7 @@ if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 sys.path.append(os.path.join(repo_root, "i18n"))
 
+from confirmation import is_affirmative, is_negative
 from language_selector import get_language
 from loader import load_messages
 
@@ -139,7 +140,7 @@ class DynamicGroupManager:
         """Ask user for debug mode"""
         print(f"{Fore.RED}{self.get_message('warnings.debug_warning')}{Style.RESET_ALL}")
         choice = input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}").strip().lower()
-        self.debug_mode = choice in ["y", "yes"]
+        self.debug_mode = is_affirmative(choice, USER_LANG)
 
         if self.debug_mode:
             print(f"{Fore.GREEN}{self.get_message('status.debug_enabled')}{Style.RESET_ALL}\n")
@@ -278,7 +279,7 @@ class DynamicGroupManager:
             print(f"\n{Fore.CYAN}{self.get_message('ui.generated_name', auto_name)}{Style.RESET_ALL}")
 
             confirm = input(f"{Fore.YELLOW}{self.get_message('prompts.use_generated_name')}{Style.RESET_ALL}").strip().lower()
-            if confirm in ["n", "no"]:
+            if is_negative(confirm, USER_LANG):
                 custom_name = input(f"{Fore.YELLOW}{self.get_message('prompts.custom_name_input')}{Style.RESET_ALL}").strip()
                 if custom_name:
                     return custom_name
@@ -808,7 +809,7 @@ class DynamicGroupManager:
 
         # Confirm creation
         confirm = input(f"\n{Fore.YELLOW}{self.get_message('prompts.create_group_confirm')}{Style.RESET_ALL}").strip().lower()
-        if confirm in ["n", "no"]:
+        if is_negative(confirm, USER_LANG):
             print(f"{Fore.YELLOW}{self.get_message('errors.creation_cancelled')}{Style.RESET_ALL}")
             return
 
@@ -848,7 +849,7 @@ class DynamicGroupManager:
             continue_choice = (
                 input(f"{Fore.YELLOW}{self.get_message('prompts.continue_operation')}{Style.RESET_ALL}").strip().lower()
             )
-            if continue_choice in ["n", "no"]:
+            if is_negative(continue_choice, USER_LANG):
                 print(f"\n{Fore.GREEN}{self.get_message('ui.goodbye')}{Style.RESET_ALL}")
                 break
             print()  # Add spacing before next operation

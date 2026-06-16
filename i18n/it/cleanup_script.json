@@ -15,7 +15,7 @@
   },
   
   "prompts": {
-    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API e le risposte)? [y/N]: ",
+    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API e le risposte)? [s/N]: ",
     "cleanup_choice": "Cosa vorresti fare? [1-3]: ",
     "confirm_deletion": "Digita 'DELETE' se sei sicuro: "
   },

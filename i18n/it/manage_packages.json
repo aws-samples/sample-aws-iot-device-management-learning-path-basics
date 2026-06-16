@@ -14,20 +14,20 @@
   },
   
   "prompts": {
-    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API e le risposte)? [y/N]: ",
+    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API e le risposte)? [s/N]: ",
     "operation_choice": "Cosa vorresti fare? [1-11]: ",
     "package_name": "Come dovremmo chiamare il pacchetto? (es. SedanVehicle): ",
     "select_package": "Quale pacchetto vorresti? ",
     "version_input": "Quale versione? (es. 1.0.0): ",
-    "describe_package": "Vuoi descrivere un pacchetto? [y/N]: ",
-    "describe_version": "Vuoi descrivere una versione? [y/N]: ",
+    "describe_package": "Vuoi descrivere un pacchetto? [s/N]: ",
+    "describe_version": "Vuoi descrivere una versione? [s/N]: ",
     "select_version": "Quale versione vorresti? ",
     "device_name": "Come si chiama il dispositivo? (es. Vehicle-VIN-001): ",
-    "check_another_device": "Vuoi controllare un altro dispositivo? [y/N]: ",
+    "check_another_device": "Vuoi controllare un altro dispositivo? [s/N]: ",
     "thing_type_input": "Quale Thing Type? (es. SedanVehicle): ",
     "target_version": "Quale versione target? (es. 1.0.0): ",
     "revert_confirmation": "Digita 'REVERT' per confermare: ",
-    "continue_operation": "Vuoi continuare con un'altra operazione? [Y/n]: ",
+    "continue_operation": "Vuoi continuare con un'altra operazione? [S/n]: ",
     "press_enter": "Premi Invio quando sei pronto..."
   },
   

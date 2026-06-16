@@ -15,7 +15,7 @@
   },
   
   "prompts": {
-    "debug_mode": "🔧 ¿Quieres habilitar el modo de depuración (muestra todas las llamadas y respuestas de API)? [y/N]: ",
+    "debug_mode": "🔧 ¿Quieres habilitar el modo de depuración (muestra todas las llamadas y respuestas de API)? [s/N]: ",
     "cleanup_choice": "¿Qué te gustaría hacer? [1-3]: ",
     "confirm_deletion": "Escribe 'DELETE' si estás seguro: "
   },

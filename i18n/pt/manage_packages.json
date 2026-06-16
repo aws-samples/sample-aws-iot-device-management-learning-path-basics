@@ -14,20 +14,20 @@
   },
   
   "prompts": {
-    "debug_mode": "🔧 Habilitar modo debug (mostrar todas as chamadas e respostas da API)? [y/N]: ",
+    "debug_mode": "🔧 Habilitar modo debug (mostrar todas as chamadas e respostas da API)? [s/N]: ",
     "operation_choice": "Digite a opção [1-11]: ",
     "package_name": "Digite nome do pacote (ex: SedanVehicle): ",
     "select_package": "Selecione número do pacote: ",
     "version_input": "Digite versão (ex: 1.0.0): ",
-    "describe_package": "Descrever um pacote? [y/N]: ",
-    "describe_version": "Descrever uma versão? [y/N]: ",
+    "describe_package": "Descrever um pacote? [s/N]: ",
+    "describe_version": "Descrever uma versão? [s/N]: ",
     "select_version": "Selecione número da versão: ",
     "device_name": "Digite nome do dispositivo (ex: Vehicle-VIN-001): ",
-    "check_another_device": "Verificar outro dispositivo? [y/N]: ",
+    "check_another_device": "Verificar outro dispositivo? [s/N]: ",
     "thing_type_input": "Digite Tipo de Coisa (ex: SedanVehicle): ",
     "target_version": "Digite versão alvo (ex: 1.0.0): ",
     "revert_confirmation": "Digite 'REVERT' para confirmar: ",
-    "continue_operation": "Continuar com outra operação? [Y/n]: ",
+    "continue_operation": "Continuar com outra operação? [S/n]: ",
     "press_enter": "Pressione Enter para continuar..."
   },
   

@@ -12,7 +12,7 @@
   },
   
   "prompts": {
-    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API e le risposte)? [y/N]: ",
+    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API e le risposte)? [s/N]: ",
     "exploration_choice": "Cosa vorresti fare? [1-7]: ",
     "choose_option": "Quale opzione preferisci? [1-2]: ",
     "select_job": "Quale job vorresti? [1-{}]: ",
@@ -20,7 +20,7 @@
     "enter_job_id_explore": "📝 Quale job vorresti esplorare (ID)? ",
     "enter_job_id_executions": "📝 Per quale job vorresti vedere le esecuzioni (ID)? ",
     "enter_thing_name": "Qual è il nome del dispositivo/thing? ",
-    "continue_exploration": "Vuoi esplorare altro? [Y/n]: ",
+    "continue_exploration": "Vuoi esplorare altro? [S/n]: ",
     "select_job_to_cancel": "Quale job vorresti cancellare? [1-{}]: ",
     "confirm_cancel": "Digita 'CANCEL' per confermare la cancellazione: ",
     "cancel_reason": "Vuoi aggiungere un motivo per la cancellazione? (opzionale): ",

@@ -18,6 +18,7 @@ if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 sys.path.append(os.path.join(repo_root, "i18n"))
 
+from confirmation import is_affirmative, is_negative
 from language_selector import get_language
 from loader import load_messages
 
@@ -200,7 +201,7 @@ class IoTCleanupBoto3:
         """Ask user for debug mode"""
         print(f"{Fore.RED}{self.get_message('warnings.debug_warning')}{Style.RESET_ALL}")
         choice = input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}").strip().lower()
-        self.debug_mode = choice in ["y", "yes"]
+        self.debug_mode = is_affirmative(choice, USER_LANG)
 
         if self.debug_mode:
             print(f"{Fore.GREEN}{self.get_message('status.debug_enabled')}{Style.RESET_ALL}\n")

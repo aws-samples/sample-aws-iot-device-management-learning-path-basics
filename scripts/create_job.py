@@ -16,6 +16,7 @@ if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 sys.path.append(os.path.join(repo_root, "i18n"))
 
+from confirmation import is_affirmative, is_negative
 from language_selector import get_language
 from loader import load_messages
 
@@ -138,7 +139,7 @@ class IoTJobCreator:
         """Ask user for debug mode"""
         print(f"{Fore.RED}{self.get_message('warnings.debug_warning')}{Style.RESET_ALL}")
         choice = input(f"{Fore.YELLOW}{self.get_message('prompts.debug_mode')}{Style.RESET_ALL}").strip().lower()
-        self.debug_mode = choice in ["y", "yes"]
+        self.debug_mode = is_affirmative(choice, USER_LANG)
 
         if self.debug_mode:
             print(f"{Fore.GREEN}{self.get_message('status.debug_enabled')}{Style.RESET_ALL}\n")
@@ -344,7 +345,7 @@ class IoTJobCreator:
         print(f"\n{Fore.BLUE}{self.get_message('ui.rollout_config')}{Style.RESET_ALL}")
 
         use_rollout = input(f"{Fore.YELLOW}{self.get_message('prompts.configure_rollout')}{Style.RESET_ALL}").strip().lower()
-        if use_rollout not in ["y", "yes"]:
+        if not is_affirmative(use_rollout, USER_LANG):
             return None
 
         print(f"\n{Fore.CYAN}{self.get_message('ui.rollout_options')}{Style.RESET_ALL}")
@@ -411,7 +412,7 @@ class IoTJobCreator:
         print(f"\n{Fore.BLUE}{self.get_message('ui.execution_config')}{Style.RESET_ALL}")
 
         use_config = input(f"{Fore.YELLOW}{self.get_message('prompts.configure_execution')}{Style.RESET_ALL}").strip().lower()
-        if use_config not in ["y", "yes"]:
+        if not is_affirmative(use_config, USER_LANG):
             return None
 
         try:
@@ -423,7 +424,7 @@ class IoTJobCreator:
 
         config = {"maxExecutionsPerMin": max_per_min}
 
-        if use_exponential in ["y", "yes"]:
+        if is_affirmative(use_exponential, USER_LANG):
             try:
                 base_rate = int(
                     input(f"{Fore.YELLOW}{self.get_message('prompts.base_execution_rate')}{Style.RESET_ALL}") or "10"
@@ -455,7 +456,7 @@ class IoTJobCreator:
         print(f"\n{Fore.BLUE}{self.get_message('ui.abort_config')}{Style.RESET_ALL}")
 
         use_abort = input(f"{Fore.YELLOW}{self.get_message('prompts.configure_abort')}{Style.RESET_ALL}").strip().lower()
-        if use_abort not in ["y", "yes"]:
+        if not is_affirmative(use_abort, USER_LANG):
             return None
 
         try:
@@ -502,7 +503,7 @@ class IoTJobCreator:
         print(f"\n{Fore.BLUE}{self.get_message('ui.timeout_config')}{Style.RESET_ALL}")
 
         use_timeout = input(f"{Fore.YELLOW}{self.get_message('prompts.configure_timeout')}{Style.RESET_ALL}").strip().lower()
-        if use_timeout not in ["y", "yes"]:
+        if not is_affirmative(use_timeout, USER_LANG):
             return None
 
         try:
@@ -703,7 +704,7 @@ class IoTJobCreator:
         # Ask about advanced features
         use_advanced = input(f"{Fore.YELLOW}{self.get_message('prompts.configure_advanced')}{Style.RESET_ALL}").strip().lower()
 
-        if use_advanced in ["y", "yes"]:
+        if is_affirmative(use_advanced, USER_LANG):
             # Configure advanced job settings with learning moments
             self.job_config["targetSelection"] = self.get_target_selection()
             self.job_config["rolloutConfig"] = self.get_rollout_config()

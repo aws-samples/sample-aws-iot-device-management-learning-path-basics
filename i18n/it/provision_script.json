@@ -12,7 +12,7 @@
     "tag_failure_iam_role": "⚠️  Tieni presente: Non sono riuscito ad applicare i tag al ruolo IAM {}"
   },
   "prompts": {
-    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API e le risposte)? [y/N]: ",
+    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API e le risposte)? [s/N]: ",
     "thing_types": "📝 Inserisci i Tipi di Cosa (separati da virgola, es. SedanVehicle,SUVVehicle,TruckVehicle):",
     "package_versions": "📝 Inserisci le versioni del pacchetto (separate da virgola, es. 1.0.0,1.1.0,2.0.0):",
     "device_count": "📊 Inserisci il numero di dispositivi da creare [{}]: ",

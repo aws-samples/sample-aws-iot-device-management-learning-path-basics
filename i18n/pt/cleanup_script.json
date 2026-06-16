@@ -13,7 +13,7 @@
     "invalid_prefix": "❌ Hmm, esse prefixo de coisa não parece certo. Tenta usar caracteres alfanuméricos com hífens, sublinhados ou dois pontos (máximo de 20 caracteres)"
   },
   "prompts": {
-    "debug_mode": "🔧 Quer habilitar o modo debug (mostra todas as chamadas e respostas da API)? [y/N]: ",
+    "debug_mode": "🔧 Quer habilitar o modo debug (mostra todas as chamadas e respostas da API)? [s/N]: ",
     "cleanup_choice": "O que você gostaria de fazer? [1-3]: ",
     "confirm_deletion": "Digite 'DELETE' se você tem certeza: "
   },

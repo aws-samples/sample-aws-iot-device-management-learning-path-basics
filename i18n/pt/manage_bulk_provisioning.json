@@ -13,10 +13,10 @@
   },
   
   "prompts": {
-    "debug_mode": "🔧 Habilitar modo debug (mostrar todas as chamadas e respostas da API)? [y/N]: ",
+    "debug_mode": "🔧 Habilitar modo debug (mostrar todas as chamadas e respostas da API)? [s/N]: ",
     "operation_choice": "Digite a opção [1-4]: ",
     "task_id_input": "Digite o ID da tarefa de registro em massa: ",
-    "continue_operation": "Continuar com outra operação? [Y/n]: ",
+    "continue_operation": "Continuar com outra operação? [S/n]: ",
     "press_enter": "Pressione Enter para continuar...",
     "thing_type_choice": "Selecione tipo de coisa [1-{}]: ",
     "select_thing_type": "Por favor selecione um tipo de coisa para seus novos dispositivos (1-{}): "

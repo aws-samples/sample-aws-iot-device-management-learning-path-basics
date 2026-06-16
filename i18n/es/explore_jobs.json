@@ -12,7 +12,7 @@
   },
   
   "prompts": {
-    "debug_mode": "🔧 ¿Habilitar modo de depuración (mostrar todas las llamadas y respuestas de API)? [y/N]: ",
+    "debug_mode": "🔧 ¿Habilitar modo de depuración (mostrar todas las llamadas y respuestas de API)? [s/N]: ",
     "exploration_choice": "Ingrese opción [1-7]: ",
     "choose_option": "Elija opción [1-2]: ",
     "select_job": "Seleccione trabajo [1-{}]: ",
@@ -20,7 +20,7 @@
     "enter_job_id_explore": "📝 Ingrese ID de Trabajo a explorar: ",
     "enter_job_id_executions": "📝 Ingrese ID de Trabajo para explorar ejecuciones: ",
     "enter_thing_name": "Ingrese Nombre de Dispositivo/Objeto: ",
-    "continue_exploration": "¿Te gustaría explorar más? [Y/n]: ",
+    "continue_exploration": "¿Te gustaría explorar más? [S/n]: ",
     "select_job_to_cancel": "Seleccione trabajo a cancelar [1-{}]: ",
     "confirm_cancel": "Escriba 'CANCEL' para confirmar la cancelación: ",
     "cancel_reason": "Ingrese razón de cancelación (opcional): ",

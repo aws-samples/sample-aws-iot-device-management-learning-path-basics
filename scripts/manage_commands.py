@@ -20,6 +20,7 @@ if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 sys.path.append(os.path.join(repo_root, "i18n"))
 
+from confirmation import is_affirmative, is_negative
 from language_selector import get_language
 from loader import load_messages
 
@@ -515,7 +516,7 @@ def handle_validation_error(
     if allow_retry:
         try:
             response = input(f"\n{Fore.YELLOW}{get_msg_func('prompts.continue')}{Style.RESET_ALL}").strip().lower()
-            return response in ["y", "yes", ""]  # Default to yes
+            return response == "" or is_affirmative(response, USER_LANG)  # Default to yes
         except (KeyboardInterrupt, EOFError):
             return False
 
@@ -574,7 +575,7 @@ def handle_network_error(error: Exception, operation_name: str, get_msg_func, de
     # Ask if user wants to retry
     try:
         response = input(f"\n{Fore.YELLOW}{get_msg_func('errors.retry_operation')}{Style.RESET_ALL}").strip().lower()
-        return response in ["y", "yes", ""]  # Default to yes
+        return response == "" or is_affirmative(response, USER_LANG)  # Default to yes
     except (KeyboardInterrupt, EOFError):
         return False
 
@@ -3711,7 +3712,7 @@ def main():
         # Prompt for debug mode
         try:
             debug_choice = input(f"{manager.get_message('prompts.debug_mode')}").strip().lower()
-            if debug_choice in ["y", "yes"]:
+            if is_affirmative(debug_choice, USER_LANG):
                 manager.debug_mode = True
                 print(f"{Fore.GREEN}{manager.get_message('status.debug_enabled')}{Style.RESET_ALL}")
                 print(f"{Fore.YELLOW}{manager.get_message('warnings.debug_warning')}{Style.RESET_ALL}")

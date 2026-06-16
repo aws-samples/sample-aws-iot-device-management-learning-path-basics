@@ -13,10 +13,10 @@
   },
   
   "prompts": {
-    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API e le risposte)? [y/N]: ",
+    "debug_mode": "🔧 Vuoi abilitare la modalità debug (mostra tutte le chiamate API e le risposte)? [s/N]: ",
     "operation_choice": "Inserisci la tua scelta [1-4]: ",
     "task_id_input": "Inserisci l'ID dell'attività di registrazione in blocco: ",
-    "continue_operation": "Vuoi continuare con un'altra operazione? [Y/n]: ",
+    "continue_operation": "Vuoi continuare con un'altra operazione? [S/n]: ",
     "press_enter": "Premi Invio per continuare...",
     "thing_type_choice": "Seleziona thing type [1-{}]: ",
     "select_thing_type": "Per favore seleziona un thing type per i tuoi nuovi dispositivi (1-{}): "

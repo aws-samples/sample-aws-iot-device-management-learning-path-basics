@@ -12,12 +12,12 @@
   },
   
   "prompts": {
-    "verbose_mode": "🔧 Activer le mode verbeux (afficher les entrées/sorties des requêtes de tâches) ? [y/N] : ",
-    "debug_mode": "🔧 Activer le mode debug (afficher tous les appels API AWS et les réponses) ? [y/N] : ",
+    "verbose_mode": "🔧 Activer le mode verbeux (afficher les entrées/sorties des requêtes de tâches) ? [o/N] : ",
+    "debug_mode": "🔧 Activer le mode debug (afficher tous les appels API AWS et les réponses) ? [o/N] : ",
     "enter_job_id": "📝 Entre l'ID de la tâche à simuler :",
     "execution_scope": "🎯 Traiter TOUTES les exécutions ou spécifier un nombre ? [ALL/nombre] :",
     "success_percentage": "📈 Entre le pourcentage de succès (0-100) :",
-    "proceed_simulation": "🚀 Prêt à simuler les exécutions de tâches. On y va ? [Y/n] : ",
+    "proceed_simulation": "🚀 Prêt à simuler les exécutions de tâches. On y va ? [O/n] : ",
     "press_enter": "Appuie sur Entrée pour continuer..."
   },
   

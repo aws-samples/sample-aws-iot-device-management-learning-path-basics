@@ -13,7 +13,7 @@
   },
   
   "prompts": {
-    "debug_mode": "🔧 ¿Quieres habilitar el modo de depuración (muestra todas las llamadas y respuestas de API)? [y/N]: ",
+    "debug_mode": "🔧 ¿Quieres habilitar el modo de depuración (muestra todas las llamadas y respuestas de API)? [s/N]: ",
     "operation_choice": "¿Qué te gustaría hacer? [1-5]: ",
     "creation_method": "¿Cómo te gustaría crearlo? [1-2]: ",
     "countries_input": "🌍 ¿Qué países? (separados por comas, como US,CA,MX o déjalo vacío):",
@@ -23,14 +23,14 @@
     "custom_query_input": "¿Cuál es tu consulta de AWS IoT Fleet Indexing? ",
     "group_name_input": "¿Cómo deberíamos llamar a este grupo? ",
     "custom_name_required": "📝 Como elegiste múltiples países o versiones, vamos a darle un nombre personalizado:",
-    "use_generated_name": "¿Te funciona este nombre? [Y/n]: ",
+    "use_generated_name": "¿Te funciona este nombre? [S/n]: ",
     "custom_name_input": "¿Qué nombre prefieres? ",
     "group_name_describe": "¿Qué Grupo dinámico de Objetos te gustaría ver? ",
     "group_select_delete": "¿Qué grupo deberíamos eliminar? [1-{}]: ",
     "delete_confirmation": "Escribe 'DELETE' para confirmar: ",
     "test_query_input": "¿Cuál es tu consulta de AWS IoT Fleet Indexing? (o escribe 'exit' para volver): ",
-    "continue_operation": "¿Quieres hacer algo más? [Y/n]: ",
-    "create_group_confirm": "¿Listo para crear este grupo dinámico? [Y/n]: ",
+    "continue_operation": "¿Quieres hacer algo más? [S/n]: ",
+    "create_group_confirm": "¿Listo para crear este grupo dinámico? [S/n]: ",
     "press_enter": "Presiona Enter cuando estés listo..."
   },
   

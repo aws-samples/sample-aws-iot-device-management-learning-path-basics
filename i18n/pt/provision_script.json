@@ -19,7 +19,7 @@
     "total_without_tags": "Total de recursos sem tags: {}"
   },
   "prompts": {
-    "debug_mode": "🔧 Habilitar modo debug (mostrar todas as chamadas e respostas da API)? [y/N]: ",
+    "debug_mode": "🔧 Habilitar modo debug (mostrar todas as chamadas e respostas da API)? [s/N]: ",
     "thing_types": "📝 Digite Tipos de Coisas (separados por vírgula, ex: SedanVehicle,SUVVehicle,TruckVehicle):",
     "package_versions": "📝 Digite versões de pacote (separadas por vírgula, ex: 1.0.0,1.1.0,2.0.0):",
     "device_count": "📊 Digite número de dispositivos para criar [{}]: ",
