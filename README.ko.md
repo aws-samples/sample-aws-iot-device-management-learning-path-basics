@@ -18,6 +18,8 @@
 
 네이티브 AWS SDK (boto3) 통합을 사용하는 최신 Python 스크립트를 통해 디바이스 프로비저닝, 무선 업데이트(OTA), 작업 관리 및 플릿 운영을 포함한 AWS IoT Device Management 기능의 포괄적인 데모입니다.
 
+이 스크립트들은 공개된 [AWS IoT Device Management - 학습 경로 - 기초 워크숍](https://catalog.workshops.aws/workshops/40b80218-bf1d-45d6-b8bb-022f6d316a52)의 기반으로도 사용돼요. 툴킷 자체뿐만 아니라, 이 워크숍은 가이드가 제공되는 실습 경험을 통해 다양한 AWS IoT Device Management 사용 사례를 더 잘 이해할 수 있는 훌륭한 방법이에요.
+
 ## 👥 대상 사용자
 
 **주요 대상:** AWS IoT 디바이스 플릿을 다루는 IoT 개발자, 솔루션 아키텍트, DevOps 엔지니어

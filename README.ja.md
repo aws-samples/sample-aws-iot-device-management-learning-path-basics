@@ -18,6 +18,8 @@
 
 デバイスプロビジョニング、Over-the-Air（OTA）アップデート、ジョブ管理、フリート運用を含むAWS IoT Device Managementの包括的なデモンストレーション。ネイティブAWS SDK（boto3）統合を使用したモダンなPythonスクリプトを活用しています。
 
+これらのスクリプトは、一般公開されている[AWS IoT Device Management - 学習パス - 基礎ワークショップ](https://catalog.workshops.aws/workshops/40b80218-bf1d-45d6-b8bb-022f6d316a52)のベースとしても使われています。ツールキット自体に加えて、このワークショップはガイド付きの実践的な体験を通じて、AWS IoT Device Managementのさまざまなユースケースをより深く理解するのに最適です。
+
 ## 👥 対象読者
 
 **主要対象者：** IoT開発者、ソリューションアーキテクト、AWS IoTデバイスフリートを扱うDevOpsエンジニアの方々

@@ -18,6 +18,8 @@
 
 Una demostración completa de las capacidades de AWS IoT Device Management que incluye aprovisionamiento de dispositivos, actualizaciones por aire (OTA), gestión de trabajos y operaciones de flota usando scripts modernos de Python con integración nativa del AWS SDK (boto3).
 
+Estos mismos scripts sirven como base para el [Taller AWS IoT Device Management - Ruta de Aprendizaje - Fundamentos](https://catalog.workshops.aws/workshops/40b80218-bf1d-45d6-b8bb-022f6d316a52), de acceso público. Más allá del propio conjunto de herramientas, el taller es una excelente forma de comprender mejor los distintos casos de uso de AWS IoT Device Management a través de una experiencia práctica y guiada.
+
 ## 👥 Audiencia Objetivo
 
 **Audiencia Principal:** Desarrolladores de IoT, arquitectos de soluciones, ingenieros DevOps que trabajan con flotas de dispositivos AWS IoT

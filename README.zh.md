@@ -18,6 +18,8 @@
 
 这个项目会带你全面了解 AWS IoT 设备管理功能，包括设备配置、空中下载 (OTA) 更新、作业管理和车队操作，使用现代 Python 脚本与原生 AWS SDK (boto3) 集成。
 
+这些脚本同样是公开的 [AWS IoT Device Management - 学习路径 - 基础实战工作坊](https://catalog.workshops.aws/workshops/40b80218-bf1d-45d6-b8bb-022f6d316a52) 的脚本基础。除了工具包本身之外，该工作坊通过引导式的动手实践，是深入理解 AWS IoT Device Management 各类使用场景的绝佳途径。
+
 ## 👥 目标受众
 
 **主要受众：** IoT 开发人员、解决方案架构师、使用 AWS IoT 设备车队的 DevOps 工程师

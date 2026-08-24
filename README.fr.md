@@ -18,6 +18,8 @@
 
 Une démonstration complète des capacités d'AWS IoT Device Management, incluant le provisionnement d'appareils, les mises à jour OTA (over-the-air), la gestion des tâches et les opérations de flotte. Ce projet utilise des scripts Python modernes avec l'intégration native du SDK AWS (boto3) pour t'aider à apprendre ces concepts de manière pratique.
 
+Ces mêmes scripts servent de base à l'[atelier AWS IoT Device Management - Parcours d'Apprentissage - Bases](https://catalog.workshops.aws/workshops/40b80218-bf1d-45d6-b8bb-022f6d316a52), accessible au public. Au-delà de la boîte à outils elle-même, l'atelier est un excellent moyen de mieux comprendre les différents cas d'usage d'AWS IoT Device Management grâce à une expérience pratique et guidée.
+
 ## 👥 Public Cible
 
 **Public Principal :** Développeurs IoT, architectes de solutions et ingénieurs DevOps travaillant avec des flottes d'appareils AWS IoT
